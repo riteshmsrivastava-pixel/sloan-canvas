@@ -362,7 +362,7 @@ function timeShort(ms){if(!ms.length)return '';const[,s,e]=ms[0];return fmtTime(
 /* ===================== Fall 2026 courses ===================== */
 function K(o){o.key=o.id+(o.sec?'·'+o.sec:'');o.base=o.id;return o;}
 const COURSES=[
-  K({id:'15.414',title:'Financial Management (Core)',units:9,half:'F',fac:'—',certs:[],route:'Core',m:mt('MW','13:00-14:30'),note:'Core — provisional time, confirm with program',locked:true}),
+  K({id:'15.414',title:'Financial Management (Core)',units:9,half:'F',fac:'Emil Verner',certs:[],route:'Core',m:mt('TTh','10:00-11:30'),note:'Sloan Fellows core · pick section A/B',locked:true}),
   K({id:'15.S03',title:'SSIM: AI and Money',units:9,half:'F',fac:'G. Gensler',certs:['BA','FIN'],route:'Bid',tier:'High',m:mt('MW','16:00-17:30')}),
   K({id:'15.563',title:'Artificial Intelligence for Business',units:9,half:'F',fac:'M. Raghavan',certs:['BA'],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
   K({id:'15.S04',title:'SSIM: AI Strategy, Governance & Ethics',units:6,half:'H1',fac:'J. Saviano',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00')}),
@@ -471,8 +471,10 @@ let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan)return s;}catch(e){}return{plan:['15.414'],bids:{}};}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A'};}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
+function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 const byKey=k=>COURSES.find(c=>c.key===k);
 const planned=()=>state.plan.map(byKey).filter(Boolean);
 
@@ -595,7 +597,7 @@ function renderPlan(){
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${c.units}u</span>
-      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
+      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
       ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
@@ -671,7 +673,7 @@ function closeHelp(){document.getElementById('help').classList.remove('show');lo
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
 
-buildStatic();render();
+applyCoreSection();buildStatic();render();
 </script>
 </body>
 </html>
