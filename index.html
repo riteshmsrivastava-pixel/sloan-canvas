@@ -388,7 +388,7 @@ const COURSES=[
   K({id:'15.535',sec:'A',title:'Business Analysis Using Financial Statements',units:9,half:'F',fac:'B. Dharan',certs:['FIN','EM'],route:'Bid',tier:'Medium',m:mt('MW','13:00-14:30')}),
   K({id:'15.535',sec:'B',title:'Business Analysis Using Financial Statements',units:9,half:'F',fac:'C. Gallimberti',certs:['FIN','EM'],route:'Bid',tier:'Medium',m:mt('MW','14:30-16:00')}),
   K({id:'15.390',title:'Entrepreneurship 101 / New Venture Creation',units:12,half:'F',fac:'B. Aulet · N. Teng',certs:['EI','HC','DPM'],route:'Bid',tier:'High',m:mt('MW','14:30-16:00'),note:'Graduate'}),
-  K({id:'15.389',title:'Global Entrepreneurship Lab (G-Lab)',units:12,half:'F',fac:'M. Jester · S. Johnson',certs:['EI'],route:'Waitlist',m:mt('TTh','14:30-16:00'),note:'2nd-yr MBA/LGO only · SFMBA waitlist'}),
+  K({id:'15.389',title:'Global Entrepreneurship Lab (G-Lab)',units:12,fu:9,half:'F',fac:'M. Jester · S. Johnson',certs:['EI'],route:'Waitlist',m:mt('TTh','14:30-16:00'),note:'9u Fall + 3u IAP · 2nd-yr MBA/LGO only · SFMBA waitlist'}),
   K({id:'15.366',title:'Climate & Energy Ventures',units:12,half:'F',fac:'G. Campbell Flatter et al.',certs:['SUS','EI'],route:'Apply',m:mt('Th','17:30-20:00'),note:'Application opens July'}),
   K({id:'15.399',title:'Entrepreneurship Lab (E-Lab)',units:12,half:'F',fac:'K. Hickey · D. Patel',certs:['EI','HC'],route:'Bid',tier:'Medium',m:mt('M','16:00-19:00')}),
   K({id:'15.388',title:'Venture Creation Tactics',units:12,half:'F',fac:'P. Cheek',certs:['EI'],route:'Bid',tier:'Medium',m:mt('T','8:30-11:00'),note:'Graduate'}),
@@ -416,7 +416,7 @@ const COURSES=[
   K({id:'15.403',title:'Intro to the Practice of Finance',units:3,half:'F',fac:'S. Mehos',certs:['FIN'],route:'Waitlist',tier:'Low',m:mt('M','16:00-17:30'),note:'MBA 1st-yr · SFMBA waitlist'}),
   K({id:'15.426',title:'Real Estate Finance and Investment',units:12,half:'F',fac:'W. Torous',certs:['FIN'],route:'Register',m:mt('MW','13:00-14:30'),note:'Pre-register via WebSIS'}),
   K({id:'15.767',title:'Intro to Healthcare Delivery in the US',units:9,half:'F',fac:'A. Quaadgras',certs:['HC'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
-  K({id:'15.777',title:'Healthcare Lab (H-Lab)',units:15,half:'F',fac:'A. Quaadgras',certs:['HC','EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30'),note:'9u Fall + 6u IAP'}),
+  K({id:'15.777',title:'Healthcare Lab (H-Lab)',units:15,fu:9,half:'F',fac:'A. Quaadgras',certs:['HC','EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30'),note:'9u Fall + 6u IAP'}),
   K({id:'15.136',title:'Principles & Practice of Drug Development',units:9,half:'F',fac:'S. Finkelstein',certs:['HC'],route:'Bid',tier:'Medium',m:mt('W','15:00-18:00')}),
   K({id:'15.S13',title:'SSIM: CATAPULT Bio — Theory into Practice',units:9,half:'F',fac:'A. Lo',certs:['HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.S05',title:'SSIM: CATAPULT Advanced Energy Technologies',units:9,half:'F',fac:'A. Lo',certs:['SUS','HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
@@ -434,7 +434,7 @@ const COURSES=[
   K({id:'15.818',sec:'C',title:'Pricing',units:6,half:'H1',fac:'R. Hoong',certs:['DPM'],route:'Bid',tier:'Medium',m:mt('TTh','14:30-16:00')}),
   K({id:'15.833',title:'Business-to-Business Marketing',units:6,half:'H2',fac:'S. Chatterjee',certs:['EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.275',title:'Entertainment, Media & Sports Lab',units:9,half:'F',fac:'B. Shields · S. Springer',certs:[],route:'Bid',tier:'Medium',m:mt('W','16:00-19:00')}),
-  K({id:'15.830',title:'Enterprise Management Lab',units:9,half:'F',fac:'S. Chatterjee',certs:['EM'],route:'Bid',tier:'Medium',m:mt('M','16:00-19:00'),note:'6u Fall + 3u IAP · Graduate'}),
+  K({id:'15.830',title:'Enterprise Management Lab',units:9,fu:6,half:'F',fac:'S. Chatterjee',certs:['EM'],route:'Bid',tier:'Medium',m:mt('M','16:00-19:00'),note:'6u Fall + 3u IAP · Graduate'}),
   K({id:'15.770',title:'Logistics Systems',units:12,half:'F',fac:'A. Acocella · C. Caplice',certs:['EM'],route:'Register',m:mt('TTh','8:30-10:00'),note:'WebSIS'}),
   K({id:'15.665',sec:'A',title:'Power and Negotiation',units:9,half:'F',fac:'B. Tewfik',certs:[],route:'Bid',tier:'High',m:mt('T','13:00-16:00')}),
   K({id:'15.665',sec:'B',title:'Power and Negotiation',units:9,half:'F',fac:'B. Tewfik',certs:[],route:'Bid',tier:'High',m:mt('T','16:30-19:30')}),
@@ -463,6 +463,7 @@ const ROUTELABEL={Bid:'Bid',Apply:'Apply',Register:'Register',Waitlist:'Waitlist
 const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
 const TIERLAB={High:'High demand',Medium:'Medium',Low:'Low · token'};
 const biddable=c=>c.route==='Bid';
+const FU=c=>(c.fu??c.units); // Fall units (some labs split Fall+IAP)
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register';
 
 /* ===================== state ===================== */
@@ -509,7 +510,7 @@ function tipHTML(c){
   return `<div class="tc" style="color:${tint(col,.55)}">${c.id}${c.sec||''}</div>
     <div class="tt">${c.title}</div>
     <div class="td">
-      <b>${c.units} units${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+c.tier+' tier':''}
+      <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+c.tier+' tier':''}
       <div class="trow">🕑 ${fmtMeet(c.m)}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
@@ -562,7 +563,7 @@ function render(){
         </div>
         <div class="ctitle">${c.title}</div>
         <div class="meta">
-          <span class="unit">${c.units}u${c.half!=='F'?' · '+c.half:''}</span>
+          <span class="unit">${FU(c)}u${c.fu&&c.fu!==c.units?' Fall':''}${c.half!=='F'?' · '+c.half:''}</span>
           <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||'TBA'}</span>
           ${biddable(c)?`<span class="tier" style="color:${TIERCOL[c.tier]}"><i style="background:${TIERCOL[c.tier]}"></i>${TIERLAB[c.tier]}</span>`:''}
           ${certBadges(c.certs)}
@@ -596,7 +597,7 @@ function renderPlan(){
         </div>
         <div class="ptitle">${c.title}</div>
       </div>
-      <span class="time">${c.units}u</span>
+      <span class="time">${FU(c)}u</span>
       ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
       ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>`;
@@ -606,7 +607,7 @@ function renderPlan(){
 /* ===================== credits ===================== */
 function renderCredits(){
   const cs=planned();let pts=0,elec=0,tot=0;
-  cs.forEach(c=>{tot+=c.units;if(!c.locked)elec+=c.units;if(biddable(c))pts+=(state.bids[c.key]||0);});
+  cs.forEach(c=>{tot+=FU(c);if(!c.locked)elec+=FU(c);if(biddable(c))pts+=(state.bids[c.key]||0);});
   const pc=(v,m)=>Math.min(100,Math.round(v/m*100));
   document.getElementById('cap-pts').textContent=pts;document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
   document.getElementById('bar-pts').style.width=pc(pts,1000)+'%';
