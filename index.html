@@ -140,6 +140,21 @@
   .btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.12s;color:var(--ink);}
   .btn:hover{background:#f0f0f3;}
   .certfull{display:flex;flex-wrap:wrap;gap:6px;}
+  .help-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 15px;font-size:12px;font-weight:600;cursor:pointer;color:var(--brand);font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.12s;}
+  .help-btn:hover{background:var(--brand-soft);}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.38);backdrop-filter:blur(5px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:24px;max-width:660px;width:100%;max-height:86vh;overflow-y:auto;box-shadow:var(--shadow-lg);padding:30px 32px;animation:pop .22s ease;}
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal h2{margin:0;font-size:24px;letter-spacing:-.02em;}
+  .modal .sub{color:var(--sub);font-size:13px;margin:4px 0 18px;}
+  .modal .close{float:right;border:0;background:#f0f0f3;width:34px;height:34px;border-radius:99px;font-size:18px;cursor:pointer;color:#86868b;line-height:1;}
+  .modal .close:hover{background:#e3e3e6;}
+  .step{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line);}
+  .step .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-weight:800;display:grid;place-items:center;font-size:13px;}
+  .step h3{margin:0 0 3px;font-size:14.5px;font-weight:700;}
+  .step p{margin:0;font-size:13px;color:var(--sub);line-height:1.55;}
+  .modal .ft{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);text-align:center;}
 </style>
 </head>
 <body>
@@ -151,6 +166,7 @@
       <h1>Sloan Canvas</h1>
       <p>Sloan Fellows ’27 · Fall 2026 Bidding Workspace</p>
     </div>
+    <button class="help-btn" onclick="openHelp()">？ How to use</button>
     <div class="meters">
       <div class="chip-round"><span class="pulse"></span> Round IB · closes in 3d 12h</div>
       <div class="meter"><div class="k">Remaining Points</div><div class="v"><span id="m-points">1000</span><small> / 1000</small></div></div>
@@ -231,6 +247,22 @@
       <div class="cal"><div class="calgrid" id="calgrid"></div></div>
       <div class="legend" id="legend"></div>
     </section>
+  </div>
+
+  <div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
+    <div class="modal">
+      <button class="close" onclick="closeHelp()">×</button>
+      <h2>How to use Sloan Canvas</h2>
+      <div class="sub">Plan your Fall 2026 electives and bids in a few minutes.</div>
+      <div class="step"><div class="n">1</div><div><h3>Browse &amp; filter the catalog (left)</h3><p>Narrow ~70 Fall courses by career track, certificate, route (Bid / Apply / Register) or search. Keep “only courses I’m eligible to bid for” on to hide undergrad/MFIN/repeat-core sections.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Build your plan</h3><p>Tap <b>+</b> (or drag a card) to add a course to <b>My Fall Plan</b> on the right. Tap <b>−</b> to remove it. Your core 15.414 is already locked in.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Enter your bids</h3><p>For biddable Sloan courses, type points in the <b>Bid</b> box. You have <b>1,000 points</b> — and you pay the clearing price, not your bid. Tiers (High/Medium/Low) are rough guidance.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h3>Watch the limits</h3><p>The bars track <b>points /1000</b>, <b>elective units /57</b> and <b>total units /66</b>. The header shows what’s remaining, live.</p></div></div>
+      <div class="step"><div class="n">5</div><div><h3>Check your week</h3><p>The calendar plots every course. A <b>red outline = time clash</b>. Half-term courses (H1 vs H2) don’t clash with each other.</p></div></div>
+      <div class="step"><div class="n">6</div><div><h3>Use the hints</h3><p>Green <b>🔁 Also offered</b> means you could take it in Spring/IAP instead — don’t overspend now. Blue <b>≈ Similar</b> is a close substitute; click it to jump.</p></div></div>
+      <div class="step"><div class="n">7</div><div><h3>It’s private</h3><p>Your plan saves only in <b>this browser</b> — nothing is shared or uploaded. Always confirm everything on SloanBid before you actually bid.</p></div></div>
+      <div class="ft">Reopen this anytime with “？ How to use” in the top bar.</div>
+    </div>
   </div>
 
   <div class="fine">
@@ -604,6 +636,11 @@ function drop(e){e.preventDefault();document.getElementById('drop').classList.re
 
 function renderAll(){renderPlan();renderCredits();renderCalendar();renderCatalog();}
 function render(){renderCatalog();}
+
+function openHelp(){document.getElementById('help').classList.add('show');}
+function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('sc_seen','1');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+if(!localStorage.getItem('sc_seen'))setTimeout(openHelp,450);
 
 buildStatic();renderAll();
 </script>
