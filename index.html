@@ -572,6 +572,15 @@ function renderCredits(){
 
 /* ===================== calendar ===================== */
 const CAL_S=480,CAL_E=1290,CAL_H=620;
+// assign overlapping meetings to side-by-side lanes (so nothing hides behind another)
+function layoutLanes(evs){
+  evs.sort((a,b)=>a.s-b.s||a.e-b.e);
+  let cluster=[],end=-1;
+  const flush=()=>{const lanes=[];cluster.forEach(ev=>{let p=false;for(let i=0;i<lanes.length;i++){if(lanes[i]<=ev.s){ev.lane=i;lanes[i]=ev.e;p=true;break;}}if(!p){ev.lane=lanes.length;lanes.push(ev.e);}});const n=lanes.length;cluster.forEach(ev=>ev.cols=n);cluster=[];end=-1;};
+  evs.forEach(ev=>{if(cluster.length&&ev.s>=end)flush();cluster.push(ev);end=Math.max(end,ev.e);});
+  if(cluster.length)flush();
+  return evs;
+}
 function renderCalendar(){
   const conf=conflictSet();const days=['M','T','W','Th','F'];
   let gut='<div class="ghead"></div><div class="track" style="height:'+CAL_H+'px">';
@@ -579,15 +588,19 @@ function renderCalendar(){
   gut+='</div>';
   const cs=planned().filter(c=>c.m.length);
   let daysHtml='';
-  days.forEach((d,di)=>{
+  days.forEach((d)=>{
     let col=`<div class="day"><div class="dhead">${DAY[d].toUpperCase()}</div><div class="track" style="height:${CAL_H}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px 56px)">`;
-    let any=false;
-    cs.forEach(c=>{c.m.forEach(([dd,s,e])=>{if(dd!==d)return;any=true;
+    // collect this day's meetings, then lay overlapping ones out in side-by-side lanes
+    const evs=[];
+    cs.forEach(c=>c.m.forEach(([dd,s,e])=>{if(dd===d)evs.push({c,s,e});}));
+    layoutLanes(evs);
+    evs.forEach(({c,s,e,lane,cols})=>{
       const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),col0=colorOf(c);
-      col+=`<div class="block ${conf.has(c.key)?'conf':''}" style="top:${top}px;height:${h}px;left:4px;right:4px;background:${tint(col0,.16)};border-left-color:${col0}">
+      const w=100/cols,left=lane*w;
+      col+=`<div class="block ${conf.has(c.key)?'conf':''}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
         <div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
-    });});
-    if(!any&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
+    });
+    if(!evs.length&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
