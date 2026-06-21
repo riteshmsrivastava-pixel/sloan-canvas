@@ -161,6 +161,25 @@
   .step h3{margin:0 0 3px;font-size:14.5px;font-weight:700;}
   .step p{margin:0;font-size:13px;color:var(--sub);line-height:1.55;}
   .modal .ft{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);text-align:center;}
+  /* scroll affordances */
+  .listwrap{position:relative;}
+  .listfade{position:absolute;left:8px;right:8px;bottom:0;height:44px;pointer-events:none;border-radius:0 0 var(--r) var(--r);background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.94));display:flex;align-items:flex-end;justify-content:center;color:#9a9aa0;font-size:15px;font-weight:700;}
+  .listfade span{animation:bob 1.7s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  .mhint{display:none;font-size:11px;color:var(--brand);font-weight:600;}
+  .cal{position:relative;}
+  @media(max-width:760px){
+    .wrap{padding:0 13px;}
+    .grid{gap:14px;margin-top:14px;}
+    .bottom{margin-top:14px;}
+    .list{max-height:56vh;}
+    .meters{width:100%;margin-left:0;}
+    .head{gap:10px;}
+    .mhint{display:inline;}
+    .calgrid{min-width:540px;}
+    .modal{padding:22px 18px;}
+    .plan-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  }
 </style>
 </head>
 <body>
@@ -211,13 +230,13 @@
           <span class="switch on" id="eligSwitch"><i></i></span> Show only courses I’m eligible to bid for (SFMBA)
         </label>
       </div>
-      <div class="list" id="catalog"></div>
+      <div class="listwrap"><div class="list" id="catalog"></div><div class="listfade"><span>⌄&nbsp; scroll for more</span></div></div>
     </section>
 
     <!-- RIGHT: schedule + plan (60%) -->
     <div class="rightcol">
     <section class="panel">
-      <div class="panel-h"><h2>Weekly Schedule</h2><span class="count" id="conflictCount">No conflicts</span></div>
+      <div class="panel-h"><h2>Weekly Schedule</h2><span class="mhint">← swipe days →</span><span class="count" id="conflictCount">No conflicts</span></div>
       <div class="cal"><div class="calgrid" id="calgrid"></div></div>
       <div class="legend" id="legend"></div>
     </section>
