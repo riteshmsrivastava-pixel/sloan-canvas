@@ -122,7 +122,14 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .block{position:absolute;border-radius:9px;border-left:3px solid;padding:5px 6px;overflow:hidden;}
 .block.conf{outline:2px solid var(--brand);outline-offset:-2px;}
 .block .bc{font-family:var(--fm);font-size:9.5px;font-weight:700;}
+.block{cursor:help;}
 .block .bt{font-size:10px;font-weight:600;color:var(--ink);line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tip{position:fixed;z-index:80;display:none;pointer-events:none;max-width:270px;background:#2A2320;color:#FBF3E6;border-radius:13px;padding:12px 14px;box-shadow:0 12px 36px rgba(20,12,6,.4);font-family:var(--fb);}
+.tip .tc{font-family:var(--fm);font-weight:700;font-size:12px;color:#F2B7AE;}
+.tip .tt{font-family:var(--fh);font-weight:700;font-size:14px;margin:3px 0 7px;line-height:1.25;}
+.tip .td{font-size:11.5px;line-height:1.6;color:#E7DBC8;}
+.tip .trow{margin-top:5px;}
+.tip b{color:#FFF;}
 .tlabel{position:absolute;right:8px;font-family:var(--fm);font-size:9.5px;color:#B6A992;transform:translateY(-7px);}
 .clash{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--brand2);background:var(--bsoft);padding:5px 11px;border-radius:999px;}
 .swipe{font-family:var(--fm);font-size:11px;color:#B6A992;}
@@ -260,6 +267,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
   </div>
 </div>
+
+<div class="tip" id="tip"></div>
 
 <!-- HELP MODAL -->
 <div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
@@ -462,6 +471,28 @@ function buildStatic(){
     ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
   ];
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
+  // calendar hover tooltip (event-delegated, survives re-renders)
+  const tip=document.getElementById('tip'),cal=document.getElementById('calwrap');
+  cal.addEventListener('mouseover',e=>{const b=e.target.closest('.block');if(!b)return;const c=byKey(b.dataset.key);if(!c)return;tip.innerHTML=tipHTML(c);tip.style.display='block';});
+  cal.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
+  cal.addEventListener('mouseout',e=>{const b=e.target.closest('.block');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
+  cal.addEventListener('scroll',()=>tip.style.display='none');
+}
+function tipHTML(c){
+  const col=colorOf(c);
+  let extra='';
+  const a=ALSO[c.base];if(a)extra+=`<div class="trow" style="color:#A9D49B">🔁 Also offered in ${a.join(', ')}</div>`;
+  const s=SIM[c.base];if(s)extra+=`<div class="trow" style="color:#AFC2DC">≈ Similar: ${s.id} — ${s.why}</div>`;
+  if(c.note)extra+=`<div class="trow" style="color:#E7B27E">◔ ${c.note}</div>`;
+  return `<div class="tc" style="color:${tint(col,.55)}">${c.id}${c.sec||''}</div>
+    <div class="tt">${c.title}</div>
+    <div class="td">
+      <b>${c.units} units${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+c.tier+' tier':''}
+      <div class="trow">🕑 ${fmtMeet(c.m)}</div>
+      <div class="trow">👤 ${c.fac}</div>
+      ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
+      ${extra}
+    </div>`;
 }
 
 /* ===================== catalog ===================== */
@@ -597,7 +628,7 @@ function renderCalendar(){
     evs.forEach(({c,s,e,lane,cols})=>{
       const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),col0=colorOf(c);
       const w=100/cols,left=lane*w;
-      col+=`<div class="block ${conf.has(c.key)?'conf':''}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
+      col+=`<div class="block ${conf.has(c.key)?'conf':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
         <div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
     if(!evs.length&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
