@@ -133,6 +133,9 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .tlabel{position:absolute;right:8px;font-family:var(--fm);font-size:9.5px;color:#B6A992;transform:translateY(-7px);}
 .clash{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--brand2);background:var(--bsoft);padding:5px 11px;border-radius:999px;}
 .swipe{font-family:var(--fm);font-size:11px;color:#B6A992;}
+.calseg{display:inline-flex;gap:3px;padding:3px;background:var(--seg);border-radius:10px;}
+.calseg button{border:none;cursor:pointer;padding:5px 11px;border-radius:7px;font-family:var(--fb);font-weight:600;font-size:11.5px;color:var(--sub);background:transparent;}
+.calseg button.on{background:var(--card);color:var(--brand);box-shadow:0 1px 2px rgba(80,55,30,.14);}
 
 /* plan */
 .prow{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:13px;background:var(--inp);border:1px solid var(--line2);border-left-width:4px;}
@@ -255,7 +258,14 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div class="panel pad">
         <div class="ph" style="margin-bottom:14px;">
           <h2>Weekly Schedule</h2>
-          <div style="display:flex;align-items:center;gap:10px;"><span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span></div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="calseg" id="calseg">
+              <button data-v="all" class="on" onclick="setCalView('all')">Full term</button>
+              <button data-v="H1" onclick="setCalView('H1')">H1</button>
+              <button data-v="H2" onclick="setCalView('H2')">H2</button>
+            </div>
+            <span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span>
+          </div>
         </div>
         <div class="calwrap" id="calwrap"></div>
       </div>
@@ -459,6 +469,8 @@ const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register';
 const KEY='sloanCanvas_fall_v1';
 let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
+let calView='all';
+function setCalView(v){calView=v;renderCalendar();}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan)return s;}catch(e){}return{plan:['15.414'],bids:{}};}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 const byKey=k=>COURSES.find(c=>c.key===k);
@@ -625,7 +637,8 @@ function renderCalendar(){
   let gut='<div class="ghead"></div><div class="track" style="height:'+CAL_H+'px">';
   for(let h=8;h<=21;h++){const top=(h*60-CAL_S)/(CAL_E-CAL_S)*CAL_H;gut+=`<span class="tlabel" style="top:${top}px">${fmtTime(h*60).replace(':00','').replace(' ','').toLowerCase()}</span>`;}
   gut+='</div>';
-  const cs=planned().filter(c=>c.m.length);
+  document.querySelectorAll('#calseg button').forEach(b=>b.classList.toggle('on',b.dataset.v===calView));
+  const cs=planned().filter(c=>c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
   let daysHtml='';
   days.forEach((d)=>{
     let col=`<div class="day"><div class="dhead">${DAY[d].toUpperCase()}</div><div class="track" style="height:${CAL_H}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px 56px)">`;
@@ -643,7 +656,7 @@ function renderCalendar(){
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
-  const n=conf.size,el=document.getElementById('clash');
+  const n=cs.filter(c=>conf.has(c.key)).length,el=document.getElementById('clash');
   if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
   else{el.textContent='✓ No conflicts';el.style.background='var(--gsoft)';el.style.color='var(--green2)';}
 }
