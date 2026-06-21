@@ -94,7 +94,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .rk{font-family:var(--fm);font-weight:700;font-size:11px;color:var(--brand);}
 .route{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;}
 .r-Bid{background:var(--bsoft);color:var(--brand2);} .r-Apply{background:#F5E7D6;color:#A65F28;}
-.r-Register{background:#ECE6DA;color:#6B6157;} .r-Waitlist{background:#F3E6CC;color:#8A6500;} .r-Core{background:var(--tsoft);color:var(--terra2);}
+.r-Register{background:#ECE6DA;color:#6B6157;} .r-Waitlist{background:#F3E6CC;color:#8A6500;} .r-Core{background:var(--tsoft);color:var(--terra2);} .r-Ineligible{background:#ECE3D3;color:#9A8E7E;}
 .ctitle{font-family:var(--fh);font-weight:600;font-size:15.5px;line-height:1.25;margin-bottom:9px;}
 .meta{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
 .unit{font-family:var(--fm);font-size:11px;font-weight:700;color:#6B6157;background:#F1EADB;padding:2px 7px;border-radius:6px;}
@@ -439,10 +439,17 @@ const COURSES=[
   K({id:'15.671',title:'U-Lab: Transforming Self, Business & Society',units:6,half:'H1',fac:'O. Scharmer',certs:['SUS'],route:'Bid',tier:'Low',m:mt('Th','17:30-21:00')}),
   K({id:'15.S21',title:'SSIM: The Successful Family Business',units:9,half:'F',fac:'J. Davis',certs:[],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00')}),
   K({id:'15.618',title:'Startups and the Law',units:6,half:'F',fac:'J. Akula',certs:['EI'],route:'Bid',tier:'Low',m:mt('W','17:30-19:00')}),
+  /* ---- Not biddable by SFMBA — shown only when the eligibility filter is OFF ---- */
+  K({id:'15.401',title:'Managerial Finance',units:9,half:'F',fac:'T. Choukhmane',certs:['FIN','EM'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Non-Sloan/MBA sections only · overlaps core 15.414'}),
+  K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take — repeats core'}),
+  K({id:'15.516',title:'Corporate Financial Accounting',units:12,half:'F',fac:'G. Sabin',certs:['FIN'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Repeats Summer core 15.511'}),
+  K({id:'15.761',title:'Introduction to Operations Management',units:9,half:'F',fac:'R. Levi',certs:['EM','BA','DPM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'Repeats Summer core 15.778'}),
+  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not bid in Fall'}),
+  K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not bid in Fall'}),
 ];
 
-const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core'};
-const ROUTELABEL={Bid:'Bid',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core'};
+const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core',Ineligible:'r-Ineligible'};
+const ROUTELABEL={Bid:'Bid',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core',Ineligible:'Not for SFMBA'};
 const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
 const TIERLAB={High:'High demand',Medium:'Medium',Low:'Low · token'};
 const biddable=c=>c.route==='Bid';
@@ -530,8 +537,8 @@ function render(){
   else items.sort((a,b)=>a.id.localeCompare(b.id));
   document.getElementById('catCount').textContent=items.length;
   document.getElementById('catalog').innerHTML=items.map(c=>{
-    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0;
-    return `<div class="course" style="border-left-color:${col};background:${tint(col,.05)}">
+    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0,inelig=c.route==='Ineligible';
+    return `<div class="course" style="border-left-color:${col};background:${tint(col,.05)};${inelig?'opacity:.72;':''}">
       <div style="flex:1;min-width:0">
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}
@@ -548,7 +555,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      <button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:`<button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
