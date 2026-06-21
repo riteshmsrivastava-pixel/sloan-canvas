@@ -4,345 +4,295 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muddy Falls · Fall 2026 Bidding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --sub:#6e6e73; --line:#e3e3e6;
-    --brand:#A31F34; --brand-soft:#fbeef0; --blue:#0066cc;
-    --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);
-    --shadow-lg:0 8px 40px rgba(0,0,0,.12);
-    --r:18px;
-    --ba:#7c5cff; --dpm:#0a84ff; --ei:#ff8a00; --em:#16a394; --fin:#1aa060; --hc:#ff375f; --sus:#34c759; --core:#1d1d1f;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{font-family:"Neue Haas Grotesk Display Pro","Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;letter-spacing:-.005em;
-    background:
-      radial-gradient(1000px 720px at 4% -10%, rgba(124,92,255,.20), transparent 60%),
-      radial-gradient(900px 680px at 103% -4%, rgba(10,132,255,.18), transparent 56%),
-      radial-gradient(1000px 820px at 48% 118%, rgba(52,199,89,.16), transparent 56%),
-      radial-gradient(820px 620px at 106% 106%, rgba(255,55,95,.12), transparent 55%),
-      linear-gradient(180deg,#eceefb,#f1f0f9 40%,#eef3f4);
-    background-attachment:fixed;}
-  .wrap{max-width:1680px;margin:0 auto;padding:0 24px;}
-  ::-webkit-scrollbar{width:9px;height:9px;}
-  ::-webkit-scrollbar-thumb{background:#c7c7cc;border-radius:99px;}
-  ::-webkit-scrollbar-track{background:transparent;}
+:root{
+  --card:#FFFDF9; --line:#E7DECB; --line2:#EAE1CE; --grid:#F0E7D6; --inp:#FCF8F0; --seg:#EDE4D2; --chip:#F4EEE1;
+  --ink:#2A2320; --sub:#73685B; --sub2:#8A7F72; --mute:#9A8E7E; --mute2:#A2978A;
+  --brand:#A8312B; --brand2:#97241F; --bsoft:#FBE6E2;
+  --green:#5F7A4E; --green2:#4F6B3E; --gsoft:#E7EDDD;
+  --terra:#C8703D; --terra2:#A05A26; --tsoft:#F2E7D4;
+  --fh:'Bricolage Grotesque',system-ui,sans-serif; --fb:'Hanken Grotesk',system-ui,sans-serif; --fm:'Space Mono',monospace;
+  /* certificate colors (kept from prior design) */
+  --BA:#7c5cff; --DPM:#0a84ff; --EI:#ff8a00; --EM:#16a394; --FIN:#1aa060; --HC:#ff375f; --SUS:#34c759;
+  --shadow:0 2px 8px rgba(80,55,30,.06); --shadowL:0 12px 40px rgba(80,55,30,.14);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:var(--fb);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:radial-gradient(120% 90% at 100% 0%, #F3ECDC 0%, #EBE2D0 55%, #E7DDC9 100%);background-attachment:fixed;}
+::selection{background:var(--brand);color:#fff;}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-thumb{background:#D8CCB6;border-radius:99px;border:2px solid #EFE7D8;}
+.wrap{max-width:1340px;margin:0 auto;padding:clamp(14px,2.4vw,28px);}
+h2{font-family:var(--fh);font-weight:700;letter-spacing:-.01em;}
+.mono{font-family:var(--fm);}
 
-  /* Header */
-  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.72);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);}
-  .head{display:flex;align-items:center;gap:20px;padding:12px 0;flex-wrap:wrap;}
-  .logo{height:27px;width:auto;display:block;}
-  .title h1{font-size:20px;font-weight:700;margin:0;letter-spacing:-.035em;}
-  .title p{font-size:12px;color:var(--sub);margin:1px 0 0;}
-  .meters{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;}
-  .meter{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:7px 14px;min-width:104px;box-shadow:var(--shadow);}
-  .meter .k{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;font-weight:600;}
-  .meter .v{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-top:1px;}
-  .meter .v small{font-size:12px;color:var(--sub);font-weight:500;}
-  .chip-round{display:flex;align-items:center;gap:7px;background:var(--brand-soft);color:var(--brand);border-radius:99px;padding:7px 13px;font-size:12px;font-weight:600;}
-  .pulse{width:7px;height:7px;border-radius:99px;background:var(--brand);animation:p 1.6s infinite;}
-  @keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.ph h2{margin:0;font-size:19px;color:var(--ink);}
+.count{font-family:var(--fm);font-size:11px;color:var(--mute2);}
 
-  /* Layout */
-  .grid{display:grid;grid-template-columns:40fr 60fr;gap:20px;margin-top:20px;align-items:start;}
-  @media(max-width:1100px){.grid{grid-template-columns:1fr;}}
-  .panel{background:rgba(255,255,255,.82);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px);border:1px solid rgba(255,255,255,.6);border-radius:var(--r);box-shadow:var(--shadow);}
-  .panel-h{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;}
-  .panel-h h2{font-size:15px;font-weight:700;margin:0;letter-spacing:-.01em;}
-  .panel-h .count{font-size:12px;color:var(--sub);}
+/* header */
+.head{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:clamp(14px,2vw,20px) clamp(16px,2.2vw,24px);margin-bottom:18px;}
+.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(150deg,#B83A30,#8E211C);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-weight:700;font-size:17px;color:#FFF6EC;box-shadow:0 4px 12px rgba(150,40,32,.32);}
+.brand-name{font-family:var(--fh);font-weight:800;font-size:clamp(21px,3vw,27px);line-height:1;letter-spacing:-.015em;}
+.brand-sub{font-size:12.5px;color:var(--sub);margin-top:4px;}
+.round{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--bsoft);color:var(--brand2);font-weight:600;font-size:12.5px;}
+.round i{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(168,49,43,.18);}
+.meters{display:flex;align-items:center;gap:18px;padding:9px 18px;border-radius:15px;background:var(--chip);border:1px solid var(--line);}
+.meters .k{font-family:var(--fm);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute2);margin-bottom:2px;}
+.meters .v{font-family:var(--fh);font-weight:700;font-size:22px;line-height:1;}
+.meters .v small{font-size:12px;color:var(--mute2);font-weight:500;font-family:var(--fb);}
+.meters .sep{width:1px;height:30px;background:#E2D8C6;}
+.helpbtn{display:inline-flex;align-items:center;gap:7px;padding:11px 15px;border-radius:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:var(--fb);font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 1px 2px rgba(80,55,30,.05);}
+.helpbtn:hover{background:#F8F2E6;}
+.helpbtn i{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--brand);color:#FFF6EC;font-size:12px;font-weight:700;font-style:normal;}
 
-  /* Filters */
-  .filters{padding:14px 18px;display:flex;flex-direction:column;gap:11px;border-bottom:1px solid var(--line);}
-  .inp{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 13px;font-size:14px;background:#fbfbfd;outline:none;transition:.15s;font-family:inherit;}
-  .inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);background:#fff;}
-  select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;font-weight:600;}
-  .seg{display:flex;background:#ececef;border-radius:11px;padding:3px;gap:2px;}
-  .seg button{flex:1;border:0;background:transparent;padding:7px 6px;border-radius:8px;font-size:12px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:.12s;}
-  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12);}
-  .lbl{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-  .certchips{display:flex;flex-wrap:wrap;gap:6px;}
-  .cc{font-size:11px;font-weight:600;padding:5px 9px;border-radius:99px;cursor:pointer;border:1px solid transparent;transition:.12s;user-select:none;}
-  .toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer;}
-  .switch{width:38px;height:23px;border-radius:99px;background:#d1d1d6;position:relative;transition:.18s;flex:none;}
-  .switch.on{background:var(--sus);}
-  .switch i{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:99px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.18s;}
-  .switch.on i{left:17px;}
+/* layout */
+.main{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;}
+.left{flex:1 1 380px;min-width:320px;max-width:480px;}
+.right{flex:2 1 560px;min-width:320px;display:flex;flex-direction:column;gap:18px;}
+.pad{padding:clamp(16px,2vw,22px);}
 
-  /* Catalog list */
-  .list{max-height:calc(100vh - 230px);overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
-  .course{border:1px solid var(--line);border-radius:15px;padding:13px;background:#fff;transition:.14s;cursor:grab;position:relative;}
-  .course:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);border-color:#d6d6db;}
-  .course:active{cursor:grabbing;}
-  .course.added{opacity:.5;}
-  .crow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-  .cid{font-size:14px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
-  .ctitle{font-size:13px;color:#3a3a3c;margin-top:3px;line-height:1.3;font-weight:500;}
-  .cmeta{font-size:11.5px;color:var(--sub);margin-top:5px;display:flex;flex-direction:column;gap:2px;}
-  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;align-items:center;}
-  .b{font-size:10px;font-weight:700;padding:3px 7px;border-radius:7px;letter-spacing:.01em;white-space:nowrap;}
-  .b-units{background:#f0f0f3;color:#48484a;}
-  .b-half{background:#fff3e0;color:#b25e00;}
-  .b-bid{background:var(--brand-soft);color:var(--brand);}
-  .b-bidH{background:#ffe3e8;color:#c2002a;}
-  .b-bidM{background:#fff2da;color:#9a6400;}
-  .b-bidL{background:#eef0f3;color:#5b5b60;}
-  .b-apply{background:#eae6ff;color:#5b3df5;}
-  .b-reg{background:#e3f1ff;color:#0066cc;}
-  .b-wait{background:#fdeecb;color:#8a6500;}
-  .b-core{background:#1d1d1f;color:#fff;}
-  .add{flex:none;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--brand);font-size:19px;font-weight:600;cursor:pointer;display:grid;place-items:center;transition:.12s;line-height:1;}
-  .add:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
-  .add.rm{color:#c2002a;border-color:#f3c2cb;font-size:22px;}
-  .add.rm:hover{background:#c2002a;color:#fff;border-color:#c2002a;}
-  .course.isin{opacity:1;}
-  .pcard .x{font-size:18px;font-weight:700;}
-  .added-tag{flex:none;font-size:10px;font-weight:700;color:var(--sus);background:#e7f9ec;padding:5px 8px;border-radius:8px;}
+/* segmented + inputs */
+.seg{display:flex;gap:4px;padding:4px;background:var(--seg);border-radius:13px;margin:14px 0 12px;}
+.seg button{flex:1;border:none;cursor:pointer;padding:8px 6px;border-radius:10px;font-family:var(--fb);font-weight:600;font-size:12.5px;color:var(--sub);background:transparent;display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s;}
+.seg button .n{font-family:var(--fm);font-size:10px;opacity:.65;}
+.seg button.on{background:var(--card);color:var(--brand);box-shadow:0 1px 2px rgba(80,55,30,.14);}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.inp{flex:1;min-width:150px;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:var(--inp);color:var(--ink);font-size:13px;font-family:var(--fb);outline:none;}
+.inp::placeholder{color:var(--mute2);}
+.inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--bsoft);background:#fff;}
+select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointer;appearance:none;padding-right:30px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' stroke='%23B6A992' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
 
-  /* Plan (drop) */
-  .drop{min-height:170px;padding:14px;transition:.15s;}
-  .drop.hot{background:var(--brand-soft);}
-  .rightcol{display:flex;flex-direction:column-reverse;gap:20px;min-width:0;}
-  .plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;}
-  .pcard{border:1px solid var(--line);border-radius:15px;padding:13px;background:#fff;box-shadow:var(--shadow);position:relative;border-left:4px solid #c7c7cc;}
-  .pcard.conflict{border-color:#ffb3c0;box-shadow:0 0 0 2px #ffe3e8;}
-  .pcard .x{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:7px;border:0;background:#f0f0f3;color:#86868b;cursor:pointer;font-size:14px;display:grid;place-items:center;}
-  .pcard .x:hover{background:#ffe3e8;color:#c2002a;}
-  .bidrow{display:flex;align-items:center;gap:8px;margin-top:10px;}
-  .bidrow input{width:74px;border:1px solid var(--line);border-radius:9px;padding:6px 9px;font-size:13px;font-family:inherit;outline:none;}
-  .bidrow input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);}
-  .empty{text-align:center;color:#aeaeb2;padding:70px 20px;border:2px dashed var(--line);border-radius:16px;font-size:14px;}
-  .conflict-note{font-size:11px;color:#c2002a;font-weight:600;margin-top:7px;display:flex;align-items:center;gap:5px;}
+/* eligibility banner */
+.elig{display:flex;gap:12px;align-items:flex-start;padding:13px;border-radius:15px;background:linear-gradient(135deg,#F3EFE1,#EFEAD8);border:1px solid #E4DAC4;}
+.switch{flex:none;width:44px;height:26px;border-radius:999px;border:none;cursor:pointer;background:#CFC4B0;position:relative;transition:.2s;margin-top:1px;}
+.switch.on{background:var(--green);}
+.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s;}
+.switch.on i{left:21px;}
+.elig .t{font-size:13px;font-weight:700;line-height:1.3;}
+.elig .t span{font-weight:500;color:var(--sub2);}
+.elig .d{font-size:11.5px;color:var(--sub2);line-height:1.45;margin-top:3px;}
 
-  /* Bottom: credits + calendar */
-  .bottom{display:grid;grid-template-columns:1fr;gap:20px;margin-top:20px;}
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);font-weight:700;padding:8px 14px;border-bottom:1px solid var(--line);}
-  td{padding:9px 14px;border-bottom:1px solid #f0f0f2;}
-  tr:last-child td{border-bottom:0;}
-  .num{text-align:right;font-variant-numeric:tabular-nums;}
-  tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0;}
-  .cap{padding:14px 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:11px;}
-  .bar{height:7px;border-radius:99px;background:#ececef;overflow:hidden;}
-  .bar i{display:block;height:100%;border-radius:99px;transition:width .3s;}
-  .caprow{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
-  .caprow b{font-weight:700;}
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:12px;font-size:11px;color:var(--sub);}
+.legend span{display:inline-flex;align-items:center;gap:5px;}
+.legend i{width:9px;height:9px;border-radius:3px;}
 
-  /* Calendar */
-  .cal{padding:14px 18px 18px;overflow-x:auto;}
-  .calgrid{display:grid;grid-template-columns:48px repeat(5,1fr);gap:0;min-width:620px;position:relative;}
-  .calhead{font-size:11px;font-weight:700;color:var(--sub);text-align:center;padding:0 0 8px;text-transform:uppercase;letter-spacing:.03em;}
-  .caltime{font-size:10px;color:#aeaeb2;text-align:right;padding-right:8px;transform:translateY(-6px);}
-  .daycol{position:relative;border-left:1px solid #f0f0f2;}
-  .gridline{position:absolute;left:0;right:0;border-top:1px solid #f4f4f6;}
-  .block{position:absolute;left:3px;right:3px;border-radius:8px;padding:4px 6px;font-size:10px;line-height:1.2;overflow:hidden;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);}
-  .block b{font-weight:700;font-size:10.5px;display:block;}
-  .block.conf{outline:2px solid #fff;box-shadow:0 0 0 2px #c2002a,0 1px 6px rgba(0,0,0,.3);}
-  .legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 18px;border-top:1px solid var(--line);font-size:11px;color:var(--sub);}
-  .legend span{display:inline-flex;align-items:center;gap:5px;}
-  .dot{width:9px;height:9px;border-radius:3px;}
+/* catalog list */
+.list{display:flex;flex-direction:column;gap:10px;margin-top:14px;max-height:560px;overflow-y:auto;padding-right:3px;position:relative;}
+.course{position:relative;display:flex;gap:12px;padding:14px;border:1px solid var(--line2);border-left-width:4px;border-radius:16px;background:var(--card);box-shadow:0 1px 2px rgba(80,55,30,.04);transition:.15s;}
+.course:hover{box-shadow:var(--shadowL);transform:translateY(-1px);}
+.crow{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap;}
+.code{font-family:var(--fm);font-weight:700;font-size:13px;color:var(--brand);letter-spacing:.01em;display:inline-flex;align-items:center;gap:6px;}
+.cdot{width:8px;height:8px;border-radius:3px;}
+.rk{font-family:var(--fm);font-weight:700;font-size:11px;color:var(--brand);}
+.route{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;}
+.r-Bid{background:var(--bsoft);color:var(--brand2);} .r-Apply{background:#F5E7D6;color:#A65F28;}
+.r-Register{background:#ECE6DA;color:#6B6157;} .r-Waitlist{background:#F3E6CC;color:#8A6500;} .r-Core{background:var(--tsoft);color:var(--terra2);}
+.ctitle{font-family:var(--fh);font-weight:600;font-size:15.5px;line-height:1.25;margin-bottom:9px;}
+.meta{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+.unit{font-family:var(--fm);font-size:11px;font-weight:700;color:#6B6157;background:#F1EADB;padding:2px 7px;border-radius:6px;}
+.time{font-family:var(--fm);font-size:11px;color:var(--mute);}
+.tier{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;}
+.tier i{width:7px;height:7px;border-radius:50%;}
+.fac{font-size:11.5px;color:var(--mute);margin-top:6px;}
+.notes{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.note{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:8px;}
+.note.also{background:var(--gsoft);color:var(--green2);} .note.sim{background:#E6EAEF;color:#4C5A6E;cursor:pointer;} .note.warn{background:#F5E7D6;color:#A65F28;}
+.cbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;}
+.add{flex:none;width:34px;height:34px;border-radius:11px;border:none;cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;align-self:flex-start;background:var(--brand);color:#FFF6EC;transition:.12s;}
+.add.in{background:var(--gsoft);color:var(--green2);}
+.scrollcue{text-align:center;font-family:var(--fm);font-size:11px;color:#B6A992;padding:4px 0 2px;}
 
-  .fine{font-size:11.5px;color:var(--sub);line-height:1.6;margin:22px 0 50px;}
-  .fine b{color:#48484a;}
-  .btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.12s;color:var(--ink);}
-  .btn:hover{background:#f0f0f3;}
-  .certfull{display:flex;flex-wrap:wrap;gap:6px;}
-  .help-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 15px;font-size:12px;font-weight:600;cursor:pointer;color:var(--brand);font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.12s;}
-  .help-btn:hover{background:var(--brand-soft);}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.38);backdrop-filter:blur(5px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
-  .overlay.show{display:flex;}
-  .modal{background:#fff;border-radius:24px;max-width:660px;width:100%;max-height:86vh;overflow-y:auto;box-shadow:var(--shadow-lg);padding:30px 32px;animation:pop .22s ease;}
-  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
-  .modal h2{margin:0;font-size:24px;letter-spacing:-.02em;}
-  .modal .sub{color:var(--sub);font-size:13px;margin:4px 0 18px;}
-  .modal .close{float:right;border:0;background:#f0f0f3;width:34px;height:34px;border-radius:99px;font-size:18px;cursor:pointer;color:#86868b;line-height:1;}
-  .modal .close:hover{background:#e3e3e6;}
-  .step{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line);}
-  .step .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-weight:800;display:grid;place-items:center;font-size:13px;}
-  .step h3{margin:0 0 3px;font-size:14.5px;font-weight:700;}
-  .step p{margin:0;font-size:13px;color:var(--sub);line-height:1.55;}
-  .modal .ft{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);text-align:center;}
-  /* scroll affordances */
-  .listwrap{position:relative;}
-  .listfade{position:absolute;left:8px;right:8px;bottom:0;height:44px;pointer-events:none;border-radius:0 0 var(--r) var(--r);background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.94));display:flex;align-items:flex-end;justify-content:center;color:#9a9aa0;font-size:15px;font-weight:700;}
-  .listfade span{animation:bob 1.7s ease-in-out infinite;}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-  .mhint{display:none;font-size:11px;color:var(--brand);font-weight:600;}
-  .cal{position:relative;}
-  @media(max-width:760px){
-    .wrap{padding:0 13px;}
-    .grid{gap:14px;margin-top:14px;}
-    .bottom{margin-top:14px;}
-    .list{max-height:56vh;}
-    .meters{width:100%;margin-left:0;}
-    .head{gap:10px;}
-    .mhint{display:inline;}
-    .calgrid{min-width:540px;}
-    .modal{padding:22px 18px;}
-    .plan-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
-  }
+/* calendar */
+.calwrap{display:flex;overflow-x:auto;border:1px solid var(--grid);border-radius:14px;}
+.gutter{flex:none;width:50px;border-right:1px solid var(--grid);}
+.ghead{height:34px;}
+.days{flex:1;min-width:540px;display:flex;}
+.day{flex:1;min-width:104px;border-right:1px solid var(--grid);}
+.day:last-child{border-right:none;}
+.dhead{height:34px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-weight:700;font-size:12px;color:var(--sub);letter-spacing:.04em;background:#FAF5EB;}
+.track{position:relative;}
+.block{position:absolute;border-radius:9px;border-left:3px solid;padding:5px 6px;overflow:hidden;}
+.block.conf{outline:2px solid var(--brand);outline-offset:-2px;}
+.block .bc{font-family:var(--fm);font-size:9.5px;font-weight:700;}
+.block .bt{font-size:10px;font-weight:600;color:var(--ink);line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tlabel{position:absolute;right:8px;font-family:var(--fm);font-size:9.5px;color:#B6A992;transform:translateY(-7px);}
+.clash{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--brand2);background:var(--bsoft);padding:5px 11px;border-radius:999px;}
+.swipe{font-family:var(--fm);font-size:11px;color:#B6A992;}
+
+/* plan */
+.prow{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:13px;background:var(--inp);border:1px solid var(--line2);border-left-width:4px;}
+.pcode{font-family:var(--fm);font-weight:700;font-size:12px;color:var(--brand);}
+.corebadge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);background:#ECE6DA;padding:2px 6px;border-radius:5px;}
+.ptitle{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bidbox{display:flex;align-items:center;gap:3px;padding:3px 8px;border:1.5px solid #E6CFC9;border-radius:9px;background:#fff;}
+.bidbox input{width:42px;border:none;outline:none;font-family:var(--fm);font-weight:700;font-size:13px;color:var(--brand);background:transparent;text-align:right;}
+.bidbox small{font-size:10px;color:var(--mute2);}
+.rm{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line2);background:var(--card);color:var(--brand);cursor:pointer;font-size:17px;font-weight:700;line-height:1;}
+.rm:hover{background:var(--bsoft);}
+.btn{border:1px solid var(--line);background:var(--inp);color:var(--sub2);font-family:var(--fb);font-weight:600;font-size:12px;padding:6px 12px;border-radius:9px;cursor:pointer;}
+.btn:hover{background:#F1E9D9;}
+
+/* points */
+.barwrap{margin-bottom:15px;}
+.barhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.barhead .lab{font-size:12.5px;font-weight:600;}
+.barhead .val{font-family:var(--fm);font-size:12px;color:var(--mute);}
+.bar{height:10px;border-radius:999px;background:var(--seg);overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:999px;transition:width .3s;}
+.okpill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;}
+.fineline{font-size:11.5px;color:var(--sub2);line-height:1.5;padding-top:14px;border-top:1px dashed #E4DAC4;}
+
+/* footer + modal */
+.foot{margin:22px auto 6px;text-align:center;font-size:12px;color:var(--mute);line-height:1.6;max-width:720px;}
+.foot b{color:var(--sub);}
+.overlay{position:fixed;inset:0;background:rgba(42,35,32,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px;z-index:50;}
+.overlay.show{display:flex;}
+.modal{background:var(--card);border-radius:24px;max-width:740px;width:100%;max-height:88vh;overflow:auto;padding:clamp(22px,3vw,36px);box-shadow:0 28px 70px rgba(42,35,32,.35);animation:pop .22s ease;}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.tagpill{display:inline-flex;align-items:center;gap:7px;font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);background:var(--bsoft);padding:4px 11px;border-radius:999px;margin-bottom:12px;}
+.modal h2.big{font-family:var(--fh);font-weight:800;font-size:clamp(22px,3vw,28px);margin:0;letter-spacing:-.015em;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:22px;}
+.step{display:flex;gap:13px;padding:15px;border-radius:16px;background:var(--inp);border:1px solid var(--line2);}
+.step .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#FFF6EC;font-family:var(--fm);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.step h3{font-family:var(--fh);font-weight:700;font-size:15px;margin:0 0 4px;}
+.step p{font-size:12.5px;color:var(--sub);line-height:1.5;margin:0;}
+.modal .close{flex:none;width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--inp);color:#6B6157;cursor:pointer;font-size:18px;line-height:1;}
+.modal .reopen{margin-top:20px;padding:14px 16px;border-radius:14px;background:var(--gsoft);font-size:12.5px;color:var(--green2);line-height:1.5;}
+.mhint{display:none;}
+@media(max-width:760px){
+  .meters{order:3;} .mhint{display:inline;} .left{max-width:none;}
+  .list{max-height:60vh;} .days{min-width:520px;}
+}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="wrap head">
-    <svg class="logo" viewBox="0 0 53 32" xmlns="http://www.w3.org/2000/svg" aria-label="MIT">
-      <rect x="0" y="0" width="5" height="32" fill="#8a8b8c"/>
-      <rect x="7" y="0" width="5" height="15" fill="#8a8b8c"/>
-      <rect x="14" y="0" width="5" height="32" fill="#8a8b8c"/>
-      <rect x="24" y="0" width="5" height="32" fill="#A31F34"/>
-      <rect x="34" y="0" width="19" height="5" fill="#8a8b8c"/>
-      <rect x="41" y="0" width="5" height="32" fill="#8a8b8c"/>
-    </svg>
-    <div class="title">
-      <h1>Muddy&nbsp;Falls</h1>
-      <p>MIT Sloan Fellows ’27 · Fall 2026 Bidding</p>
-    </div>
-    <button class="help-btn" onclick="openHelp()">？ How to use</button>
-    <div class="meters">
-      <div class="chip-round"><span class="pulse"></span> Round IB · closes in 3d 12h</div>
-      <div class="meter"><div class="k">Remaining Points</div><div class="v"><span id="m-points">1000</span><small> / 1000</small></div></div>
-      <div class="meter"><div class="k">Remaining Units</div><div class="v"><span id="m-units">57</span><small> / 57</small></div></div>
-    </div>
-  </div>
-</header>
-
 <div class="wrap">
 
-  <div class="grid">
-    <!-- LEFT: catalog -->
-    <section class="panel">
-      <div class="panel-h"><h2>Course Catalog</h2><span class="count" id="catCount"></span></div>
+  <!-- HEADER -->
+  <div class="panel head">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div class="logo">MF</div>
+      <div>
+        <div class="brand-name">Muddy Falls</div>
+        <div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 Bidding</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+      <div class="round"><i></i> Round IB · closes in 3d 12h</div>
+      <div class="meters">
+        <div><div class="k">Points left</div><div class="v" style="color:var(--brand)"><span id="m-points">1000</span><small> / 1000</small></div></div>
+        <div class="sep"></div>
+        <div><div class="k">Units left</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
+      </div>
+      <button class="helpbtn" onclick="openHelp()"><i>?</i> How to use</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT: CATALOG -->
+    <div class="left panel pad">
+      <div class="ph"><h2>Course Catalog</h2><span class="count"><span id="catCount">0</span> courses</span></div>
+      <div class="seg" id="routeSeg"></div>
       <div class="filters">
-        <input id="q" class="inp" placeholder="Search course #, name, or faculty…" oninput="render()">
+        <input id="q" class="inp" placeholder="⌕  Search courses…" oninput="render()">
+        <select id="cert" class="inp" onchange="render()"></select>
         <select id="track" class="inp" onchange="render()"></select>
-        <div>
-          <div class="lbl" style="margin-bottom:6px">Certificate track</div>
-          <div class="certchips" id="certChips"></div>
-        </div>
-        <div class="seg" id="routeSeg">
-          <button data-route="" class="on">All routes</button>
-          <button data-route="Bid">Bid</button>
-          <button data-route="Apply">Apply</button>
-          <button data-route="Register">Register</button>
-        </div>
-        <label class="toggle" onclick="toggleElig()">
-          <span class="switch on" id="eligSwitch"><i></i></span> Show only courses I’m eligible to bid for (SFMBA)
-        </label>
-        <p style="font-size:11px;color:var(--sub);line-height:1.45;margin:-2px 0 0">Hides undergrad, doctoral, MFIN &amp; recitation sections and core-repeats — only what SFMBAs can actually bid for or apply to. <i>(SloanBid’s “205” counts all those ineligible rows.)</i></p>
       </div>
-      <div class="listwrap"><div class="list" id="catalog"></div><div class="listfade"><span>⌄&nbsp; scroll for more</span></div></div>
-    </section>
-
-    <!-- RIGHT: schedule + plan (60%) -->
-    <div class="rightcol">
-    <section class="panel">
-      <div class="panel-h"><h2>Weekly Schedule</h2><span class="mhint">← swipe days →</span><span class="count" id="conflictCount">No conflicts</span></div>
-      <div class="cal"><div class="calgrid" id="calgrid"></div></div>
+      <div class="elig">
+        <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
+        <div>
+          <div class="t">Only courses I can bid for <span>(SFMBA)</span></div>
+          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats — only what SFMBAs can actually bid or apply for. <i>(SloanBid’s “205” counts all those.)</i></div>
+        </div>
+      </div>
       <div class="legend" id="legend"></div>
-    </section>
-    <section class="panel">
-      <div class="panel-h">
-        <h2>My Fall Plan</h2>
-        <div style="display:flex;gap:8px;align-items:center">
-          <span class="count" id="planCount"></span>
-          <button class="btn" onclick="resetPlan()">Reset</button>
+      <div class="list" id="catalog"></div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <!-- PLAN + POINTS -->
+      <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;">
+        <div class="panel pad" style="flex:1 1 340px;min-width:280px;">
+          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="resetPlan()">Reset</button></div></div>
+          <div id="plan" style="display:flex;flex-direction:column;gap:9px;"></div>
+        </div>
+        <div class="panel pad" style="flex:1 1 250px;min-width:250px;">
+          <div class="ph" style="margin-bottom:16px;"><h2>Points &amp; Credits</h2><span class="okpill" id="okpill">Add courses</span></div>
+          <div class="barwrap"><div class="barhead"><span class="lab">Bid points</span><span class="val"><b id="cap-pts" style="color:var(--brand)">0</b> / 1000</span></div><div class="bar"><i id="bar-pts" style="background:linear-gradient(90deg,#B83A30,#97241F)"></i></div></div>
+          <div class="barwrap"><div class="barhead"><span class="lab">Elective units</span><span class="val"><b id="cap-elec" style="color:var(--green)">0</b> / 57</span></div><div class="bar"><i id="bar-elec" style="background:linear-gradient(90deg,#6E8A5B,#5F7A4E)"></i></div></div>
+          <div class="barwrap"><div class="barhead"><span class="lab">Total Fall units <span style="color:var(--mute2);font-weight:500">(incl. core)</span></span><span class="val"><b id="cap-tot" style="color:var(--terra)">9</b> / 66</span></div><div class="bar"><i id="bar-tot" style="background:linear-gradient(90deg,#D08043,#C8703D)"></i></div></div>
+          <div class="fineline">You pay the <b style="color:#6B6157">clearing price</b>, not your bid. Tiers shown are directional — check SloanBid’s closed-class history.</div>
         </div>
       </div>
-      <div class="drop" id="drop" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-        <div class="plan-grid" id="plan"></div>
+
+      <!-- CALENDAR -->
+      <div class="panel pad">
+        <div class="ph" style="margin-bottom:14px;">
+          <h2>Weekly Schedule</h2>
+          <div style="display:flex;align-items:center;gap:10px;"><span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span></div>
+        </div>
+        <div class="calwrap" id="calwrap"></div>
       </div>
-    </section>
     </div>
   </div>
 
-  <!-- BOTTOM: credits -->
-  <div class="bottom">
-    <section class="panel">
-      <div class="panel-h"><h2>Points &amp; Credits</h2></div>
-      <table>
-        <thead><tr><th>Course</th><th class="num">Units</th><th>Route</th><th class="num">Bid</th></tr></thead>
-        <tbody id="creditBody"></tbody>
-        <tfoot id="creditFoot"></tfoot>
-      </table>
-      <div class="cap">
-        <div>
-          <div class="caprow"><span>Bid points</span><b id="cap-pts">0 / 1000</b></div>
-          <div class="bar"><i id="bar-pts" style="width:0;background:var(--brand)"></i></div>
-        </div>
-        <div>
-          <div class="caprow"><span>Elective units</span><b id="cap-elec">0 / 57</b></div>
-          <div class="bar"><i id="bar-elec" style="width:0;background:var(--dpm)"></i></div>
-        </div>
-        <div>
-          <div class="caprow"><span>Total Fall units (incl. core)</span><b id="cap-tot">9 / 66</b></div>
-          <div class="bar"><i id="bar-tot" style="width:0;background:var(--ba)"></i></div>
-        </div>
-        <div id="capWarn" style="font-size:12px;font-weight:600;color:var(--sus)">✓ Within limits</div>
-      </div>
-    </section>
+  <!-- FOOTER -->
+  <div class="foot">
+    <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
   </div>
+</div>
 
-  <div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
-    <div class="modal">
+<!-- HELP MODAL -->
+<div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
+  <div class="modal">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+      <div>
+        <div class="tagpill">Getting started</div>
+        <h2 class="big">How to use Muddy Falls</h2>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.5;">Plan your Fall 2026 electives and bids in a few minutes.</p>
+      </div>
       <button class="close" onclick="closeHelp()">×</button>
-      <h2>How to use Muddy Falls</h2>
-      <div class="sub">Plan your Fall 2026 electives and bids in a few minutes.</div>
-      <div class="step"><div class="n">1</div><div><h3>Browse &amp; filter the catalog (left)</h3><p>Narrow ~70 Fall courses by career track, certificate, route (Bid / Apply / Register) or search. Keep “only courses I’m eligible to bid for” on to hide undergrad/MFIN/repeat-core sections.</p></div></div>
-      <div class="step"><div class="n">2</div><div><h3>Build your plan</h3><p>Tap <b>+</b> (or drag a card) to add a course to <b>My Fall Plan</b> on the right. Tap <b>−</b> to remove it. Your core 15.414 is already locked in.</p></div></div>
-      <div class="step"><div class="n">3</div><div><h3>Enter your bids</h3><p>For biddable Sloan courses, type points in the <b>Bid</b> box. You have <b>1,000 points</b> — and you pay the clearing price, not your bid. Tiers (High/Medium/Low) are rough guidance.</p></div></div>
-      <div class="step"><div class="n">4</div><div><h3>Watch the limits</h3><p>The bars track <b>points /1000</b>, <b>elective units /57</b> and <b>total units /66</b>. The header shows what’s remaining, live.</p></div></div>
-      <div class="step"><div class="n">5</div><div><h3>Check your week</h3><p>The calendar plots every course. A <b>red outline = time clash</b>. Half-term courses (H1 vs H2) don’t clash with each other.</p></div></div>
-      <div class="step"><div class="n">6</div><div><h3>Use the hints</h3><p>Green <b>🔁 Also offered</b> means you could take it in Spring/IAP instead — don’t overspend now. Blue <b>≈ Similar</b> is a close substitute; click it to jump.</p></div></div>
-      <div class="step"><div class="n">7</div><div><h3>It’s private</h3><p>Your plan saves only in <b>this browser</b> — nothing is shared or uploaded. Always confirm everything on SloanBid before you actually bid.</p></div></div>
-      <div class="ft">Reopen this anytime with “？ How to use” in the top bar.</div>
     </div>
-  </div>
-
-  <div class="fine">
-    <b>Notes for Sloan Fellows.</b> You have <b>1,000 points</b> and up to <b>57 elective units</b> in Round IB (max 66 total Fall units incl. the 9-unit core <b>15.414 Financial Management</b>, which is auto-assigned — not bid). Half-term courses (H1/H2) only conflict within the same half. You pay the <b>clearing price, not your bid</b>; bid tiers shown (High ≈ 300–700+, Medium ≈ 75–300, Low ≈ token) are directional — check SloanBid’s closed-class history.
-    <br><b>Not biddable by SFMBA / excluded:</b> 15.402 &amp; 15.516 (repeat the core), 15.761 (repeats Summer core), 15.871 / 15.873 (Fall — you take System Dynamics core in Spring H3), plus undergrad-, doctoral-, MFIN- and MBA-2nd-year-restricted sections. <b>Apply/Permission</b> courses (G-Lab, A-Lab, Climate &amp; Energy Ventures, CATAPULT, 15.739) and <b>Register (WebSIS)</b> courses don’t use points — calendar the deadlines.
-    <br>Course data from the Fall 2026 SloanBid listing; verify meeting times, units &amp; eligibility on the live system before bidding.
-  </div>
-
-  <div style="text-align:center;color:#aeaeb2;font-size:11px;padding:0 0 44px;line-height:1.6">
-    Muddy Falls · an unofficial planning tool built for the MIT Sloan Fellows ’27 cohort · not affiliated with MIT Sloan.<br>
-    Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
+    <div class="steps" id="steps"></div>
+    <div class="reopen"><b>Reopen anytime</b> with “? How to use” in the top bar. Always confirm everything on SloanBid before you actually bid.</div>
   </div>
 </div>
 
 <script>
-/* ---------- certificates (full names) ---------- */
+/* ===================== certificates ===================== */
 const CERT={
-  BA :{full:'Business Analytics',           c:'var(--ba)'},
-  DPM:{full:'Product Management',           c:'var(--dpm)'},
-  EI :{full:'Entrepreneurship & Innovation',c:'var(--ei)'},
-  EM :{full:'Enterprise Management',        c:'var(--em)'},
-  FIN:{full:'Finance',                      c:'var(--fin)'},
-  HC :{full:'Healthcare',                   c:'var(--hc)'},
-  SUS:{full:'Sustainability',               c:'var(--sus)'},
+  BA:{full:'Business Analytics',v:'--BA',c:'#7c5cff'},
+  DPM:{full:'Product Management',v:'--DPM',c:'#0a84ff'},
+  EI:{full:'Entrepreneurship & Innovation',v:'--EI',c:'#ff8a00'},
+  EM:{full:'Enterprise Management',v:'--EM',c:'#16a394'},
+  FIN:{full:'Finance',v:'--FIN',c:'#1aa060'},
+  HC:{full:'Healthcare',v:'--HC',c:'#ff375f'},
+  SUS:{full:'Sustainability',v:'--SUS',c:'#34c759'},
 };
 const CERT_KEYS=Object.keys(CERT);
-const CCOL={BA:'#7c5cff',DPM:'#0a84ff',EI:'#ff8a00',EM:'#16a394',FIN:'#1aa060',HC:'#ff375f',SUS:'#34c759'};
-function colorOf(c){return c.locked?'#5b5b60':(c.certs&&c.certs.length?CCOL[c.certs[0]]:'#8e8e93');}
+function colorOf(c){return c.locked?'#C8703D':(c.certs&&c.certs.length?CERT[c.certs[0]].c:'#B0A48E');}
 function tint(hex,p){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,m=v=>Math.round(v+(255-v)*(1-p));return `rgb(${m(r)},${m(g)},${m(b)})`;}
 
-/* ---------- career tracks ---------- */
-const TRACKS={
-  '':'— All career tracks —',
-  AIX:'02 · The AI-Aware Executive', CONS:'03 · Consulting & Strategy',
-  ENT:'04 · Entrepreneurship & Venture Building', PROD:'05 · Product & Operations Leadership',
-  CFOF:'06 · Finance: CFO, PE & Investing', EXP:'07 · The Explorer',
-  MKT:'08 · Marketing, Brand & Growth', HLTH:'09 · Healthcare, Biotech & Pharma',
-  SUST:'10 · Sustainability, Climate & Impact', LEAD:'11 · Leadership, People & Negotiation',
-};
-// ranked base-id membership (Fall-relevant)
+/* ===================== career tracks ===================== */
+const TRACKS={'':'All career tracks',AIX:'02 · AI-Aware Executive',CONS:'03 · Consulting & Strategy',ENT:'04 · Entrepreneurship',PROD:'05 · Product & Ops',CFOF:'06 · Finance / PE / Investing',EXP:'07 · The Explorer',MKT:'08 · Marketing & Growth',HLTH:'09 · Healthcare & Biotech',SUST:'10 · Sustainability',LEAD:'11 · Leadership & Negotiation'};
 const TRACK_RANK={
-  AIX:['15.S03','15.563','15.S04','15.622','15.S50','15.561','15.071','15.774','15.S23'],
+  AIX:['15.S03','15.563','15.S04','15.622','15.561','15.071','15.774','15.S23'],
   CONS:['15.900','15.389','15.665','15.572','15.223','15.768','15.284','15.535','15.906'],
   ENT:['15.390','15.389','15.366','15.399','15.388','15.371','15.431','15.387','15.497','15.378','15.911','15.394','15.369','15.S17'],
-  PROD:['15.761','15.768','15.774','15.814','15.818','15.770','15.337','15.371','15.561'],
-  CFOF:['15.402','15.431','15.S07','15.450','15.456','15.434','15.535','15.S06','15.426','15.483','15.S08','15.451','15.382'],
+  PROD:['15.761','15.768','15.774','15.814','15.818','15.770','15.371','15.561'],
+  CFOF:['15.402','15.431','15.S07','15.456','15.434','15.535','15.S06','15.426','15.483','15.S08','15.451','15.382'],
   EXP:['15.665','15.128','15.269','15.S21','15.275','15.321','15.671'],
   MKT:['15.814','15.818','15.833','15.387','15.561','15.276','15.275','15.284'],
   HLTH:['15.136','15.777','15.767','15.S13','15.371','15.S05'],
@@ -350,51 +300,43 @@ const TRACK_RANK={
   LEAD:['15.665','15.284','15.337','15.739','15.321','15.269','15.288','15.318','15.325'],
 };
 
-/* also offered in another term (besides Fall) — so you may not need to bid hard now */
-const ALSO={
-  '15.071':['Spring'],'15.563':['Spring'],'15.387':['Spring'],'15.390':['Spring'],
-  '15.665':['Spring'],'15.814':['Spring'],'15.535':['Spring'],'15.321':['Spring'],
-  '15.403':['Spring'],'15.521':['Spring'],'15.371':['Spring'],
-  '15.830':['IAP (continues)'],'15.777':['IAP (continues)'],'15.389':['IAP (continues)'],
-};
-/* closest replacement / very similar course */
+/* ===================== also-offered / similar ===================== */
+const ALSO={'15.071':['Spring'],'15.563':['Spring'],'15.387':['Spring'],'15.390':['Spring'],'15.665':['Spring'],'15.814':['Spring'],'15.535':['Spring'],'15.321':['Spring'],'15.403':['Spring'],'15.521':['Spring'],'15.371':['Spring'],'15.830':['IAP'],'15.777':['IAP'],'15.389':['IAP']};
 const SIM={
-  '15.739':{id:'15.318',why:'biddable H2 version'}, '15.318':{id:'15.739',why:'SFMBA full-term version'},
-  '15.767':{id:'15.777',why:'same lectures + IAP lab (15u)'}, '15.777':{id:'15.767',why:'lectures only, 9u, no IAP'},
-  '15.S03':{id:'15.483',why:'Gensler finance × tech'}, '15.483':{id:'15.S03',why:'Gensler AI × money'},
-  '15.071':{id:'15.095',why:'optimization-based ML'}, '15.095':{id:'15.071',why:'lighter, larger section'},
-  '15.099':{id:'15.095',why:'Bertsimas ML'}, '15.774':{id:'15.071',why:'broader analytics'}, '15.C57':{id:'15.095',why:'optimization core'},
-  '15.563':{id:'15.561',why:'managerial digital/AI'}, '15.561':{id:'15.563',why:'AI for business'},
-  '15.622':{id:'15.618',why:'Akula law course'}, '15.618':{id:'15.622',why:'Akula law course'}, '15.S04':{id:'15.622',why:'AI law / governance'},
-  '15.431':{id:'15.497',why:'Rhodes-Kropf VC/fintech'}, '15.497':{id:'15.431',why:'VC financing'}, '15.S07':{id:'15.431',why:'investing/finance'},
-  '15.456':{id:'15.S08',why:'quant / ML finance'}, '15.S08':{id:'15.456',why:'financial engineering'}, '15.S06':{id:'15.S08',why:'AI in finance'},
-  '15.535':{id:'15.521',why:'accounting analysis'}, '15.521':{id:'15.535',why:'statement analysis'},
-  '15.818':{id:'15.814',why:'marketing strategy'}, '15.833':{id:'15.814',why:'marketing course'}, '15.814':{id:'15.818',why:'pricing (H1, 6u)'},
-  '15.665':{id:'15.288',why:'tough conversations'}, '15.284':{id:'15.288',why:'communication skill'},
-  '15.390':{id:'15.388',why:'venture creation tactics'}, '15.388':{id:'15.390',why:'Aulet flagship'}, '15.394':{id:'15.390',why:'Ent 101'},
-  '15.399':{id:'15.389',why:'lab w/ real startups'}, '15.389':{id:'15.399',why:'E-Lab (biddable)'}, '15.387':{id:'15.390',why:'entrepreneurship'},
-  '15.911':{id:'15.394',why:'founding & teams'}, '15.369':{id:'15.388',why:'venture tactics'},
-  '15.366':{id:'15.385',why:'impact venture (biddable)'}, '15.385':{id:'15.366',why:'climate venture lab'}, '15.671':{id:'15.385',why:'impact / systems change'},
-  '15.016':{id:'15.S09',why:'energy systems'}, '15.S09':{id:'15.016',why:'climate economics'},
-  '15.S13':{id:'15.S05',why:'CATAPULT (Lo)'}, '15.S05':{id:'15.S13',why:'CATAPULT Bio (Lo)'}, '15.136':{id:'15.S13',why:'life-sciences (Lo)'},
-  '15.900':{id:'15.906',why:'Fellows boot camp (biddable)'}, '15.906':{id:'15.900',why:'full strategy (waitlist)'},
+  '15.739':{id:'15.318',why:'biddable H2 version'},'15.318':{id:'15.739',why:'SFMBA full-term version'},
+  '15.767':{id:'15.777',why:'same lectures + IAP lab'},'15.777':{id:'15.767',why:'lectures only, 9u'},
+  '15.S03':{id:'15.483',why:'Gensler finance×tech'},'15.483':{id:'15.S03',why:'Gensler AI×money'},
+  '15.071':{id:'15.095',why:'optimization ML'},'15.095':{id:'15.071',why:'lighter, larger'},
+  '15.099':{id:'15.095',why:'Bertsimas ML'},'15.774':{id:'15.071',why:'broader analytics'},'15.C57':{id:'15.095',why:'optimization core'},
+  '15.563':{id:'15.561',why:'managerial digital/AI'},'15.561':{id:'15.563',why:'AI for business'},
+  '15.622':{id:'15.618',why:'Akula law'},'15.618':{id:'15.622',why:'Akula law'},'15.S04':{id:'15.622',why:'AI law/gov'},
+  '15.431':{id:'15.497',why:'Rhodes-Kropf VC'},'15.497':{id:'15.431',why:'VC financing'},'15.S07':{id:'15.431',why:'investing'},
+  '15.456':{id:'15.S08',why:'quant/ML finance'},'15.S08':{id:'15.456',why:'fin engineering'},'15.S06':{id:'15.S08',why:'AI in finance'},
+  '15.535':{id:'15.521',why:'accounting analysis'},'15.521':{id:'15.535',why:'statement analysis'},
+  '15.818':{id:'15.814',why:'marketing strategy'},'15.833':{id:'15.814',why:'marketing'},'15.814':{id:'15.818',why:'pricing (H1)'},
+  '15.665':{id:'15.288',why:'tough conversations'},'15.284':{id:'15.288',why:'communication'},
+  '15.390':{id:'15.388',why:'venture tactics'},'15.388':{id:'15.390',why:'Aulet flagship'},'15.394':{id:'15.390',why:'Ent 101'},
+  '15.399':{id:'15.389',why:'lab w/ startups'},'15.389':{id:'15.399',why:'E-Lab (biddable)'},'15.387':{id:'15.390',why:'entrepreneurship'},
+  '15.911':{id:'15.394',why:'founding & teams'},'15.369':{id:'15.388',why:'venture tactics'},
+  '15.366':{id:'15.385',why:'impact (biddable)'},'15.385':{id:'15.366',why:'climate venture lab'},'15.671':{id:'15.385',why:'impact / systems'},
+  '15.016':{id:'15.S09',why:'energy systems'},'15.S09':{id:'15.016',why:'climate economics'},
+  '15.S13':{id:'15.S05',why:'CATAPULT (Lo)'},'15.S05':{id:'15.S13',why:'CATAPULT Bio (Lo)'},'15.136':{id:'15.S13',why:'life-sciences (Lo)'},
+  '15.900':{id:'15.906',why:'Fellows boot camp'},'15.906':{id:'15.900',why:'full strategy (waitlist)'},
 };
 
-/* ---------- time helpers ---------- */
+/* ===================== time helpers ===================== */
 const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+(m||0);};
-function mt(days,range){const[s,e]=range.split('-').map(toMin);const ds=[];let i=0;
-  while(i<days.length){if(days.substr(i,2)==='Th'){ds.push('Th');i+=2;}else{ds.push(days[i]);i++;}}
-  return ds.map(d=>[d,s,e]);}
-const DAYNAME={M:'Mon',T:'Tue',W:'Wed',Th:'Thu',F:'Fri'};
-function fmtTime(m){let h=Math.floor(m/60),mm=m%60;const ap=h>=12?'PM':'AM';let hh=h%12;if(hh===0)hh=12;return mm?`${hh}:${String(mm).padStart(2,'0')} ${ap}`:`${hh} ${ap}`;}
-function fmtMeet(ms){if(!ms.length)return 'Time set by program';const g={};ms.forEach(([d,s,e])=>{(g[s+'-'+e]=g[s+'-'+e]||[]).push(d);});
-  return Object.entries(g).map(([k,ds])=>{const[s,e]=k.split('-').map(Number);return ds.map(d=>DAYNAME[d]).join(', ')+' · '+fmtTime(s)+'–'+fmtTime(e);}).join('  ·  ');}
+function mt(d,r){const[s,e]=r.split('-').map(toMin);const ds=[];let i=0;while(i<d.length){if(d.substr(i,2)==='Th'){ds.push('Th');i+=2;}else{ds.push(d[i]);i++;}}return ds.map(x=>[x,s,e]);}
+const DAY={M:'Mon',T:'Tue',W:'Wed',Th:'Thu',F:'Fri'};
+function fmtTime(m){let h=Math.floor(m/60),mm=m%60,ap=h>=12?'PM':'AM',hh=h%12;if(hh===0)hh=12;return mm?`${hh}:${String(mm).padStart(2,'0')} ${ap}`:`${hh} ${ap}`;}
+function fmtMeet(ms){if(!ms.length)return 'Set by program';const g={};ms.forEach(([d,s,e])=>{(g[s+'-'+e]=g[s+'-'+e]||[]).push(d);});return Object.entries(g).map(([k,ds])=>{const[s,e]=k.split('-').map(Number);return ds.map(d=>DAY[d]).join(', ')+' · '+fmtTime(s)+'–'+fmtTime(e);}).join('  ·  ');}
+function daysShort(ms){if(!ms.length)return 'TBD';const set=[];ms.forEach(([d])=>{if(!set.includes(d))set.push(d);});return set.map(d=>DAY[d]).join('·');}
+function timeShort(ms){if(!ms.length)return '';const[,s,e]=ms[0];return fmtTime(s)+'–'+fmtTime(e);}
 
-/* ---------- Fall 2026 courses (SFMBA-relevant) ---------- */
+/* ===================== Fall 2026 courses ===================== */
 function K(o){o.key=o.id+(o.sec?'·'+o.sec:'');o.base=o.id;return o;}
 const COURSES=[
   K({id:'15.414',title:'Financial Management (Core)',units:9,half:'F',fac:'—',certs:[],route:'Core',m:[],note:'Auto-assigned core — not bid',locked:true}),
-
   K({id:'15.S03',title:'SSIM: AI and Money',units:9,half:'F',fac:'G. Gensler',certs:['BA','FIN'],route:'Bid',tier:'High',m:mt('MW','16:00-17:30')}),
   K({id:'15.563',title:'Artificial Intelligence for Business',units:9,half:'F',fac:'M. Raghavan',certs:['BA'],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
   K({id:'15.S04',title:'SSIM: AI Strategy, Governance & Ethics',units:6,half:'H1',fac:'J. Saviano',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00')}),
@@ -408,11 +350,10 @@ const COURSES=[
   K({id:'15.C57',sec:'C',title:'Optimization Methods',units:12,half:'F',fac:'S. Amin',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'20 Sloan seats'}),
   K({id:'15.S23',title:'SSIM: AI Builder Space Proseminar',units:3,half:'F',fac:'R. Card',certs:['BA'],route:'Apply',m:mt('M','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.572',title:'Analytics Lab (A-Lab)',units:9,half:'F',fac:'A. Almaatouq',certs:['BA'],route:'Apply',m:mt('Th','16:00-17:30'),note:'Permission · a-lab@mit.edu'}),
-
-  K({id:'15.900',sec:'A',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','8:30-10:00'),note:'MBA 1st-yr elective — SFMBA waitlist'}),
-  K({id:'15.900',sec:'B',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','10:00-11:30'),note:'MBA 1st-yr elective — SFMBA waitlist'}),
-  K({id:'15.900',sec:'C',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','13:00-14:30'),note:'MBA 1st-yr elective — SFMBA waitlist'}),
-  K({id:'15.900',sec:'D',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','14:30-16:00'),note:'MBA 1st-yr elective — SFMBA waitlist'}),
+  K({id:'15.900',sec:'A',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','8:30-10:00'),note:'MBA 1st-yr — SFMBA waitlist'}),
+  K({id:'15.900',sec:'B',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','10:00-11:30'),note:'MBA 1st-yr — SFMBA waitlist'}),
+  K({id:'15.900',sec:'C',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','13:00-14:30'),note:'MBA 1st-yr — SFMBA waitlist'}),
+  K({id:'15.900',sec:'D',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','14:30-16:00'),note:'MBA 1st-yr — SFMBA waitlist'}),
   K({id:'15.906',title:'Competitive Strategy Boot Camp',units:3,half:'H1',fac:'D. Li',certs:[],route:'Bid',tier:'Low',m:[],note:'Sloan Fellows · meets 9/8 & 9/11'}),
   K({id:'15.223',sec:'A',title:'Global Markets, National Policies & Competitive Advantage',units:6,half:'H2',fac:'S. Johnson · R. Locke · L. Videgaray',certs:[],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.223',sec:'B',title:'Global Markets, National Policies & Competitive Advantage',units:6,half:'H2',fac:'S. Johnson · R. Locke · L. Videgaray',certs:[],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
@@ -420,9 +361,8 @@ const COURSES=[
   K({id:'15.768',sec:'B',title:'Management of Services',units:9,half:'F',fac:'Z. Ton',certs:['EM'],route:'Bid',tier:'Medium',m:mt('MW','14:30-16:00'),note:'13 seats held for SFMBA'}),
   K({id:'15.535',sec:'A',title:'Business Analysis Using Financial Statements',units:9,half:'F',fac:'B. Dharan',certs:['FIN','EM'],route:'Bid',tier:'Medium',m:mt('MW','13:00-14:30')}),
   K({id:'15.535',sec:'B',title:'Business Analysis Using Financial Statements',units:9,half:'F',fac:'C. Gallimberti',certs:['FIN','EM'],route:'Bid',tier:'Medium',m:mt('MW','14:30-16:00')}),
-
-  K({id:'15.390',title:'Entrepreneurship 101: New Venture Creation',units:12,half:'F',fac:'B. Aulet · N. Teng',certs:['EI','HC','DPM'],route:'Bid',tier:'High',m:mt('MW','14:30-16:00'),note:'Graduate'}),
-  K({id:'15.389',title:'Global Entrepreneurship Lab (G-Lab)',units:12,half:'F',fac:'M. Jester · S. Johnson',certs:['EI'],route:'Waitlist',m:mt('TTh','14:30-16:00'),note:'2nd-yr MBA/LGO bidding only · SFMBA waitlist'}),
+  K({id:'15.390',title:'Entrepreneurship 101 / New Venture Creation',units:12,half:'F',fac:'B. Aulet · N. Teng',certs:['EI','HC','DPM'],route:'Bid',tier:'High',m:mt('MW','14:30-16:00'),note:'Graduate'}),
+  K({id:'15.389',title:'Global Entrepreneurship Lab (G-Lab)',units:12,half:'F',fac:'M. Jester · S. Johnson',certs:['EI'],route:'Waitlist',m:mt('TTh','14:30-16:00'),note:'2nd-yr MBA/LGO only · SFMBA waitlist'}),
   K({id:'15.366',title:'Climate & Energy Ventures',units:12,half:'F',fac:'G. Campbell Flatter et al.',certs:['SUS','EI'],route:'Apply',m:mt('Th','17:30-20:00'),note:'Application opens July'}),
   K({id:'15.399',title:'Entrepreneurship Lab (E-Lab)',units:12,half:'F',fac:'K. Hickey · D. Patel',certs:['EI','HC'],route:'Bid',tier:'Medium',m:mt('M','16:00-19:00')}),
   K({id:'15.388',title:'Venture Creation Tactics',units:12,half:'F',fac:'P. Cheek',certs:['EI'],route:'Bid',tier:'Medium',m:mt('T','8:30-11:00'),note:'Graduate'}),
@@ -436,7 +376,6 @@ const COURSES=[
   K({id:'15.128',title:'Revolutionary Ventures',units:9,half:'F',fac:'Bonsen · Boyden · Jacobson',certs:['EI'],route:'Register',m:mt('Th','14:00-16:00'),note:'Pre-register via WebSIS'}),
   K({id:'15.371',title:'Innovation Teams (i-Teams)',units:12,half:'F',fac:'L. Perez-Breva',certs:['EI'],route:'Register',m:[...mt('T','13:00-15:00'),...mt('F','9:00-12:30')],note:'Pre-register via WebSIS'}),
   K({id:'15.379',title:'Mobility Ventures',units:12,half:'F',fac:'Moavenzadeh · Zhao',certs:['EI'],route:'Register',m:mt('MW','11:30-13:00'),note:'WebSIS · Graduate'}),
-
   K({id:'15.431',sec:'A',title:'Entrepreneurial Finance & Venture Capital',units:9,half:'F',fac:'T. Liu · M. Rhodes-Kropf',certs:['FIN','EI'],route:'Bid',tier:'High',m:mt('TTh','13:00-14:30'),note:'Graduate'}),
   K({id:'15.431',sec:'B',title:'Entrepreneurial Finance & Venture Capital',units:9,half:'F',fac:'T. Liu · M. Rhodes-Kropf',certs:['FIN','EI'],route:'Bid',tier:'High',m:mt('TTh','14:30-16:00'),note:'Graduate'}),
   K({id:'15.456',title:'Financial Engineering',units:9,half:'F',fac:'L. Kogan · P. Mende',certs:['FIN','BA'],route:'Bid',tier:'Medium',m:mt('MW','14:30-16:00')}),
@@ -449,13 +388,12 @@ const COURSES=[
   K({id:'15.521',sec:'A',title:'Accounting Information for Decision Makers',units:6,half:'H1',fac:'C. Noe',certs:['FIN'],route:'Bid',tier:'Low',m:mt('MW','13:00-14:30')}),
   K({id:'15.521',sec:'B',title:'Accounting Information for Decision Makers',units:6,half:'H1',fac:'C. Noe',certs:['FIN'],route:'Bid',tier:'Low',m:mt('MW','14:30-16:00')}),
   K({id:'15.403',title:'Intro to the Practice of Finance',units:3,half:'F',fac:'S. Mehos',certs:['FIN'],route:'Waitlist',tier:'Low',m:mt('M','16:00-17:30'),note:'MBA 1st-yr · SFMBA waitlist'}),
-
+  K({id:'15.426',title:'Real Estate Finance and Investment',units:12,half:'F',fac:'W. Torous',certs:['FIN'],route:'Register',m:mt('MW','13:00-14:30'),note:'Pre-register via WebSIS'}),
   K({id:'15.767',title:'Intro to Healthcare Delivery in the US',units:9,half:'F',fac:'A. Quaadgras',certs:['HC'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.777',title:'Healthcare Lab (H-Lab)',units:15,half:'F',fac:'A. Quaadgras',certs:['HC','EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30'),note:'9u Fall + 6u IAP'}),
   K({id:'15.136',title:'Principles & Practice of Drug Development',units:9,half:'F',fac:'S. Finkelstein',certs:['HC'],route:'Bid',tier:'Medium',m:mt('W','15:00-18:00')}),
   K({id:'15.S13',title:'SSIM: CATAPULT Bio — Theory into Practice',units:9,half:'F',fac:'A. Lo',certs:['HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.S05',title:'SSIM: CATAPULT Advanced Energy Technologies',units:9,half:'F',fac:'A. Lo',certs:['SUS','HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
-
   K({id:'15.016',title:'Climate & Energy in the Global Economy',units:12,half:'F',fac:'N. Kala · C. Wolfram',certs:['SUS'],route:'Bid',tier:'Medium',m:mt('MW','13:00-14:30'),note:'Graduate'}),
   K({id:'15.662',sec:'A',title:'People & Profits: Shaping the Future of Work',units:12,half:'F',fac:'A. Stansbury',certs:['SUS'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30')}),
   K({id:'15.662',sec:'B',title:'People & Profits: Shaping the Future of Work',units:12,half:'F',fac:'A. Stansbury',certs:['SUS'],route:'Bid',tier:'Medium',m:mt('MW','13:00-14:30')}),
@@ -463,7 +401,6 @@ const COURSES=[
   K({id:'15.S09',title:'SSIM: Optimization of Energy Systems',units:12,half:'F',fac:'A. Sun',certs:['SUS'],route:'Bid',tier:'Low',m:mt('MW','16:00-17:30')}),
   K({id:'15.657',title:'Technology, Globalization & Sustainable Development',units:12,half:'F',fac:'N. Ashford',certs:['SUS'],route:'Register',m:mt('W','16:00-18:30'),note:'WebSIS'}),
   K({id:'15.655',title:'Law, Technology & Public Policy',units:12,half:'F',fac:'N. Ashford · C. Caldart',certs:['SUS'],route:'Register',m:mt('TTh','15:30-17:00'),note:'WebSIS'}),
-
   K({id:'15.814',sec:'A',title:'Marketing Innovation',units:9,half:'F',fac:'J. Zhang',certs:['EI','EM','DPM'],route:'Waitlist',tier:'Medium',m:mt('MW','13:00-14:30'),note:'MBA 1st-yr · SFMBA waitlist'}),
   K({id:'15.814',sec:'B',title:'Marketing Innovation',units:9,half:'F',fac:'J. Zhang',certs:['EI','EM','DPM'],route:'Waitlist',tier:'Medium',m:mt('MW','14:30-16:00'),note:'MBA 1st-yr · SFMBA waitlist'}),
   K({id:'15.818',sec:'A',title:'Pricing',units:6,half:'H1',fac:'R. Hoong',certs:['DPM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
@@ -471,10 +408,8 @@ const COURSES=[
   K({id:'15.818',sec:'C',title:'Pricing',units:6,half:'H1',fac:'R. Hoong',certs:['DPM'],route:'Bid',tier:'Medium',m:mt('TTh','14:30-16:00')}),
   K({id:'15.833',title:'Business-to-Business Marketing',units:6,half:'H2',fac:'S. Chatterjee',certs:['EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.275',title:'Entertainment, Media & Sports Lab',units:9,half:'F',fac:'B. Shields · S. Springer',certs:[],route:'Bid',tier:'Medium',m:mt('W','16:00-19:00')}),
-
   K({id:'15.830',title:'Enterprise Management Lab',units:9,half:'F',fac:'S. Chatterjee',certs:['EM'],route:'Bid',tier:'Medium',m:mt('M','16:00-19:00'),note:'6u Fall + 3u IAP · Graduate'}),
   K({id:'15.770',title:'Logistics Systems',units:12,half:'F',fac:'A. Acocella · C. Caplice',certs:['EM'],route:'Register',m:mt('TTh','8:30-10:00'),note:'WebSIS'}),
-
   K({id:'15.665',sec:'A',title:'Power and Negotiation',units:9,half:'F',fac:'B. Tewfik',certs:[],route:'Bid',tier:'High',m:mt('T','13:00-16:00')}),
   K({id:'15.665',sec:'B',title:'Power and Negotiation',units:9,half:'F',fac:'B. Tewfik',certs:[],route:'Bid',tier:'High',m:mt('T','16:30-19:30')}),
   K({id:'15.284',sec:'A',title:'Strategic Leadership Communication',units:6,half:'H1',fac:'N. Hartman',certs:[],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'Sloan Fellows'}),
@@ -490,193 +425,181 @@ const COURSES=[
   K({id:'15.618',title:'Startups and the Law',units:6,half:'F',fac:'J. Akula',certs:['EI'],route:'Bid',tier:'Low',m:mt('W','17:30-19:00')}),
 ];
 
-const TIERCLASS={High:'b-bidH',Medium:'b-bidM',Low:'b-bidL'};
-const ROUTECLASS={Bid:'b-bid',Apply:'b-apply',Register:'b-reg',Waitlist:'b-wait',Core:'b-core'};
-const ROUTELABEL={Bid:'Bid',Apply:'Apply · permission',Register:'Register · WebSIS',Waitlist:'Waitlist',Core:'Core · no bid'};
+const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core'};
+const ROUTELABEL={Bid:'Bid',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core'};
+const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
+const TIERLAB={High:'High demand',Medium:'Medium',Low:'Low · token'};
 const biddable=c=>c.route==='Bid';
-
-/* ---------- state ---------- */
-const SKEY='sloanCanvas_fall_v1';
-let state=loadState();
-let filter={q:'',track:'',certs:new Set(),route:'',eligOnly:true};
-function loadState(){try{const s=JSON.parse(localStorage.getItem(SKEY));if(s&&s.plan)return s;}catch(e){}return{plan:['15.414'],bids:{}};}
-function saveState(){localStorage.setItem(SKEY,JSON.stringify(state));}
-const byKey=k=>COURSES.find(c=>c.key===k);
-const planned=()=>state.plan.map(byKey).filter(Boolean);
-const eligibleForBid=c=>!['Waitlist'].includes(c.route)&&!c.locked||c.route==='Bid'||c.route==='Apply'||c.route==='Register';
-// SFMBA "eligible" = anything not Waitlist-restricted and not core-locked-only; for filter we treat Bid/Apply/Register as eligible
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register';
 
-/* ---------- build static UI ---------- */
+/* ===================== state ===================== */
+const KEY='sloanCanvas_fall_v1';
+let state=load();
+let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan)return s;}catch(e){}return{plan:['15.414'],bids:{}};}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+const byKey=k=>COURSES.find(c=>c.key===k);
+const planned=()=>state.plan.map(byKey).filter(Boolean);
+
+/* ===================== static UI ===================== */
 function buildStatic(){
-  const ts=document.getElementById('track');
-  ts.innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-  document.getElementById('certChips').innerHTML=CERT_KEYS.map(k=>`<span class="cc" data-cert="${k}" onclick="toggleCert('${k}')" style="background:${CERT[k].c}18;color:${CERT[k].c};border-color:${CERT[k].c}40">${CERT[k].full}</span>`).join('');
-  document.querySelectorAll('#routeSeg button').forEach(b=>b.onclick=()=>{filter.route=b.dataset.route;document.querySelectorAll('#routeSeg button').forEach(x=>x.classList.toggle('on',x===b));render();});
-  // legend
-  document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i class="dot" style="background:${CERT[k].c}"></i>${CERT[k].full}</span>`).join('')+`<span><i class="dot" style="background:#c7c7cc"></i>Other</span>`;
+  document.getElementById('cert').innerHTML='<option value="">All certificates</option>'+CERT_KEYS.map(k=>`<option value="${k}">${CERT[k].full}</option>`).join('');
+  document.getElementById('track').innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
+  const steps=[
+    ['1','Browse & filter','Narrow ~60 Fall courses by route, certificate, career track or search.'],
+    ['2','Build your plan','Tap + to add a course to My Fall Plan. Your core 15.414 is locked in.'],
+    ['3','Enter your bids','You have 1,000 points — and you pay the clearing price, not your bid.'],
+    ['4','Watch the limits','Bars track points /1000, electives /57 and total units /66, live.'],
+    ['5','Check your week','The calendar plots every course. A red outline means a time clash.'],
+    ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
+  ];
+  document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
 }
-function toggleCert(k){filter.certs.has(k)?filter.certs.delete(k):filter.certs.add(k);
-  document.querySelectorAll('.cc').forEach(el=>{const on=filter.certs.has(el.dataset.cert);el.style.outline=on?'2px solid '+CERT[el.dataset.cert].c:'none';el.style.outlineOffset='1px';});render();}
-function toggleElig(){filter.eligOnly=!filter.eligOnly;document.getElementById('eligSwitch').classList.toggle('on',filter.eligOnly);render();}
 
-/* ---------- catalog ---------- */
-function certBadges(cs){return cs.map(k=>`<span class="b" style="background:${tint(CCOL[k],.18)};color:${CCOL[k]}">${CERT[k].full}</span>`).join('');}
-function routeBadge(c){if(c.route==='Bid')return `<span class="b ${TIERCLASS[c.tier]||'b-bid'}">Bid · ${c.tier}</span>`;return `<span class="b ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>`;}
-function altNote(c){const a=ALSO[c.base];return a?`<span style="color:var(--fin)">🔁 Also offered: ${a.join(', ')}</span>`:'';}
-function simNote(c){const s=SIM[c.base];return s?`<span style="color:var(--blue);cursor:pointer" onclick="simJump(event,'${s.id}')">≈ Similar: ${s.id} — ${s.why}</span>`:'';}
-function simJump(e,id){e.stopPropagation();const q=document.getElementById('q');q.value=id;filter.eligOnly=false;document.getElementById('eligSwitch').classList.remove('on');document.getElementById('track').value='';renderCatalog();document.getElementById('catalog').scrollTop=0;}
+/* ===================== catalog ===================== */
+function routeTabs(){
+  const counts={all:0,Bid:0,Apply:0,Register:0};
+  COURSES.forEach(c=>{if(c.locked)return; if(filter.eligibleOnly&&!isEligible(c))return; counts.all++; if(counts[c.route]!=null)counts[c.route]++;});
+  const tabs=[['all','All'],['Bid','Bid'],['Apply','Apply'],['Register','Register']];
+  document.getElementById('routeSeg').innerHTML=tabs.map(([k,l])=>`<button class="${filter.route===k?'on':''}" onclick="setRoute('${k}')">${l}<span class="n">${counts[k]}</span></button>`).join('');
+}
+function setRoute(r){filter.route=r;render();}
+function toggleElig(){filter.eligibleOnly=!filter.eligibleOnly;document.getElementById('eligSwitch').classList.toggle('on',filter.eligibleOnly);render();}
+function simJump(e,id){e.stopPropagation();document.getElementById('q').value=id;filter.eligibleOnly=false;document.getElementById('eligSwitch').classList.remove('on');filter.cert='';filter.track='';document.getElementById('cert').value='';document.getElementById('track').value='';filter.route='all';render();document.getElementById('catalog').scrollTop=0;}
 
-function renderCatalog(){
+function certBadges(cs){return cs.map(k=>`<span class="cbadge" style="background:${tint(CERT[k].c,.18)};color:${CERT[k].c}">${k}</span>`).join('');}
+function noteChips(c){
+  let h='';
+  const a=ALSO[c.base]; if(a)h+=`<span class="note also">🔁 Also in ${a.join(', ')}</span>`;
+  const s=SIM[c.base]; if(s)h+=`<span class="note sim" onclick="simJump(event,'${s.id}')">≈ ${s.id} · ${s.why}</span>`;
+  if(c.note)h+=`<span class="note warn">◔ ${c.note}</span>`;
+  return h;
+}
+
+function render(){
   filter.q=document.getElementById('q').value.toLowerCase().trim();
+  filter.cert=document.getElementById('cert').value;
   filter.track=document.getElementById('track').value;
+  routeTabs();
   let items=COURSES.filter(c=>!c.locked);
-  if(filter.eligOnly) items=items.filter(c=>isEligible(c));
-  if(filter.q) items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(filter.q));
-  if(filter.certs.size) items=items.filter(c=>c.certs.some(x=>filter.certs.has(x)));
-  if(filter.route) items=items.filter(c=>c.route===filter.route);
-  let ranked=null;
-  if(filter.track){const order=TRACK_RANK[filter.track]||[];const rk={};order.forEach((id,i)=>rk[id]=i+1);
-    items=items.filter(c=>rk[c.base]).sort((a,b)=>rk[a.base]-rk[b.base]||a.key.localeCompare(b.key));ranked=rk;}
+  if(filter.eligibleOnly)items=items.filter(isEligible);
+  if(filter.q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(filter.q));
+  if(filter.route!=='all')items=items.filter(c=>c.route===filter.route);
+  if(filter.cert)items=items.filter(c=>c.certs.includes(filter.cert));
+  let rk=null;
+  if(filter.track){const o=TRACK_RANK[filter.track]||[];rk={};o.forEach((id,i)=>rk[id]=i+1);items=items.filter(c=>rk[c.base]).sort((a,b)=>rk[a.base]-rk[b.base]);}
   else items.sort((a,b)=>a.id.localeCompare(b.id));
-  document.getElementById('catCount').textContent=items.length+' courses';
+  document.getElementById('catCount').textContent=items.length;
   document.getElementById('catalog').innerHTML=items.map(c=>{
-    const added=state.plan.includes(c.key);
-    const rank=ranked?ranked[c.base]:0;
-    const col=colorOf(c);
-    return `<div class="course ${added?'isin':''}" draggable="true" ondragstart="dragStart(event,'${c.key}')"
-         style="background:${tint(col,.10)};border-left:4px solid ${col};${added?`box-shadow:0 0 0 2px ${col}`:''}">
-      <div class="crow">
-        <div style="min-width:0">
-          <div class="cid">${rank?`<span style="color:var(--brand);font-weight:800">#${rank}</span>`:''}<span style="width:8px;height:8px;border-radius:3px;background:${col};display:inline-block"></span>${c.id}${c.sec?`<span style="color:var(--sub);font-weight:600">${c.sec}</span>`:''}</div>
-          <div class="ctitle">${c.title}</div>
-          <div class="cmeta"><span>👤 ${c.fac}</span><span>🕑 ${fmtMeet(c.m)}</span>${c.note?`<span style="color:#9a6400">⚠ ${c.note}</span>`:''}${altNote(c)}${simNote(c)}</div>
-          <div class="badges"><span class="b b-units">${c.units}u</span>${c.half!=='F'?`<span class="b b-half">${c.half}</span>`:''}${routeBadge(c)}${certBadges(c.certs)}</div>
+    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0;
+    return `<div class="course" style="border-left-color:${col};background:${tint(col,.05)}">
+      <div style="flex:1;min-width:0">
+        <div class="crow">
+          ${rank?`<span class="rk">#${rank}</span>`:''}
+          <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
+          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>
         </div>
-        ${added?`<button class="add rm" onclick="remove('${c.key}')" title="Remove from plan">−</button>`:`<button class="add" onclick="add('${c.key}')" title="Add to plan">+</button>`}
+        <div class="ctitle">${c.title}</div>
+        <div class="meta">
+          <span class="unit">${c.units}u${c.half!=='F'?' · '+c.half:''}</span>
+          <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||'TBA'}</span>
+          ${biddable(c)?`<span class="tier" style="color:${TIERCOL[c.tier]}"><i style="background:${TIERCOL[c.tier]}"></i>${TIERLAB[c.tier]}</span>`:''}
+          ${certBadges(c.certs)}
+        </div>
+        <div class="fac">👤 ${c.fac}</div>
+        <div class="notes">${noteChips(c)}</div>
       </div>
+      <button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>
     </div>`;
-  }).join('')||`<div class="empty">No courses match these filters.</div>`;
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
+  document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
+  renderPlan();renderCredits();renderCalendar();
 }
 
-/* ---------- conflicts ---------- */
+/* ===================== plan ===================== */
 const halfOverlap=(a,b)=>a==='F'||b==='F'||a===b;
-function conflictSet(){
-  const cs=planned().filter(c=>c.m.length);const conf=new Set();
-  for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){
-    if(!halfOverlap(cs[i].half,cs[j].half))continue;
-    for(const[d1,s1,e1]of cs[i].m)for(const[d2,s2,e2]of cs[j].m)
-      if(d1===d2&&s1<e2&&s2<e1){conf.add(cs[i].key);conf.add(cs[j].key);}
-  }
-  return conf;
-}
+function conflictSet(){const cs=planned().filter(c=>c.m.length),s=new Set();
+  for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){if(!halfOverlap(cs[i].half,cs[j].half))continue;
+    for(const[d1,s1,e1]of cs[i].m)for(const[d2,s2,e2]of cs[j].m)if(d1===d2&&s1<e2&&s2<e1){s.add(cs[i].key);s.add(cs[j].key);}}
+  return s;}
 
-/* ---------- plan ---------- */
 function renderPlan(){
-  const conf=conflictSet();
-  const cs=planned();
-  document.getElementById('planCount').textContent=cs.length+' courses';
-  const host=document.getElementById('plan');
-  if(!cs.length){host.innerHTML=`<div class="empty" style="grid-column:1/-1">Drag courses here, or tap +<br><span style="font-size:12px">Your core 15.414 is already locked in.</span></div>`;return;}
-  host.innerHTML=cs.map(c=>{
+  const cs=planned().sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
+  document.getElementById('planCount').textContent=cs.length;
+  document.getElementById('plan').innerHTML=cs.map(c=>{
     const col=colorOf(c);
-    const isConf=conf.has(c.key);
-    return `<div class="pcard ${isConf?'conflict':''}" style="border-left-color:${col};background:${tint(col,.09)}">
-      ${c.locked?'':`<button class="x" onclick="remove('${c.key}')" title="Delete">−</button>`}
-      <div class="cid">${c.locked?'🔒 ':''}${c.id}${c.sec?`<span style="color:var(--sub);font-weight:600">${c.sec}</span>`:''}</div>
-      <div class="ctitle">${c.title}</div>
-      <div class="cmeta" style="margin-top:6px"><span>🕑 ${fmtMeet(c.m)}</span>${altNote(c)}${simNote(c)}</div>
-      <div class="badges"><span class="b b-units">${c.units}u</span>${c.half!=='F'?`<span class="b b-half">${c.half}</span>`:''}${routeBadge(c)}</div>
-      ${biddable(c)?`<div class="bidrow"><label style="font-size:12px;color:var(--sub)">Bid</label><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><span style="font-size:11px;color:var(--sub)">pts · ${c.tier} tier</span></div>`:''}
-      ${!biddable(c)&&!c.locked?`<div style="font-size:11px;color:var(--blue);margin-top:8px">${c.route==='Apply'?'No points — application / permission':c.route==='Register'?'No points — register via WebSIS':'No points — waitlist round'}</div>`:''}
-      ${isConf?`<div class="conflict-note">⚠ Time conflict</div>`:''}
+    return `<div class="prow" style="border-left-color:${col}">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}
+        </div>
+        <div class="ptitle">${c.title}</div>
+      </div>
+      <span class="time">${c.units}u</span>
+      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
+      ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>`;
-  }).join('');
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
 }
 
-/* ---------- credits + meters ---------- */
+/* ===================== credits ===================== */
 function renderCredits(){
-  const cs=planned();
-  let pts=0,elec=0,tot=0;
+  const cs=planned();let pts=0,elec=0,tot=0;
   cs.forEach(c=>{tot+=c.units;if(!c.locked)elec+=c.units;if(biddable(c))pts+=(state.bids[c.key]||0);});
-  document.getElementById('creditBody').innerHTML=cs.map(c=>`<tr>
-     <td><b>${c.id}${c.sec||''}</b><br><span style="font-size:11px;color:var(--sub)">${c.title}</span></td>
-     <td class="num">${c.units}</td>
-     <td>${ROUTELABEL[c.route].split(' ')[0]}</td>
-     <td class="num">${biddable(c)?(state.bids[c.key]||0):'—'}</td></tr>`).join('')||`<tr><td colspan="4" style="color:#aeaeb2">No courses yet</td></tr>`;
-  document.getElementById('creditFoot').innerHTML=`<tr><td>Total</td><td class="num">${tot}u</td><td></td><td class="num">${pts}</td></tr>`;
-  const pct=(v,m)=>Math.min(100,Math.round(v/m*100));
-  document.getElementById('cap-pts').textContent=`${pts} / 1000`;
-  document.getElementById('cap-elec').textContent=`${elec} / 57`;
-  document.getElementById('cap-tot').textContent=`${tot} / 66`;
-  document.getElementById('bar-pts').style.width=pct(pts,1000)+'%';
-  document.getElementById('bar-elec').style.width=pct(elec,57)+'%';
-  document.getElementById('bar-tot').style.width=pct(tot,66)+'%';
-  document.getElementById('bar-pts').style.background=pts>1000?'#c2002a':'var(--brand)';
-  document.getElementById('bar-elec').style.background=elec>57?'#c2002a':'var(--dpm)';
-  document.getElementById('bar-tot').style.background=tot>66?'#c2002a':'var(--ba)';
+  const pc=(v,m)=>Math.min(100,Math.round(v/m*100));
+  document.getElementById('cap-pts').textContent=pts;document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
+  document.getElementById('bar-pts').style.width=pc(pts,1000)+'%';
+  document.getElementById('bar-elec').style.width=pc(elec,57)+'%';
+  document.getElementById('bar-tot').style.width=pc(tot,66)+'%';
   document.getElementById('m-points').textContent=Math.max(0,1000-pts);
   document.getElementById('m-units').textContent=Math.max(0,57-elec);
   const w=[];const hasBid=cs.some(biddable);
-  if(pts>1000)w.push('over 1000 points');else if(hasBid&&pts<1000)w.push(`${1000-pts} points unused`);
-  if(elec>57)w.push('over 57 elective units');
-  if(tot>66)w.push('over 66 total units');
-  const el=document.getElementById('capWarn');
-  if(w.length){el.textContent='⚠ '+w.join(' · ');el.style.color='#c2002a';}
-  else if(hasBid){el.textContent='✓ Using all 1000 points · within limits';el.style.color='var(--sus)';}
-  else{el.textContent='Add Fall electives to begin bidding';el.style.color='var(--sub)';}
+  if(pts>1000)w.push('over 1000 pts');else if(hasBid&&pts<1000)w.push((1000-pts)+' pts unused');
+  if(elec>57)w.push('over 57 units');if(tot>66)w.push('over 66 units');
+  const p=document.getElementById('okpill');
+  if(w.length){p.textContent='⚠ '+w.join(' · ');p.style.background='var(--bsoft)';p.style.color='var(--brand2)';}
+  else if(hasBid){p.textContent='✓ Within limits';p.style.background='var(--gsoft)';p.style.color='var(--green2)';}
+  else{p.textContent='Add courses';p.style.background='var(--seg)';p.style.color='var(--sub)';}
 }
 
-/* ---------- calendar ---------- */
-const CAL_S=480,CAL_E=1290,CAL_H=660;
+/* ===================== calendar ===================== */
+const CAL_S=480,CAL_E=1290,CAL_H=620;
 function renderCalendar(){
-  const conf=conflictSet();
-  const days=['M','T','W','Th','F'];
-  let html=`<div></div>`+days.map(d=>`<div class="calhead">${DAYNAME[d]}</div>`).join('');
-  // time column
-  html+=`<div style="position:relative;height:${CAL_H}px">`;
-  for(let h=8;h<=21;h++){const top=(h*60-CAL_S)/(CAL_E-CAL_S)*CAL_H;html+=`<div class="caltime" style="position:absolute;top:${top}px;right:0">${fmtTime(h*60)}</div>`;}
-  html+=`</div>`;
+  const conf=conflictSet();const days=['M','T','W','Th','F'];
+  let gut='<div class="ghead"></div><div class="track" style="height:'+CAL_H+'px">';
+  for(let h=8;h<=21;h++){const top=(h*60-CAL_S)/(CAL_E-CAL_S)*CAL_H;gut+=`<span class="tlabel" style="top:${top}px">${fmtTime(h*60).replace(':00','').replace(' ','').toLowerCase()}</span>`;}
+  gut+='</div>';
   const cs=planned().filter(c=>c.m.length);
-  days.forEach(day=>{
-    let col=`<div class="daycol" style="height:${CAL_H}px">`;
-    for(let h=8;h<=21;h++){const top=(h*60-CAL_S)/(CAL_E-CAL_S)*CAL_H;col+=`<div class="gridline" style="top:${top}px"></div>`;}
-    cs.forEach(c=>{c.m.forEach(([d,s,e])=>{if(d!==day)return;
-      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H;const h=(e-s)/(CAL_E-CAL_S)*CAL_H;
-      const color=colorOf(c);
-      col+=`<div class="block ${conf.has(c.key)?'conf':''}" style="top:${top}px;height:${Math.max(h,16)}px;background:${color}">
-        <b>${c.id}${c.sec||''}</b>${fmtTime(s)}${c.half!=='F'?' · '+c.half:''}</div>`;
+  let daysHtml='';
+  days.forEach((d,di)=>{
+    let col=`<div class="day"><div class="dhead">${DAY[d].toUpperCase()}</div><div class="track" style="height:${CAL_H}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px 56px)">`;
+    let any=false;
+    cs.forEach(c=>{c.m.forEach(([dd,s,e])=>{if(dd!==d)return;any=true;
+      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),col0=colorOf(c);
+      col+=`<div class="block ${conf.has(c.key)?'conf':''}" style="top:${top}px;height:${h}px;left:4px;right:4px;background:${tint(col0,.16)};border-left-color:${col0}">
+        <div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });});
-    col+=`</div>`;html+=col;
+    if(!any&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
+    col+='</div></div>';daysHtml+=col;
   });
-  document.getElementById('calgrid').innerHTML=html;
-  const n=conf.size;
-  const cc=document.getElementById('conflictCount');
-  cc.textContent=n?`⚠ ${n} course${n>1?'s':''} in conflict`:'No conflicts';
-  cc.style.color=n?'#c2002a':'var(--sub)';
-  cc.style.fontWeight=n?'700':'400';
+  document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
+  const n=conf.size,el=document.getElementById('clash');
+  if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
+  else{el.textContent='✓ No conflicts';el.style.background='var(--gsoft)';el.style.color='var(--green2)';}
 }
 
-/* ---------- actions ---------- */
-function add(k){if(!state.plan.includes(k)){state.plan.push(k);saveState();renderAll();}}
-function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];saveState();renderAll();}
-function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);saveState();renderCredits();}
-function resetPlan(){if(!confirm('Clear your plan & bids? (Core 15.414 stays.)'))return;state={plan:['15.414'],bids:{}};saveState();renderAll();}
-/* DnD */
-function dragStart(e,k){e.dataTransfer.setData('k',k);}
-function allowDrop(e){e.preventDefault();document.getElementById('drop').classList.add('hot');}
-function dragLeave(e){if(!e.currentTarget.contains(e.relatedTarget))document.getElementById('drop').classList.remove('hot');}
-function drop(e){e.preventDefault();document.getElementById('drop').classList.remove('hot');const k=e.dataTransfer.getData('k');if(k)add(k);}
-
-function renderAll(){renderPlan();renderCredits();renderCalendar();renderCatalog();}
-function render(){renderCatalog();}
-
+/* ===================== actions ===================== */
+function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();}}
+function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
+function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
+function resetPlan(){if(!confirm('Clear your plan & bids? (Core 15.414 stays.)'))return;state={plan:['15.414'],bids:{}};save();render();}
 function openHelp(){document.getElementById('help').classList.add('show');}
-function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('sc_seen','1');}
+function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('mf_seen','1');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
-if(!localStorage.getItem('sc_seen'))setTimeout(openHelp,450);
+if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
 
-buildStatic();renderAll();
+buildStatic();render();
 </script>
 </body>
 </html>
