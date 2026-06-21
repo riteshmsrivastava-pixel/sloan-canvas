@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sloan Canvas · Fall 2026 Bidding</title>
+<title>Muddy Falls · Fall 2026 Bidding</title>
 <style>
   :root{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --sub:#6e6e73; --line:#e3e3e6;
@@ -15,7 +15,7 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;
+  body{font-family:"Neue Haas Grotesk Display Pro","Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;letter-spacing:-.005em;
     background:
       radial-gradient(1000px 720px at 4% -10%, rgba(124,92,255,.20), transparent 60%),
       radial-gradient(900px 680px at 103% -4%, rgba(10,132,255,.18), transparent 56%),
@@ -31,8 +31,8 @@
   /* Header */
   header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.72);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);}
   .head{display:flex;align-items:center;gap:20px;padding:12px 0;flex-wrap:wrap;}
-  .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#c12f45,#A31F34);color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;box-shadow:var(--shadow);}
-  .title h1{font-size:17px;font-weight:700;margin:0;letter-spacing:-.02em;}
+  .logo{height:27px;width:auto;display:block;}
+  .title h1{font-size:20px;font-weight:700;margin:0;letter-spacing:-.035em;}
   .title p{font-size:12px;color:var(--sub);margin:1px 0 0;}
   .meters{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;}
   .meter{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:7px 14px;min-width:104px;box-shadow:var(--shadow);}
@@ -167,10 +167,17 @@
 
 <header>
   <div class="wrap head">
-    <div class="logo">S</div>
+    <svg class="logo" viewBox="0 0 53 32" xmlns="http://www.w3.org/2000/svg" aria-label="MIT">
+      <rect x="0" y="0" width="5" height="32" fill="#8a8b8c"/>
+      <rect x="7" y="0" width="5" height="15" fill="#8a8b8c"/>
+      <rect x="14" y="0" width="5" height="32" fill="#8a8b8c"/>
+      <rect x="24" y="0" width="5" height="32" fill="#A31F34"/>
+      <rect x="34" y="0" width="19" height="5" fill="#8a8b8c"/>
+      <rect x="41" y="0" width="5" height="32" fill="#8a8b8c"/>
+    </svg>
     <div class="title">
-      <h1>Sloan Canvas</h1>
-      <p>Sloan Fellows ’27 · Fall 2026 Bidding Workspace</p>
+      <h1>Muddy&nbsp;Falls</h1>
+      <p>MIT Sloan Fellows ’27 · Fall 2026 Bidding</p>
     </div>
     <button class="help-btn" onclick="openHelp()">？ How to use</button>
     <div class="meters">
@@ -259,7 +266,7 @@
   <div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
     <div class="modal">
       <button class="close" onclick="closeHelp()">×</button>
-      <h2>How to use Sloan Canvas</h2>
+      <h2>How to use Muddy Falls</h2>
       <div class="sub">Plan your Fall 2026 electives and bids in a few minutes.</div>
       <div class="step"><div class="n">1</div><div><h3>Browse &amp; filter the catalog (left)</h3><p>Narrow ~70 Fall courses by career track, certificate, route (Bid / Apply / Register) or search. Keep “only courses I’m eligible to bid for” on to hide undergrad/MFIN/repeat-core sections.</p></div></div>
       <div class="step"><div class="n">2</div><div><h3>Build your plan</h3><p>Tap <b>+</b> (or drag a card) to add a course to <b>My Fall Plan</b> on the right. Tap <b>−</b> to remove it. Your core 15.414 is already locked in.</p></div></div>
@@ -279,7 +286,7 @@
   </div>
 
   <div style="text-align:center;color:#aeaeb2;font-size:11px;padding:0 0 44px;line-height:1.6">
-    Sloan Canvas · an unofficial planning tool built for the MIT Sloan Fellows ’27 cohort · not affiliated with MIT Sloan.<br>
+    Muddy Falls · an unofficial planning tool built for the MIT Sloan Fellows ’27 cohort · not affiliated with MIT Sloan.<br>
     Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
   </div>
 </div>
