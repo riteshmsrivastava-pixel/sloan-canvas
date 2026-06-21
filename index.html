@@ -362,7 +362,7 @@ function timeShort(ms){if(!ms.length)return '';const[,s,e]=ms[0];return fmtTime(
 /* ===================== Fall 2026 courses ===================== */
 function K(o){o.key=o.id+(o.sec?'·'+o.sec:'');o.base=o.id;return o;}
 const COURSES=[
-  K({id:'15.414',title:'Financial Management (Core)',units:9,half:'F',fac:'—',certs:[],route:'Core',m:[],note:'Auto-assigned core — not bid',locked:true}),
+  K({id:'15.414',title:'Financial Management (Core)',units:9,half:'F',fac:'—',certs:[],route:'Core',m:mt('MW','13:00-14:30'),note:'Core — provisional time, confirm with program',locked:true}),
   K({id:'15.S03',title:'SSIM: AI and Money',units:9,half:'F',fac:'G. Gensler',certs:['BA','FIN'],route:'Bid',tier:'High',m:mt('MW','16:00-17:30')}),
   K({id:'15.563',title:'Artificial Intelligence for Business',units:9,half:'F',fac:'M. Raghavan',certs:['BA'],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
   K({id:'15.S04',title:'SSIM: AI Strategy, Governance & Ethics',units:6,half:'H1',fac:'J. Saviano',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00')}),
