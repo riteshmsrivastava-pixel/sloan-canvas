@@ -577,8 +577,8 @@ const PAT={MW:['M','W'],TTh:['T','Th'],MTW:['M','T','W'],WThF:['W','Th','F'],M:[
 const HV_DAYS={'HBS-1624':['W','Th','F'],'HBS-1440':['W','Th','F'],'HBS-2240':['M','T','W'],'HBS-1676':['M','T','W'],'HBS-2157':['T'],'HBS-1286':['W','Th','F'],'HBS-1914':['M','T','W'],'HBS-1655':['W','Th','F'],'HBS-2165':['W','Th','F'],'HBS-2120':['M','T','W'],'HBS-1581':['W','Th','F'],'HBS-1166':['M','T','W']};
 const fmtRange=t=>{const[s,e]=t.split('-').map(toMin);return fmtTime(s)+'–'+fmtTime(e);};
 function patternOf(days){return days?(Object.keys(PAT).find(k=>PAT[k].length===days.length&&PAT[k].every((x,i)=>x===days[i]))||''):'';}
-function hvSel(c){return (state.hvPat&&state.hvPat[c.key])||patternOf(HV_DAYS[c.key]||c.hvdays)||(HV_TIME[c.key]?'MW':'');}
-function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up];if(HV_DAYS[c.key])return HV_DAYS[c.key];if(c.hvdays)return c.hvdays;return HV_TIME[c.key]?['M','W']:null;}
+function hvSel(c){return (state.hvPat&&state.hvPat[c.key])||patternOf(HV_DAYS[c.key]||c.hvdays)||'';}
+function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up];if(HV_DAYS[c.key])return HV_DAYS[c.key];if(c.hvdays)return c.hvdays;return null;}
 function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const d=effDays(c),t=HV_TIME[c.key];c.m=(d&&t)?d.flatMap(x=>mt(x,t)):[];});}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
