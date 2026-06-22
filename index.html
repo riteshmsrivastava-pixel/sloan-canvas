@@ -624,7 +624,7 @@ function buildStatic(){
   document.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
   document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
   cal.addEventListener('scroll',()=>tip.style.display='none');
-  cal.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;const c=byKey(b.dataset.key);if(!c||c.locked)return;tip.style.display='none';remove(c.key);});
+  document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked)return;tip.style.display='none';remove(c.key);});
 }
 function tipHTML(c){
   const col=colorOf(c);
