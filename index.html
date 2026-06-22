@@ -606,9 +606,10 @@ function buildStatic(){
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
   // calendar hover tooltip (event-delegated, survives re-renders)
   const tip=document.getElementById('tip'),cal=document.getElementById('calwrap');
-  cal.addEventListener('mouseover',e=>{const b=e.target.closest('.block');if(!b)return;const c=byKey(b.dataset.key);if(!c)return;tip.innerHTML=tipHTML(c);tip.style.display='block';});
-  cal.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
-  cal.addEventListener('mouseout',e=>{const b=e.target.closest('.block');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
+  // tooltip on any element with data-key (calendar tiles + catalog/Harvard cards)
+  document.addEventListener('mouseover',e=>{const b=e.target.closest('[data-key]');if(!b)return;const c=byKey(b.dataset.key);if(!c)return;tip.innerHTML=tipHTML(c);tip.style.display='block';});
+  document.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
+  document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
   cal.addEventListener('scroll',()=>tip.style.display='none');
   cal.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;const c=byKey(b.dataset.key);if(!c||c.locked)return;tip.style.display='none';remove(c.key);});
 }
@@ -622,7 +623,7 @@ function tipHTML(c){
     <div class="tt">${c.title}</div>
     <div class="td">
       <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+c.tier+' tier':''}
-      <div class="trow">🕑 ${fmtMeet(c.m)}</div>
+      <div class="trow">🕑 ${c.m.length?fmtMeet(c.m):(isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program')}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
       ${extra}
@@ -665,7 +666,7 @@ function render(){
   document.getElementById('catCount').textContent=items.length;
   document.getElementById('catalog').innerHTML=items.map(c=>{
     const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0,inelig=c.route==='Ineligible';
-    return `<div class="course" style="border-left-color:${col};background:${tint(col,.05)};${inelig?'opacity:.72;':''}">
+    return `<div class="course" data-key="${c.key}" style="border-left-color:${col};background:${tint(col,.05)};${inelig?'opacity:.72;':''}">
       <div style="flex:1;min-width:0">
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick — top reputation/demand">⭐</span>':''}
@@ -814,7 +815,7 @@ function renderHarvard(){
   document.getElementById('hvCount').textContent=items.length;
   list.innerHTML=items.map(c=>{
     const added=state.plan.includes(c.key), school=c.fac.split('·').pop().trim(), tl=HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'time TBA';
-    return `<div class="course" style="border-left-color:#8C1515;background:#FBF6F4">
+    return `<div class="course" data-key="${c.key}" style="border-left-color:#8C1515;background:#FBF6F4">
       <div style="flex:1;min-width:0">
         <div class="crow">${c.star?'<span title="Marquee pick">⭐</span>':''}<span class="code" style="color:#8C1515"><span class="cdot" style="background:#8C1515"></span>${c.id}</span><span class="route r-Crossreg">${school}</span></div>
         <div class="ctitle">${c.title}</div>
