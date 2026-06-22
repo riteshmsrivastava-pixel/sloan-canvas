@@ -511,9 +511,9 @@ const COURSES=[
   K({id:'HBS-2240',title:'Negotiation',units:12,half:'F',fac:'Zlatev / Norton / Coffman · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1676',title:'The Founder Mindset',units:12,half:'F',fac:'Satchu · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-6728',title:'Field Course: Venture Capital Journey',units:12,half:'F',fac:'Bussgang · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · field course→12u (2025 listing)'}),
-  K({id:'HBS-2157',title:'U.S. Healthcare Strategy',units:12,half:'F',fac:'Dafny · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-2157',title:'U.S. Healthcare Strategy',units:12,half:'F',fac:'Dafny · HBS',certs:[],route:'Crossreg',m:[],star:1,hvdays:['T'],note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1286',title:'Strategy and Technology',units:12,half:'F',fac:'Yoffie · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
-  K({id:'HBS-1914',title:'The Business of Entertainment, Media & Sports',units:12,half:'F',fac:'Elberse · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1914',title:'The Business of Entertainment, Media & Sports',units:12,half:'F',fac:'Elberse · HBS',certs:[],route:'Crossreg',m:[],star:1,hvdays:['M','W'],note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1655',title:'Entrepreneurial Sales 101: Founder Selling',units:6,half:'H2',fac:'Roberge · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · Fall 2 · 1.5cr→6u (2025 listing)'}),
   K({id:'HBS-2165',title:'Driving Profitable Growth',units:6,half:'H2',fac:'Sadun · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · Fall 2 · 1.5cr→6u (2025 listing)'}),
   K({id:'HBS-2077',title:'Crafting Your Life: The First 10 Years Post MBA',units:12,half:'F',fac:'Perlow · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
@@ -574,11 +574,10 @@ const HV_TIME={
 };
 const PAT={MW:['M','W'],TTh:['T','Th'],M:['M'],T:['T'],W:['W'],Th:['Th'],F:['F']};
 const fmtRange=t=>{const[s,e]=t.split('-').map(toMin);return fmtTime(s)+'–'+fmtTime(e);};
-function computeHv(){let changed=false;COURSES.forEach(c=>{if(!isHv(c))return;
-  // a planned Harvard course with a known time but no chosen days defaults to Mon/Wed (provisional — change in plan)
-  if(state.plan.includes(c.key)&&HV_TIME[c.key]&&!(state.hvPat&&state.hvPat[c.key])){if(!state.hvPat)state.hvPat={};state.hvPat[c.key]='MW';changed=true;}
-  const p=state.hvPat&&state.hvPat[c.key],t=HV_TIME[c.key];c.m=(p&&t)?PAT[p].flatMap(d=>mt(d,t)):[];});
-  if(changed)save();}
+function patternOf(days){return days?(Object.keys(PAT).find(k=>PAT[k].length===days.length&&PAT[k].every((x,i)=>x===days[i]))||''):'';}
+function hvSel(c){return (state.hvPat&&state.hvPat[c.key])||patternOf(c.hvdays)||(HV_TIME[c.key]?'MW':'');}
+function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up];if(c.hvdays)return c.hvdays;return HV_TIME[c.key]?['M','W']:null;}
+function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const d=effDays(c),t=HV_TIME[c.key];c.m=(d&&t)?d.flatMap(x=>mt(x,t)):[];});}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
 
@@ -723,7 +722,7 @@ function renderPlan(){
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
-      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${state.hvPat[c.key]===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
+      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
       ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
