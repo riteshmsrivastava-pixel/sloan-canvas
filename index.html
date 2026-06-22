@@ -121,6 +121,10 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .track{position:relative;}
 .block{position:absolute;border-radius:9px;border-left:3px solid;padding:5px 6px;overflow:hidden;}
 .block.conf{outline:2px solid var(--brand);outline-offset:-2px;}
+.block.hv{border-left-style:solid;background-image:repeating-linear-gradient(45deg,rgba(140,21,21,.08) 0 6px,transparent 6px 12px);}
+.block.caution{outline:2px dashed #C8703D;outline-offset:-2px;}
+.hvsel{font-family:var(--fb);font-size:10.5px;border:1px solid var(--line2);border-radius:8px;padding:3px 5px;background:#fff;color:var(--sub);cursor:pointer;}
+.traveldisc{margin-top:12px;font-size:11.5px;color:#8C1515;background:#F6EAE7;border:1px solid #E8CFC9;border-radius:12px;padding:10px 12px;line-height:1.5;}
 .block .bc{font-family:var(--fm);font-size:9.5px;font-weight:700;}
 .block{cursor:help;}
 .block .bt{font-size:10px;font-weight:600;color:var(--ink);line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -281,6 +285,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
           </div>
         </div>
         <div class="calwrap" id="calwrap"></div>
+        <div class="traveldisc">🚇 <b>Harvard is across town</b> — HBS (Allston) and HKS/HLS (Cambridge) sit ~30–40 min from Sloan (Kendall). Leave a buffer between a Harvard class and a Sloan one; back-to-back isn’t realistic. <b>Set each Harvard course’s days</b> in My Fall Plan (confirm on my.harvard) and it appears here; an amber outline flags a tight commute.</div>
       </div>
     </div>
   </div>
@@ -483,20 +488,50 @@ const COURSES=[
   K({id:'15.671',title:'U-Lab: Transforming Self, Business & Society',units:6,half:'H1',fac:'O. Scharmer',certs:['SUS'],route:'Bid',tier:'Low',m:mt('Th','17:30-21:00')}),
   K({id:'15.S21',title:'SSIM: The Successful Family Business',units:9,half:'F',fac:'J. Davis',certs:[],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00')}),
   K({id:'15.618',title:'Startups and the Law',units:6,half:'F',fac:'J. Akula',certs:['EI'],route:'Bid',tier:'Low',m:mt('W','17:30-19:00')}),
-  /* ---- Harvard cross-registration (curated) · units = MIT conversion · register via MIT Add/Drop + instructor OK ---- */
-  K({id:'MLD-201',title:'Exercising Leadership: The Politics of Change',units:12,half:'F',fac:'Chipungu · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA · legendary adaptive-leadership course'}),
-  K({id:'MLD-215',title:'Negotiation and Leadership',units:12,half:'F',fac:'Wilkinson · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
-  K({id:'MLD-370',title:'AI and Civil Society: Human Agency in the Age of AI',units:12,half:'F',fac:'McKenna · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
-  K({id:'API-318',title:'Thinking Analytically in an Uncertain World',units:12,half:'F',fac:'Levy · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
-  K({id:'HBS-1624',title:'Entrepreneurial Finance',units:12,half:'F',fac:'Howell · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~10:10–11:30am, days on my.harvard (2025 listing)'}),
-  K({id:'HBS-6728',title:'Field Course: Venture Capital Journey',units:12,half:'F',fac:'Bussgang · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~3:10–5:10pm, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-1676',title:'The Founder Mindset',units:12,half:'F',fac:'Satchu · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~11:50–1:10pm, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-2240',title:'Negotiation',units:12,half:'F',fac:'Zlatev / Norton · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~10:10–1:10pm, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-2157',title:'U.S. Healthcare Strategy',units:12,half:'F',fac:'Dafny · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~3:10–5:10pm, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-1914',title:'The Business of Entertainment, Media & Sports',units:12,half:'F',fac:'Elberse · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~11:50–1:10pm, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-1286',title:'Strategy and Technology',units:12,half:'F',fac:'Yoffie · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · ~10:10–11:30am, confirm on my.harvard (2025 listing)'}),
-  K({id:'HBS-1231',title:'Modern Corporate Strategy: Revitalizing the Corporation',units:12,half:'H1',fac:'Tamayo Castano · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · Fall 1 · ~1:30–2:50pm (2025 listing)'}),
-  K({id:'LAW-2185',title:'M&A Workshop: Boardroom Strategies & Deal Tactics',units:12,half:'F',fac:'Gordon · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 3cr→12u · ~1:30–3:30pm, confirm on my.harvard'}),
+  /* ---- Harvard cross-registration · units = MIT conversion · register via MIT Add/Drop + instructor OK · ⭐ = marquee · set days in plan ---- */
+  /* HBS (2025 Fall listing — confirm on my.harvard) */
+  K({id:'HBS-1624',title:'Entrepreneurial Finance',units:12,half:'F',fac:'Howell · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1440',title:'Private Equity Finance',units:12,half:'F',fac:'Berk · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-2240',title:'Negotiation',units:12,half:'F',fac:'Zlatev / Norton / Coffman · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1676',title:'The Founder Mindset',units:12,half:'F',fac:'Satchu · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-6728',title:'Field Course: Venture Capital Journey',units:12,half:'F',fac:'Bussgang · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · field course→12u (2025 listing)'}),
+  K({id:'HBS-2157',title:'U.S. Healthcare Strategy',units:12,half:'F',fac:'Dafny · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1286',title:'Strategy and Technology',units:12,half:'F',fac:'Yoffie · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1914',title:'The Business of Entertainment, Media & Sports',units:12,half:'F',fac:'Elberse · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1655',title:'Entrepreneurial Sales 101: Founder Selling',units:6,half:'H2',fac:'Roberge · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · Fall 2 · 1.5cr→6u (2025 listing)'}),
+  K({id:'HBS-2165',title:'Driving Profitable Growth',units:6,half:'H2',fac:'Sadun · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · Fall 2 · 1.5cr→6u (2025 listing)'}),
+  K({id:'HBS-2077',title:'Crafting Your Life: The First 10 Years Post MBA',units:12,half:'F',fac:'Perlow · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1350',title:'Changing the World: Life Choices of Influential Leaders',units:12,half:'F',fac:'Simons · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1231',title:'Modern Corporate Strategy: Revitalizing the Corporation',units:6,half:'H1',fac:'Tamayo Castano · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · Fall 1 · 1.5cr→6u (2025 listing)'}),
+  K({id:'HBS-2120',title:'Managing Service Operations',units:12,half:'F',fac:'Markey · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-2120B',title:'Managing Service Operations',units:12,half:'F',fac:'Buell · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u · sec 2 (2025 listing)'}),
+  K({id:'HBS-2158',title:'Demystifying the Family Enterprise',units:12,half:'F',fac:'Wing · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1581',title:'Social Entrepreneurship and Systems Change',units:12,half:'F',fac:'Trelstad · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1588',title:'Business Solutions for the Poor (Global and Local)',units:12,half:'F',fac:'Roth · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-1166',title:'Managing International Trade and Investment',units:12,half:'F',fac:'Rithmire · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · 3cr→12u (2025 listing)'}),
+  K({id:'HBS-6756',title:'Field Course: Life Sciences Venture Creation',units:12,half:'F',fac:'Tadikonda · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · field course→12u (2025 listing)'}),
+  K({id:'HBS-6345',title:'Field Course: Business Plans for Innovating in Health Care',units:6,half:'H2',fac:'Herzlinger · HBS',certs:[],route:'Crossreg',m:[],note:'HBS · Fall 2 · field→6u (2025 listing)'}),
+  /* HKS (time TBA on my.harvard) */
+  K({id:'MLD-201',title:'Exercising Leadership: The Politics of Change',units:12,half:'F',fac:'Chipungu · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'MLD-215',title:'Negotiation and Leadership',units:12,half:'F',fac:'Wilkinson · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'MLD-370',title:'AI and Civil Society: Human Agency in the Age of AI',units:12,half:'F',fac:'McKenna · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'API-318',title:'Thinking Analytically in an Uncertain World',units:12,half:'F',fac:'Levy · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'DEV-130',title:'Why Are So Many Countries Poor, Volatile, and Unequal?',units:12,half:'F',fac:'Hausmann · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'IGA-116',title:'Great Powers in a World of Disorder',units:12,half:'F',fac:'Burns · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'MLD-381',title:'Mitigating and Managing a Crisis',units:12,half:'F',fac:'Kayyem · HKS',certs:[],route:'Crossreg',m:[],star:1,note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'API-302',title:'Analytic Frameworks for Policy',units:12,half:'F',fac:'Zeckhauser · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'MLD-427',title:'Strategic Finance for Nonprofit Leaders',units:12,half:'F',fac:'Honan · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'BGP-235M',title:'Private Capital for Public Purpose: Impact Investing',units:6,half:'H2',fac:'Wood · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · module · 2cr→6u · time TBA'}),
+  K({id:'DPI-115',title:'The American Presidency',units:12,half:'F',fac:'Porter · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'DPI-202',title:'Moral Leadership: Ethics in Public Life',units:12,half:'F',fac:'Risse · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · 4cr→12u · time TBA'}),
+  K({id:'DPI-805M',title:'Writing for Policy and Politics',units:6,half:'H1',fac:'Green · HKS',certs:[],route:'Crossreg',m:[],note:'HKS · module · 2cr→6u · time TBA'}),
+  /* HLS (confirm on my.harvard) */
+  K({id:'LAW-2185',title:'M&A Workshop: Boardroom Strategies & Deal Tactics',units:12,half:'F',fac:'Gordon · HLS',certs:[],route:'Crossreg',m:[],star:1,note:'HLS · workshop→12u'}),
+  K({id:'LAW-2830',title:'Controlling Shareholders',units:12,half:'F',fac:'Bebchuk · HLS',certs:[],route:'Crossreg',m:[],star:1,note:'HLS · 3cr→12u'}),
+  K({id:'LAW-1003',title:'Legislation and Regulation',units:12,half:'F',fac:'Tarullo · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 4cr→12u'}),
+  K({id:'LAW-2101',title:'Law in Global Affairs',units:12,half:'F',fac:'D. Kennedy · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 3cr→12u'}),
+  K({id:'LAW-2020',title:'Capital Punishment in America',units:12,half:'F',fac:'Steiker · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 4cr→12u'}),
+  K({id:'LAW-2169',title:'Legal Profession',units:12,half:'F',fac:'Gordon-Reed · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 3cr→12u'}),
   /* ---- Not biddable by SFMBA — shown only when the eligibility filter is OFF ---- */
   K({id:'15.401',title:'Managerial Finance',units:9,half:'F',fac:'T. Choukhmane',certs:['FIN','EM'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Non-Sloan/MBA sections only · overlaps core 15.414'}),
   K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take — repeats core'}),
@@ -512,6 +547,19 @@ const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
 const TIERLAB={High:'High demand',Medium:'Medium',Low:'Low · token'};
 const biddable=c=>c.route==='Bid';
 const FU=c=>(c.fu??c.units); // Fall units (some labs split Fall+IAP)
+const isHv=c=>c.route==='Crossreg';
+// Harvard time-of-day (24h). HKS courses are TBA → no entry. Days are user-set (my.harvard).
+const HV_TIME={
+  'HBS-6756':'15:10-17:10','HBS-1231':'13:30-14:50','HBS-6345':'11:50-13:10','HBS-6728':'15:10-17:10','HBS-1655':'11:50-13:10',
+  'HBS-2120':'8:30-9:50','HBS-2120B':'10:10-11:30','HBS-2158':'10:10-11:30','HBS-1581':'8:30-9:50','HBS-1588':'15:10-17:10',
+  'HBS-1350':'8:30-9:50','HBS-2077':'10:10-11:30','HBS-2157':'15:10-17:10','HBS-2165':'10:10-11:30','HBS-1440':'11:50-13:10',
+  'HBS-2240':'10:10-11:30','HBS-1676':'11:50-13:10','HBS-1914':'11:50-13:10','HBS-1286':'10:10-11:30','HBS-1624':'10:10-11:30','HBS-1166':'13:30-14:50',
+  'LAW-2185':'13:30-15:30','LAW-1003':'10:15-12:15','LAW-2830':'15:45-17:45','LAW-2101':'10:15-12:15','LAW-2020':'10:15-12:15','LAW-2169':'15:45-17:15',
+};
+const PAT={MW:['M','W'],TTh:['T','Th'],M:['M'],T:['T'],W:['W'],Th:['Th'],F:['F']};
+const fmtRange=t=>{const[s,e]=t.split('-').map(toMin);return fmtTime(s)+'–'+fmtTime(e);};
+function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const p=state.hvPat&&state.hvPat[c.key],t=HV_TIME[c.key];c.m=(p&&t)?PAT[p].flatMap(d=>mt(d,t)):[];});}
+function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
 
 /* ===================== state ===================== */
@@ -520,7 +568,7 @@ let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A'};}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{}};}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
@@ -605,14 +653,14 @@ function render(){
     return `<div class="course" style="border-left-color:${col};background:${tint(col,.05)};${inelig?'opacity:.72;':''}">
       <div style="flex:1;min-width:0">
         <div class="crow">
-          ${rank?`<span class="rk">#${rank}</span>`:''}
+          ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick — top reputation/demand">⭐</span>':''}
           <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
           <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>
         </div>
         <div class="ctitle">${c.title}</div>
         <div class="meta">
           <span class="unit">${FU(c)}u${c.fu&&c.fu!==c.units?' Fall':''}${c.half!=='F'?' · '+c.half:''}</span>
-          <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||'TBA'}</span>
+          <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||(HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'TBA')}</span>
           ${biddable(c)?`<span class="tier" style="color:${TIERCOL[c.tier]}"><i style="background:${TIERCOL[c.tier]}"></i>${TIERLAB[c.tier]}</span>`:''}
           ${certBadges(c.certs)}
         </div>
@@ -628,9 +676,15 @@ function render(){
 
 /* ===================== plan ===================== */
 const halfOverlap=(a,b)=>a==='F'||b==='F'||a===b;
-function conflictSet(){const cs=planned().filter(c=>c.m.length),s=new Set();
+function conflictSet(){const cs=planned().filter(c=>c.m.length&&!isHv(c)),s=new Set();
   for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){if(!halfOverlap(cs[i].half,cs[j].half))continue;
     for(const[d1,s1,e1]of cs[i].m)for(const[d2,s2,e2]of cs[j].m)if(d1===d2&&s1<e2&&s2<e1){s.add(cs[i].key);s.add(cs[j].key);}}
+  return s;}
+// Harvard↔Sloan same-day gap < 45 min (overlap or too tight to commute across town)
+function commuteSet(){const hv=planned().filter(c=>isHv(c)&&c.m.length),sl=planned().filter(c=>!isHv(c)&&c.m.length),s=new Set();
+  hv.forEach(h=>sl.forEach(o=>{if(!halfOverlap(h.half,o.half))return;
+    h.m.forEach(([d1,s1,e1])=>o.m.forEach(([d2,s2,e2])=>{if(d1!==d2)return;
+      const gap=s1>=e2?s1-e2:(s2>=e1?s2-e1:-1); if(gap<45){s.add(h.key);s.add(o.key);}}));}));
   return s;}
 
 function renderPlan(){
@@ -646,7 +700,7 @@ function renderPlan(){
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
-      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route==='Crossreg'?'Harvard':c.route}</span>`}
+      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${state.hvPat[c.key]===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route}</span>`}
       ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
@@ -688,6 +742,7 @@ function renderCalendar(){
   let gut='<div class="ghead"></div><div class="track" style="height:'+CAL_H+'px">';
   for(let h=8;h<=21;h++){const top=(h*60-CAL_S)/(CAL_E-CAL_S)*CAL_H;gut+=`<span class="tlabel" style="top:${top}px">${fmtTime(h*60).replace(':00','').replace(' ','').toLowerCase()}</span>`;}
   gut+='</div>';
+  const commute=commuteSet();
   document.querySelectorAll('#calseg button').forEach(b=>b.classList.toggle('on',b.dataset.v===calView));
   const cs=planned().filter(c=>c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
   let daysHtml='';
@@ -698,17 +753,18 @@ function renderCalendar(){
     cs.forEach(c=>c.m.forEach(([dd,s,e])=>{if(dd===d)evs.push({c,s,e});}));
     layoutLanes(evs);
     evs.forEach(({c,s,e,lane,cols})=>{
-      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),col0=colorOf(c);
-      const w=100/cols,left=lane*w;
-      col+=`<div class="block ${conf.has(c.key)?'conf':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
+      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),col0=hv?'#8C1515':colorOf(c);
+      const w=100/cols,left=lane*w,caution=commute.has(c.key)&&!conf.has(c.key);
+      col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
         <div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
     if(!evs.length&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
-  const n=cs.filter(c=>conf.has(c.key)).length,el=document.getElementById('clash');
-  if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
+  const n=cs.filter(c=>conf.has(c.key)).length,cm=cs.filter(c=>isHv(c)&&commute.has(c.key)).length,el=document.getElementById('clash');
+  if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'')+(cm?' · '+cm+' commute':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
+  else if(cm){el.textContent='🚇 '+cm+' tight commute'+(cm>1?'s':'');el.style.background='#F5E7D6';el.style.color='#A65F28';}
   else{el.textContent='✓ No conflicts';el.style.background='var(--gsoft)';el.style.color='var(--green2)';}
 }
 
@@ -775,7 +831,7 @@ function renderMit(){
   if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} — refine search or pick a department to see more.</div>`);
 }
 
-applyCoreSection();buildStatic();render();
+applyCoreSection();computeHv();buildStatic();render();
 </script>
 </body>
 </html>
