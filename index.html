@@ -225,6 +225,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <!-- TABS -->
   <div class="tabs">
     <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan Fall Bidding</button>
+    <button id="tab-harvard" onclick="setTab('harvard')">🎓 Harvard cross-reg</button>
     <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
   </div>
 
@@ -291,6 +292,20 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   </div>
 
   </div><!-- /view-sloan -->
+
+  <!-- VIEW: HARVARD -->
+  <div id="view-harvard" style="display:none">
+    <div class="panel pad">
+      <div class="ph"><h2>Harvard Cross-Registration</h2><span class="count"><span id="hvCount">0</span> courses</span></div>
+      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-register via MIT Add/Drop + the Harvard instructor’s OK (HKS/FAS are the easy path; HBS is petition + lottery). Fellows take <b>~3 Harvard courses total across the whole degree</b>. Units shown are the <b>MIT conversion</b> and count toward your 57/66 caps. <b>Add a course here, then set its days in My Fall Plan</b> (Sloan tab) to see it on your calendar with a commute check. ⭐ = marquee. HBS times are the 2025 listing; HKS is TBA — confirm on my.harvard.</p>
+      <div class="filters">
+        <input id="hq" class="inp" placeholder="⌕  Search title, course #, faculty…" oninput="renderHarvard()">
+        <select id="hschool" class="inp" onchange="renderHarvard()"><option value="">All schools</option><option value="HBS">HBS — Business</option><option value="HKS">HKS — Kennedy</option><option value="HLS">HLS — Law</option></select>
+      </div>
+      <label class="toggle" style="margin-bottom:14px" onclick="hvMarquee=!hvMarquee;document.getElementById('hvmq').classList.toggle('on',hvMarquee);renderHarvard()"><span class="switch" id="hvmq"><i></i></span> Show only ⭐ marquee picks</label>
+      <div id="hvlist" class="list" style="max-height:none"></div>
+    </div>
+  </div>
 
   <!-- VIEW: MIT NON-SLOAN -->
   <div id="view-mit" style="display:none">
@@ -617,7 +632,7 @@ function tipHTML(c){
 /* ===================== catalog ===================== */
 function routeTabs(){
   const counts={all:0,Bid:0,Apply:0,Register:0};
-  COURSES.forEach(c=>{if(c.locked)return; if(filter.eligibleOnly&&!isEligible(c))return; counts.all++; if(counts[c.route]!=null)counts[c.route]++;});
+  COURSES.forEach(c=>{if(c.locked||isHv(c))return; if(filter.eligibleOnly&&!isEligible(c))return; counts.all++; if(counts[c.route]!=null)counts[c.route]++;});
   const tabs=[['all','All'],['Bid','Bid'],['Apply','Apply'],['Register','Register']];
   document.getElementById('routeSeg').innerHTML=tabs.map(([k,l])=>`<button class="${filter.route===k?'on':''}" onclick="setRoute('${k}')">${l}<span class="n">${counts[k]}</span></button>`).join('');
 }
@@ -639,7 +654,7 @@ function render(){
   filter.cert=document.getElementById('cert').value;
   filter.track=document.getElementById('track').value;
   routeTabs();
-  let items=COURSES.filter(c=>!c.locked);
+  let items=COURSES.filter(c=>!c.locked&&!isHv(c));
   if(filter.eligibleOnly)items=items.filter(isEligible);
   if(filter.q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(filter.q));
   if(filter.route!=='all')items=items.filter(c=>c.route===filter.route);
@@ -672,6 +687,7 @@ function render(){
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
   renderPlan();renderCredits();renderCalendar();
+  if(document.getElementById('hvlist'))renderHarvard();
 }
 
 /* ===================== plan ===================== */
@@ -779,14 +795,36 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
 
 /* ===================== MIT non-Sloan tab ===================== */
-let mitHideOff=true, mitBuilt=false;
+let mitHideOff=true, mitBuilt=false, hvMarquee=false;
 function setTab(t){
-  const s=t==='sloan';
-  document.getElementById('view-sloan').style.display=s?'':'none';
-  document.getElementById('view-mit').style.display=s?'none':'';
-  document.getElementById('tab-sloan').classList.toggle('on',s);
-  document.getElementById('tab-mit').classList.toggle('on',!s);
-  if(!s&&!mitBuilt){buildMit();mitBuilt=true;}
+  ['sloan','harvard','mit'].forEach(v=>{
+    document.getElementById('view-'+v).style.display=(v===t)?'':'none';
+    document.getElementById('tab-'+v).classList.toggle('on',v===t);
+  });
+  if(t==='mit'&&!mitBuilt){buildMit();mitBuilt=true;}
+  if(t==='harvard')renderHarvard();
+}
+function renderHarvard(){
+  const list=document.getElementById('hvlist'); if(!list)return;
+  const q=document.getElementById('hq').value.toLowerCase().trim(), sch=document.getElementById('hschool').value;
+  let items=COURSES.filter(isHv);
+  if(q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(q));
+  if(sch)items=items.filter(c=>c.fac.includes(sch));
+  if(hvMarquee)items=items.filter(c=>c.star);
+  document.getElementById('hvCount').textContent=items.length;
+  list.innerHTML=items.map(c=>{
+    const added=state.plan.includes(c.key), school=c.fac.split('·').pop().trim(), tl=HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'time TBA';
+    return `<div class="course" style="border-left-color:#8C1515;background:#FBF6F4">
+      <div style="flex:1;min-width:0">
+        <div class="crow">${c.star?'<span title="Marquee pick">⭐</span>':''}<span class="code" style="color:#8C1515"><span class="cdot" style="background:#8C1515"></span>${c.id}</span><span class="route r-Crossreg">${school}</span></div>
+        <div class="ctitle">${c.title}</div>
+        <div class="meta"><span class="unit">${c.units}u${c.half!=='F'?' · '+c.half:''}</span><span class="time">${tl}</span></div>
+        <div class="fac">👤 ${c.fac}</div>
+        ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
+      </div>
+      <button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>
+    </div>`;
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No Harvard courses match.</div>`;
 }
 function buildMit(){
   const depts=window.MIT_DEPTS||{};
