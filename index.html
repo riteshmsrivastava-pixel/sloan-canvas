@@ -121,7 +121,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .track{position:relative;}
 .block{position:absolute;border-radius:9px;border-left:3px solid;padding:5px 6px;overflow:hidden;}
 .block.conf{outline:2px solid var(--brand);outline-offset:-2px;}
-.block.hv{border-left-style:solid;background-image:repeating-linear-gradient(45deg,rgba(140,21,21,.08) 0 6px,transparent 6px 12px);}
+.block.hv{border-left-style:solid;background-image:repeating-linear-gradient(45deg,rgba(140,21,21,.10) 0 6px,transparent 6px 12px);animation:hvpulse 2.2s ease-in-out infinite;}
+@keyframes hvpulse{0%,100%{box-shadow:0 1px 4px rgba(20,12,6,.15);}50%{box-shadow:0 0 0 3px rgba(140,21,21,.22);}}
 .block.caution{outline:2px dashed #C8703D;outline-offset:-2px;}
 .hvsel{font-family:var(--fb);font-size:10.5px;border:1px solid var(--line2);border-radius:8px;padding:3px 5px;background:#fff;color:var(--sub);cursor:pointer;}
 .traveldisc{margin-top:12px;font-size:11.5px;color:#8C1515;background:#F6EAE7;border:1px solid #E8CFC9;border-radius:12px;padding:10px 12px;line-height:1.5;}
@@ -573,7 +574,11 @@ const HV_TIME={
 };
 const PAT={MW:['M','W'],TTh:['T','Th'],M:['M'],T:['T'],W:['W'],Th:['Th'],F:['F']};
 const fmtRange=t=>{const[s,e]=t.split('-').map(toMin);return fmtTime(s)+'–'+fmtTime(e);};
-function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const p=state.hvPat&&state.hvPat[c.key],t=HV_TIME[c.key];c.m=(p&&t)?PAT[p].flatMap(d=>mt(d,t)):[];});}
+function computeHv(){let changed=false;COURSES.forEach(c=>{if(!isHv(c))return;
+  // a planned Harvard course with a known time but no chosen days defaults to Mon/Wed (provisional — change in plan)
+  if(state.plan.includes(c.key)&&HV_TIME[c.key]&&!(state.hvPat&&state.hvPat[c.key])){if(!state.hvPat)state.hvPat={};state.hvPat[c.key]='MW';changed=true;}
+  const p=state.hvPat&&state.hvPat[c.key],t=HV_TIME[c.key];c.m=(p&&t)?PAT[p].flatMap(d=>mt(d,t)):[];});
+  if(changed)save();}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
 
@@ -651,6 +656,7 @@ function noteChips(c){
 }
 
 function render(){
+  computeHv();
   filter.q=document.getElementById('q').value.toLowerCase().trim();
   filter.cert=document.getElementById('cert').value;
   filter.track=document.getElementById('track').value;
