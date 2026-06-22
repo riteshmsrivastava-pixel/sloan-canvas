@@ -177,6 +177,11 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .modal .close{flex:none;width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--inp);color:#6B6157;cursor:pointer;font-size:18px;line-height:1;}
 .modal .reopen{margin-top:20px;padding:14px 16px;border-radius:14px;background:var(--gsoft);font-size:12.5px;color:var(--green2);line-height:1.5;}
 .mhint{display:none;}
+.tabs{display:inline-flex;gap:4px;padding:4px;background:var(--seg);border-radius:14px;margin-bottom:18px;}
+.tabs button{border:none;cursor:pointer;padding:9px 16px;border-radius:11px;font-family:var(--fb);font-weight:600;font-size:13.5px;color:var(--sub);background:transparent;display:inline-flex;align-items:center;gap:7px;}
+.tabs button.on{background:var(--card);color:var(--brand);box-shadow:0 1px 3px rgba(80,55,30,.16);}
+.mitgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:820px){.mitgrid{grid-template-columns:1fr;}}
 @media(max-width:760px){
   .meters{order:3;} .mhint{display:inline;} .left{max-width:none;}
   .list{max-height:60vh;} .days{min-width:520px;}
@@ -213,6 +218,14 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     </div>
   </div>
 
+  <!-- TABS -->
+  <div class="tabs">
+    <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan Fall Bidding</button>
+    <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
+  </div>
+
+  <!-- VIEW: SLOAN -->
+  <div id="view-sloan">
   <!-- MAIN -->
   <div class="main">
 
@@ -272,6 +285,23 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     </div>
   </div>
 
+  </div><!-- /view-sloan -->
+
+  <!-- VIEW: MIT NON-SLOAN -->
+  <div id="view-mit" style="display:none">
+    <div class="panel pad">
+      <div class="ph"><h2>MIT Non-Sloan Graduate Subjects</h2><span class="count"><span id="mitCount">0</span> shown</span></div>
+      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-registration reference for Sloan Fellows — graduate (G) subjects across MIT departments. These are <b>register / instructor-permission</b> (not bid), and meeting times aren’t in this dataset, so treat it as a browse-and-plan reference: email the professor early and confirm on the live MIT catalog before you register.</p>
+      <div class="filters">
+        <input id="mq" class="inp" placeholder="⌕  Search title, course #, instructor…" oninput="renderMit()">
+        <select id="mdept" class="inp" onchange="renderMit()"></select>
+        <select id="mterm" class="inp" onchange="renderMit()"><option value="">All terms</option><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="IAP">IAP</option></select>
+      </div>
+      <label class="toggle" style="margin-bottom:14px" onclick="mitHideOff=!mitHideOff;document.getElementById('mitoff').classList.toggle('on',mitHideOff);renderMit()"><span class="switch on" id="mitoff"><i></i></span> Hide subjects not offered this year</label>
+      <div id="mitlist" class="mitgrid"></div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <div class="foot">
     <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
@@ -279,6 +309,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 </div>
 
 <div class="tip" id="tip"></div>
+
+<script src="mit-data.js"></script>
 
 <!-- HELP MODAL -->
 <div class="overlay" id="help" onclick="if(event.target===this)closeHelp()">
@@ -673,6 +705,59 @@ function openHelp(){document.getElementById('help').classList.add('show');}
 function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('mf_seen','1');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
+
+/* ===================== MIT non-Sloan tab ===================== */
+let mitHideOff=true, mitBuilt=false;
+function setTab(t){
+  const s=t==='sloan';
+  document.getElementById('view-sloan').style.display=s?'':'none';
+  document.getElementById('view-mit').style.display=s?'none':'';
+  document.getElementById('tab-sloan').classList.toggle('on',s);
+  document.getElementById('tab-mit').classList.toggle('on',!s);
+  if(!s&&!mitBuilt){buildMit();mitBuilt=true;}
+}
+function buildMit(){
+  const depts=window.MIT_DEPTS||{};
+  document.getElementById('mdept').innerHTML='<option value="">All departments</option>'+Object.entries(depts).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  renderMit();
+}
+function renderMit(){
+  const data=window.MIT_COURSES||[];
+  const q=document.getElementById('mq').value.toLowerCase().trim();
+  const dep=document.getElementById('mdept').value, term=document.getElementById('mterm').value;
+  const depts=window.MIT_DEPTS||{};
+  let items=data.filter(c=>{
+    if(mitHideOff&&c.off)return false;
+    if(dep&&c.d!==dep)return false;
+    if(term&&!(c.tm||[]).includes(term))return false;
+    if(q&&!((c.id+' '+c.t+' '+(c.ins||'')).toLowerCase().includes(q)))return false;
+    return true;
+  });
+  const total=items.length, CAP=250; const shown=items.slice(0,CAP);
+  document.getElementById('mitCount').textContent=total;
+  document.getElementById('mitlist').innerHTML=shown.map(c=>`
+    <div class="course" style="border-left-color:#9a8e7e;background:#fff">
+      <div style="flex:1;min-width:0">
+        <div class="crow">
+          <span class="code" style="color:#5b5b60"><span class="cdot" style="background:#9a8e7e"></span>${c.id}</span>
+          <span class="route r-Register">${depts[c.d]||c.d}</span>
+          ${c.off?`<span class="route" style="background:#F3E0DA;color:#A65F28">not offered ’25–’26</span>`:''}
+        </div>
+        <div class="ctitle">${c.t}</div>
+        <div class="meta">
+          ${c.u?`<span class="unit">${c.u}u</span>`:''}
+          ${(c.tm||[]).map(t=>`<span class="time">${t}</span>`).join(' ')}
+          ${c.aw?`<span class="tier" style="color:#A05A26">🏅 ${c.aw}</span>`:''}
+          ${c.hon?`<span class="tier" style="color:#A8312B">★ ${c.hon}</span>`:''}
+        </div>
+        ${c.ins?`<div class="fac">👤 ${c.ins}</div>`:''}
+        ${c.pre?`<div class="fac">prereq: ${c.pre}</div>`:''}
+        ${c.ds?`<div style="font-size:11.5px;color:var(--sub);margin-top:8px;line-height:1.45">${c.ds}</div>`:''}
+        ${c.x?`<div class="fac" style="margin-top:4px">↔ ${c.x}</div>`:''}
+      </div>
+    </div>`).join('')||`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);padding:40px 0">No subjects match these filters.</div>`;
+  if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} — refine search or pick a department to see more.</div>`);
+}
 
 applyCoreSection();buildStatic();render();
 </script>
