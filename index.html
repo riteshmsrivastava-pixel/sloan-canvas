@@ -597,7 +597,7 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 let MITIDX=null;
-function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:'F',certs:[],route:'MITreg',m:[],fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
+function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
 const byKey=k=>k&&k.slice(0,4)==='MIT:'?mitIndex()[k]:COURSES.find(c=>c.key===k);
 const planned=()=>state.plan.map(byKey).filter(Boolean);
@@ -784,7 +784,7 @@ function renderCalendar(){
     cs.forEach(c=>c.m.forEach(([dd,s,e])=>{if(dd===d)evs.push({c,s,e});}));
     layoutLanes(evs);
     evs.forEach(({c,s,e,lane,cols})=>{
-      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),col0=hv?'#8C1515':colorOf(c);
+      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
       const w=100/cols,left=lane*w,caution=commute.has(c.key)&&!conf.has(c.key);
       col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
         <div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
@@ -871,7 +871,7 @@ function renderMit(){
         <div class="ctitle">${c.t}</div>
         <div class="meta">
           ${c.u?`<span class="unit">${c.u}u</span>`:''}
-          ${(c.tm||[]).map(t=>`<span class="time">${t}</span>`).join(' ')}
+          ${c.sc?`<span class="time">${c.sc.d.map(d=>DAY[d]).join(', ')} · ${fmtRange(c.sc.t)}</span>`:`<span class="time" style="color:#B6A992">${(c.tm||[]).join('/')||'time arr.'}</span>`}
           ${c.aw?`<span class="tier" style="color:#A05A26">🏅 ${c.aw}</span>`:''}
           ${c.hon?`<span class="tier" style="color:#A8312B">★ ${c.hon}</span>`:''}
         </div>
