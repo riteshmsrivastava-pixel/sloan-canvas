@@ -133,6 +133,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .block .bx{position:absolute;top:1px;right:1px;width:15px;height:15px;border:none;border-radius:4px;background:rgba(255,255,255,.8);color:#2A2320;font-size:13px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
 .block:hover .bx{display:flex;}
 .block .bx:hover{background:#fff;color:#A8312B;}
+.block.locked{animation:none;}
+.block .lk{position:absolute;top:1px;right:2px;font-size:9px;line-height:1;}
 .tip{position:fixed;z-index:80;display:none;pointer-events:none;max-width:270px;background:#2A2320;color:#FBF3E6;border-radius:13px;padding:12px 14px;box-shadow:0 12px 36px rgba(20,12,6,.4);font-family:var(--fb);}
 .tip .tc{font-family:var(--fm);font-weight:700;font-size:12px;color:#F2B7AE;}
 .tip .tt{font-family:var(--fh);font-weight:700;font-size:14px;margin:3px 0 7px;line-height:1.25;}
@@ -596,7 +598,11 @@ let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{}};}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[]};}
+const isWon=k=>state.won&&state.won.includes(k);
+function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
+function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
+function withdraw(k){const c=byKey(k);if(!confirm('Withdraw '+(c?c.id:'this course')+'?\nYou drop the seat and your bid points are freed to use elsewhere.'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
@@ -627,7 +633,7 @@ function buildStatic(){
   document.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
   document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
   cal.addEventListener('scroll',()=>tip.style.display='none');
-  document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked)return;tip.style.display='none';remove(c.key);});
+  document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked||isWon(c.key))return;tip.style.display='none';remove(c.key);});
 }
 function tipHTML(c){
   const col=colorOf(c);
@@ -700,7 +706,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:`<button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>`}
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
@@ -726,8 +732,8 @@ function renderPlan(){
   const cs=planned().sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
   document.getElementById('planCount').textContent=cs.length;
   document.getElementById('plan').innerHTML=cs.map(c=>{
-    const col=colorOf(c);
-    return `<div class="prow" style="border-left-color:${col}">
+    const col=colorOf(c),won=isWon(c.key);
+    return `<div class="prow" style="border-left-color:${col};${won?'background:#F1F6EC;':''}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
           <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}
@@ -735,8 +741,8 @@ function renderPlan(){
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
-      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route==='MITreg'?'MIT':c.route}</span>`}
-      ${c.locked?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}
+      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" ${won?'readonly':''} oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route==='MITreg'?'MIT':c.route}</span>`}
+      ${c.locked?'':`<button class="rm" title="${won?'Won — locked in (click to unlock)':'Lock in (won this seat)'}" onclick="${won?`unlockWon('${c.key}')`:`lockWon('${c.key}')`}" style="${won?'background:#E7EDDD;color:#4F6B3E;border-color:#cfe0c4':''}">${won?'🔒':'🔓'}</button>${won?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
 }
@@ -788,10 +794,10 @@ function renderCalendar(){
     cs.forEach(c=>c.m.forEach(([dd,s,e])=>{if(dd===d)evs.push({c,s,e});}));
     layoutLanes(evs);
     evs.forEach(({c,s,e,lane,cols})=>{
-      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
+      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),won=isWon(c.key),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
       const w=100/cols,left=lane*w,caution=commute.has(c.key)&&!conf.has(c.key);
-      col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
-        ${c.locked?'':`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
+      col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
+        ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
     if(!evs.length&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
@@ -841,7 +847,7 @@ function renderHarvard(){
         <div class="fac">👤 ${c.fac}</div>
         ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
       </div>
-      <button class="add ${added?'in':''}" onclick="${added?`remove('${c.key}')`:`add('${c.key}')`}">${added?'✓':'+'}</button>
+      ${added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No Harvard courses match.</div>`;
 }
@@ -884,7 +890,7 @@ function renderMit(){
         ${c.ds?`<div style="font-size:11.5px;color:var(--sub);margin-top:8px;line-height:1.45">${c.ds}</div>`:''}
         ${c.x?`<div class="fac" style="margin-top:4px">↔ ${c.x}</div>`:''}
       </div>
-      <button class="add ${state.plan.includes('MIT:'+c.id)?'in':''}" onclick="${state.plan.includes('MIT:'+c.id)?`remove('MIT:${c.id}')`:`add('MIT:${c.id}')`}">${state.plan.includes('MIT:'+c.id)?'✓':'+'}</button>
+      ${state.plan.includes('MIT:'+c.id)?(isWon('MIT:'+c.id)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw" onclick="withdraw('MIT:${c.id}')">🔒</button>`:`<button class="add in" onclick="remove('MIT:${c.id}')">✓</button>`):`<button class="add" onclick="add('MIT:${c.id}')">+</button>`}
     </div>`).join('')||`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);padding:40px 0">No subjects match these filters.</div>`;
   if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} — refine search or pick a department to see more.</div>`);
 }
