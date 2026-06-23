@@ -618,12 +618,14 @@ function buildStatic(){
   document.getElementById('track').innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
   const steps=[
-    ['1','Browse & filter','Narrow ~60 Fall courses by route, certificate, career track or search.'],
-    ['2','Build your plan','Tap + to add a course to My Fall Plan. Your core 15.414 is locked in.'],
-    ['3','Enter your bids','You have 1,000 points — and you pay the clearing price, not your bid.'],
-    ['4','Watch the limits','Bars track points /1000, electives /57 and total units /66, live.'],
-    ['5','Check your week','The calendar plots every course. A red outline means a time clash.'],
+    ['1','Three catalogs','Top tabs: 📋 Sloan bidding · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
+    ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
+    ['3','Enter your bids','You have 1,000 points on Sloan electives — you pay the clearing price, not your bid.'],
+    ['4','Watch the limits','Bars track points /1000, electives /57 and total units /66, live. Harvard/MIT units count too.'],
+    ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Hover for details; ✕ or double-click to remove.'],
     ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
+    ['7','After results','Hit 🔓 on a course you won to lock it in (can’t be deleted, bid frozen). To withdraw, tap 🔒 in the course list — your points come back for Round 2.'],
+    ['8','It’s private','Your plan saves only in this browser — nothing is shared. Always confirm on SloanBid / my.harvard before bidding.'],
   ];
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
   // calendar hover tooltip (event-delegated, survives re-renders)
