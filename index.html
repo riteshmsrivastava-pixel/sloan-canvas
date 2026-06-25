@@ -95,7 +95,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .rk{font-family:var(--fm);font-weight:700;font-size:11px;color:var(--brand);}
 .route{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;}
 .r-Bid{background:var(--bsoft);color:var(--brand2);} .r-Apply{background:#F5E7D6;color:#A65F28;}
-.r-Register{background:#ECE6DA;color:#6B6157;} .r-Waitlist{background:#F3E6CC;color:#8A6500;} .r-Core{background:var(--tsoft);color:var(--terra2);} .r-Ineligible{background:#ECE3D3;color:#9A8E7E;} .r-Crossreg{background:#F1DFDA;color:#8C1515;}
+.r-Register{background:#ECE6DA;color:#6B6157;} .r-Waitlist{background:#F3E6CC;color:#8A6500;} .r-Core{background:var(--tsoft);color:var(--terra2);} .r-Ineligible{background:#ECE3D3;color:#9A8E7E;} .r-Crossreg{background:#F1DFDA;color:#8C1515;} .r-Full{background:#ffe1e6;color:#c2002a;}
 .ctitle{font-family:var(--fh);font-weight:600;font-size:15.5px;line-height:1.25;margin-bottom:9px;}
 .meta{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
 .unit{font-family:var(--fm);font-size:11px;font-weight:700;color:#6B6157;background:#F1EADB;padding:2px 7px;border-radius:6px;}
@@ -219,7 +219,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       </div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-      <div class="round"><i></i> Round IB · closes in 3d 12h</div>
+      <div class="round"><i></i> Round II · closes in ~5 days</div>
       <div class="meters">
         <div><div class="k">Points left</div><div class="v" style="color:var(--brand)"><span id="m-points">1000</span><small> / 1000</small></div></div>
         <div class="sep"></div>
@@ -591,6 +591,9 @@ function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up
 function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const d=effDays(c),t=HV_TIME[c.key];c.m=(d&&t)?d.flatMap(x=>mt(x,t)):[];});}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
+/* Sold out after Round I (Round II) — closed, can't bid. Update keys here each round. */
+const FULL=new Set(['15.S03','15.563','15.774','15.095','15.C57·B','15.C57·C','15.223·A','15.223·B','15.768·A','15.768·B','15.431·B','15.456','15.483','15.451','15.S07','15.818·A','15.275','15.665·A','15.665·B','15.284·A','15.325']);
+const isFull=c=>FULL.has(c.key);
 
 /* ===================== state ===================== */
 const KEY='sloanCanvas_fall_v1';
@@ -690,13 +693,13 @@ function render(){
   else items.sort((a,b)=>a.id.localeCompare(b.id));
   document.getElementById('catCount').textContent=items.length;
   document.getElementById('catalog').innerHTML=items.map(c=>{
-    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0,inelig=c.route==='Ineligible';
-    return `<div class="course" data-key="${c.key}" style="border-left-color:${col};background:${tint(col,.05)};${inelig?'opacity:.72;':''}">
+    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0,inelig=c.route==='Ineligible',full=isFull(c)&&!added;
+    return `<div class="course" data-key="${c.key}" style="border-left-color:${full?'#c2002a':col};background:${full?'#fdecee':tint(col,.05)};${inelig?'opacity:.72;':''}">
       <div style="flex:1;min-width:0">
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick — top reputation/demand">⭐</span>':''}
           <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
-          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>
+          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Full — Round I</span>':''}
         </div>
         <div class="ctitle">${c.title}</div>
         <div class="meta">
@@ -708,7 +711,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:full?`<span class="add" style="background:#ffe3e8;color:#c2002a;cursor:not-allowed" title="Sold out — closed after Round I">✕</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
