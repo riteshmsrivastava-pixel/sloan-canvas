@@ -710,7 +710,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:full?`<span class="add" style="background:#ffe3e8;color:#c2002a;cursor:not-allowed" title="Sold out — closed after Round I">✕</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
