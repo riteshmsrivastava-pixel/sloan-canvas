@@ -231,11 +231,11 @@
           <div class="f-row">
             <div class="f-group">
               <label class="f-label" for="fEmail">Email</label>
-              <input class="f-input" id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@mit.edu" required>
+              <input class="f-input" id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@mit.edu" pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}" title="Enter a valid email like you@mit.edu" required>
             </div>
             <div class="f-group">
               <label class="f-label" for="fPhone">Phone number</label>
-              <input class="f-input" id="fPhone" name="phone" type="tel" autocomplete="tel" placeholder="(617) 555-0123" required>
+              <input class="f-input" id="fPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(617) 555-0123" required>
             </div>
           </div>
           <div class="f-row">
@@ -454,6 +454,19 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
     if (name) nameSpan.textContent = ', ' + name.trim().split(/\s+/)[0];
   };
 
+  // phone format check: optional +, 10 to 15 digits, common separators allowed
+  const phoneInput = document.getElementById('fPhone');
+  const validatePhone = () => {
+    const v = phoneInput.value.trim();
+    const okChars = /^[+\d\s\-().]*$/.test(v);
+    const digits = v.replace(/\D/g, '');
+    phoneInput.setCustomValidity(
+      okChars && digits.length >= 10 && digits.length <= 15
+        ? '' : 'Enter a valid phone number (10 to 15 digits, e.g. (617) 555-0123 or +91 98765 43210)'
+    );
+  };
+  phoneInput.addEventListener('input', validatePhone);
+
   // .ics download for Apple/Outlook calendars
   document.getElementById('icsBtn').addEventListener('click', (e) => {
     e.preventDefault();
@@ -484,6 +497,7 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errEl.style.display = 'none';
+    validatePhone();
     if (!form.reportValidity()) return;
 
     const data = new FormData(form);
