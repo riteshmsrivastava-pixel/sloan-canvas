@@ -69,6 +69,14 @@
   .cal-btn{display:inline-block;text-decoration:none;font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.04em;color:#7a4a12;background:#fffdf6;border:1.5px solid rgba(184,94,16,.4);border-radius:999px;padding:11px 20px;transition:border-color .2s ease,transform .2s ease;}
   .cal-btn:hover{border-color:var(--marigold);transform:translateY(-1px)}
   .count-badge{display:none;margin:18px auto 0;font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;color:var(--goldLite);}
+
+  /* ── highlights ── */
+  .hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(14px,2vw,22px);max-width:1000px;margin:clamp(40px,6vh,64px) auto 0;}
+  .hl-card{position:relative;text-align:left;background:rgba(255,247,230,.05);border:1px solid rgba(255,158,27,.28);border-radius:18px;padding:clamp(20px,2.6vw,26px);transition:transform .25s ease,border-color .25s ease,background .25s ease;}
+  .hl-card:hover{transform:translateY(-4px);border-color:rgba(255,158,27,.6);background:rgba(255,247,230,.08);}
+  .hl-emoji{font-size:30px;line-height:1;display:block;margin-bottom:14px;}
+  .hl-card h3{font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(19px,2.4vw,23px);margin:0 0 8px;color:var(--cream);}
+  .hl-card p{margin:0;font-size:clamp(14px,1.7vw,15.5px);color:rgba(253,236,203,.72);line-height:1.5;}
 </style>
 </head>
 <body>
@@ -176,6 +184,7 @@
         <span class="chip"><svg width="13" height="13" style="color:var(--marigold)"><use href="#m-diya"/></svg> 6:00 – 11:00 PM</span>
         <span class="chip"><svg width="13" height="13" style="color:var(--marigold)"><use href="#m-diya"/></svg> Venue TBD</span>
         <span class="chip"><svg width="13" height="13" style="color:var(--marigold)"><use href="#m-diya"/></svg> $60 per person</span>
+        <span class="chip"><svg width="13" height="13" style="color:var(--marigold)"><use href="#m-diya"/></svg> Festive Indian or Bollywood glam</span>
       </div>
       <p data-reveal style="margin:14px auto 0;max-width:520px;font-size:clamp(13px,1.6vw,15px);color:rgba(253,236,203,.68);">SOs welcome. Kids eat free.</p>
 
@@ -191,10 +200,31 @@
   <!-- ░░ MARQUEE ░░ -->
   <div style="background:linear-gradient(90deg,var(--orange),var(--marigold) 50%,var(--orange));overflow:hidden;padding:15px 0;position:relative;border-top:1px solid rgba(12,10,44,.25);border-bottom:1px solid rgba(12,10,44,.25);">
     <div style="display:flex;white-space:nowrap;animation:marquee 36s linear infinite;will-change:transform;font-family:'Yeseva One',serif;font-size:clamp(20px,3.2vw,34px);color:#2a1550;">
-      <span style="display:inline-flex;align-items:center;gap:.55em;padding-right:.55em;">Lip-Smacking Food<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Bollywood Floor<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Chaat Counter<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Trivia<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Desi Olympics<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Awards<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg></span>
-      <span style="display:inline-flex;align-items:center;gap:.55em;padding-right:.55em;" aria-hidden="true">Lip-Smacking Food<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Bollywood Floor<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Chaat Counter<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Trivia<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Desi Olympics<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Awards<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg></span>
+      <span style="display:inline-flex;align-items:center;gap:.55em;padding-right:.55em;">Feast<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Chaat Counter<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Indian Beers &amp; Rum<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Bollywood Floor<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Trivia<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Desi Olympics<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Awards<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Photo Booth<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg></span>
+      <span style="display:inline-flex;align-items:center;gap:.55em;padding-right:.55em;" aria-hidden="true">Feast<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Chaat Counter<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Indian Beers &amp; Rum<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Bollywood Floor<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Trivia<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Desi Olympics<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Awards<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg>Photo Booth<svg width="20" height="13" style="color:#5a141f"><use href="#m-lotus"/></svg></span>
     </div>
   </div>
+
+  <!-- ░░ HIGHLIGHTS ░░ -->
+  <section style="position:relative;padding:clamp(72px,11vh,120px) clamp(22px,6vw,80px);background:linear-gradient(180deg,#0c0a2c,#120d38 60%,#0c0a2c);overflow:hidden;text-align:center;">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(1.4px 1.4px at 20% 30%,rgba(255,240,200,.5),transparent),radial-gradient(1.2px 1.2px at 72% 18%,rgba(255,240,200,.45),transparent),radial-gradient(1.3px 1.3px at 45% 62%,rgba(255,240,200,.4),transparent),radial-gradient(1.2px 1.2px at 88% 48%,rgba(255,240,200,.4),transparent);pointer-events:none;"></div>
+    <div style="position:relative;z-index:2;max-width:1000px;margin:0 auto;">
+      <div data-reveal style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;color:var(--marigold);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--marigold)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
+      <div data-reveal style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--marigold2);font-weight:500;margin-bottom:16px;">What's in store</div>
+      <h2 data-reveal style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(36px,6.5vw,72px);line-height:.98;margin:0;color:var(--cream);text-wrap:balance;">The Night</h2>
+
+      <div class="hl-grid" data-reveal>
+        <div class="hl-card"><span class="hl-emoji">🍽️</span><h3>Feast &amp; Chaat Counter</h3><p>A full Indian spread with veg and non-veg, plus a live chaat counter running all night.</p></div>
+        <div class="hl-card"><span class="hl-emoji">🍹</span><h3>Indian Beers &amp; Rum</h3><p>Kingfisher, Old Monk and more, included. Bring your own too if you want extra.</p></div>
+        <div class="hl-card"><span class="hl-emoji">🏆</span><h3>Awards</h3><p>Best Dressed and Best Dance Steps, with a few surprise titles. Dress to win.</p></div>
+        <div class="hl-card"><span class="hl-emoji">🎮</span><h3>Games &amp; Desi Olympics</h3><p>Team games and desi challenges. Bragging rights on the line.</p></div>
+        <div class="hl-card"><span class="hl-emoji">🧠</span><h3>India &amp; The World Trivia</h3><p>How well do you really know India... and everywhere else? Find out.</p></div>
+        <div class="hl-card"><span class="hl-emoji">📸</span><h3>Photo Booth</h3><p>Props, lights and a backdrop worth the group shot.</p></div>
+        <div class="hl-card"><span class="hl-emoji">💃</span><h3>Bollywood Dance Floor</h3><p>DJ, lights and a floor that doesn't stop till 11.</p></div>
+        <div class="hl-card"><span class="hl-emoji">🧒</span><h3>Kid-Friendly</h3><p>Little ones welcome, with activities to keep them busy.</p></div>
+      </div>
+    </div>
+  </section>
 
   <!-- ░░ RSVP ░░ -->
   <section id="rsvp" style="position:relative;padding:clamp(90px,14vh,170px) clamp(22px,6vw,80px);background:radial-gradient(120% 100% at 50% 116%,#ff9e1b 0%,#ff7a1f 22%,#3a2470 60%,#0c0a2c 100%);overflow:hidden;text-align:center;">
