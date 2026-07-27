@@ -132,7 +132,7 @@
   </defs></svg>
 
   <!-- ░░ STICKY NAV ░░ -->
-  <div data-nav style="position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px clamp(18px,5vw,56px);background:rgba(12,10,44,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,158,27,.32);opacity:0;transform:translateY(-110%);transition:opacity .5s ease,transform .5s cubic-bezier(.16,.84,.44,1);pointer-events:none;">
+  <div data-nav style="position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px clamp(18px,5vw,56px);background:rgba(12,10,44,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,158,27,.32);">
     <div style="display:flex;align-items:center;gap:10px;font-family:'Yeseva One',serif;font-size:clamp(15px,1.9vw,19px);color:var(--cream);line-height:1;">
       <svg width="24" height="16" viewBox="0 0 80 52" style="color:var(--marigold);display:block;flex:none;"><use href="#m-lotus"/></svg>
       <span style="display:block;">Indian Night</span>
@@ -445,9 +445,8 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
   }
   setTimeout(() => els.forEach(e => e.classList.add('reveal-play')), 1600);
 
-  // ── Parallax + sticky nav ──
+  // ── Parallax ──
   const pEls = [...document.querySelectorAll('[data-parallax]')];
-  const nav = document.querySelector('[data-nav]');
   let mx = 0, my = 0, tmx = 0, tmy = 0, ticking = false;
   const apply = () => {
     const y = window.scrollY || 0;
@@ -459,12 +458,6 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
       const base = el.getAttribute('data-base') || '';
       el.style.transform = base + ' translate3d(' + (mx * mf) + 'px,' + (y * sp + my * mf) + 'px,0)';
     });
-    if (nav) {
-      const on = y > 520;
-      nav.style.opacity = on ? '1' : '0';
-      nav.style.transform = on ? 'translateY(0)' : 'translateY(-110%)';
-      nav.style.pointerEvents = on ? 'auto' : 'none';
-    }
   };
   const onScroll = () => {
     if (ticking) return;
