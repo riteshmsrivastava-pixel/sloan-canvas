@@ -77,6 +77,28 @@
   .hl-emoji{font-size:30px;line-height:1;display:block;margin-bottom:14px;}
   .hl-card h3{font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(19px,2.4vw,23px);margin:0 0 8px;color:var(--cream);}
   .hl-card p{margin:0;font-size:clamp(14px,1.7vw,15.5px);color:rgba(253,236,203,.72);line-height:1.5;}
+
+  /* ── dress ideas ── */
+  .dress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(16px,2.4vw,26px);max-width:960px;margin:clamp(38px,6vh,60px) auto 0;text-align:left;}
+  .dress-col{background:rgba(255,247,230,.05);border:1px solid rgba(255,158,27,.28);border-radius:18px;padding:clamp(20px,2.6vw,26px);}
+  .dress-col h3{font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(20px,2.5vw,25px);margin:0 0 4px;color:var(--cream);}
+  .dress-col .sub{font-size:12.5px;color:rgba(253,236,203,.5);margin:0 0 16px;}
+  .dress-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--cream);font-size:15px;font-weight:500;padding:11px 14px;border-radius:11px;border:1px solid rgba(255,158,27,.22);background:rgba(12,10,44,.25);margin-bottom:10px;transition:border-color .2s ease,transform .2s ease,background .2s ease;}
+  .dress-link:last-child{margin-bottom:0;}
+  .dress-link:hover{border-color:rgba(255,158,27,.6);transform:translateX(3px);background:rgba(12,10,44,.4);}
+  .dress-link .arr{margin-left:auto;color:var(--marigold);font-size:16px;}
+  .dress-help{margin:clamp(28px,4vh,40px) auto 0;max-width:560px;font-size:clamp(14px,1.8vw,16px);color:rgba(253,236,203,.72);}
+  .dress-help strong{color:var(--goldLite);}
+
+  /* ── payment ── */
+  .pay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(16px,2.4vw,24px);max-width:900px;margin:clamp(36px,5vh,52px) auto 0;}
+  .pay-card{background:var(--panel);border-radius:18px;padding:clamp(18px,2.4vw,24px);box-shadow:0 20px 50px rgba(8,7,31,.4),inset 0 0 0 1px rgba(230,185,77,.4);display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .pay-badge{font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:5px 13px;border-radius:999px;color:#fff;}
+  .pay-badge.zelle{background:#6d1ed4;}
+  .pay-badge.venmo{background:#008cff;}
+  .pay-card img{width:100%;max-width:190px;height:auto;border-radius:8px;display:block;}
+  .pay-name{font-family:'Yeseva One',serif;font-size:19px;color:var(--ink);margin:0;line-height:1.1;text-align:center;}
+  .pay-note{margin:clamp(22px,3.5vh,32px) auto 0;max-width:540px;font-size:clamp(13px,1.7vw,15px);color:rgba(253,236,203,.66);}
 </style>
 </head>
 <body>
@@ -219,6 +241,42 @@
     </div>
   </section>
 
+  <!-- ░░ DRESS IDEAS ░░ -->
+  <section style="position:relative;padding:clamp(72px,11vh,120px) clamp(22px,6vw,80px);background:linear-gradient(180deg,#0c0a2c,#0a0826 60%,#0c0a2c);overflow:hidden;text-align:center;">
+    <div style="position:relative;z-index:2;max-width:960px;margin:0 auto;">
+      <div data-reveal style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;color:var(--marigold);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--marigold)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
+      <div data-reveal style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--marigold2);font-weight:500;margin-bottom:16px;">Dress the part</div>
+      <h2 data-reveal style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(36px,6.5vw,72px);line-height:.98;margin:0;color:var(--cream);text-wrap:balance;">What to wear</h2>
+      <p data-reveal style="margin:20px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.78);">Festive Indian or Bollywood glam. New to Indian wear? Here are a few ideas to get you started, all under $40.</p>
+
+      <div class="dress-grid" data-reveal>
+        <div class="dress-col">
+          <h3>Men</h3>
+          <p class="sub">Kurtas &amp; kurta sets</p>
+          <a class="dress-link" href="https://www.amazon.com/dp/B0CFW3F4WB" target="_blank" rel="noopener">Cotton kurta pajama set <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B0FBWPX8HP" target="_blank" rel="noopener">Kurta / kaftan robe <span class="arr">↗</span></a>
+        </div>
+        <div class="dress-col">
+          <h3>Women</h3>
+          <p class="sub">Kurtis, anarkalis &amp; sets</p>
+          <a class="dress-link" href="https://www.amazon.com/dp/B0DZGPG96M" target="_blank" rel="noopener">Printed anarkali <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B07R4M7CX2" target="_blank" rel="noopener">Kurta with dupatta set <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B07RG5T8ZL" target="_blank" rel="noopener">Cotton anarkali kurti <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B0G4WRNXV6" target="_blank" rel="noopener">Anarkali with dupatta <span class="arr">↗</span></a>
+        </div>
+        <div class="dress-col">
+          <h3>Kids</h3>
+          <p class="sub">For the little ones</p>
+          <a class="dress-link" href="https://www.amazon.com/dp/B08N6NKKQB" target="_blank" rel="noopener">Boys' handloom kurta set <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B09JLZL74V" target="_blank" rel="noopener">Girls' sharara dress <span class="arr">↗</span></a>
+          <a class="dress-link" href="https://www.amazon.com/dp/B0GNN29WQG" target="_blank" rel="noopener">Girls' embroidered lehenga <span class="arr">↗</span></a>
+        </div>
+      </div>
+
+      <p class="dress-help" data-reveal>These are just ideas to get you going. Not sure what to pick? <strong>Reach out to any Indian community member</strong> and we'll happily help you find something.</p>
+    </div>
+  </section>
+
   <!-- ░░ RSVP ░░ -->
   <section id="rsvp" style="position:relative;padding:clamp(90px,14vh,170px) clamp(22px,6vw,80px);background:radial-gradient(120% 100% at 50% 116%,#ff9e1b 0%,#ff7a1f 22%,#3a2470 60%,#0c0a2c 100%);overflow:hidden;text-align:center;">
     <div style="position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 18% 14%,rgba(255,240,200,.7),transparent),radial-gradient(1.3px 1.3px at 76% 20%,rgba(255,240,200,.6),transparent),radial-gradient(1.4px 1.4px at 52% 10%,rgba(255,240,200,.6),transparent),radial-gradient(1.2px 1.2px at 30% 26%,rgba(255,240,200,.5),transparent);pointer-events:none;"></div>
@@ -308,6 +366,25 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ░░ PAYMENT ░░ -->
+  <section id="pay" style="position:relative;padding:clamp(72px,11vh,120px) clamp(22px,6vw,80px);background:linear-gradient(180deg,#0c0a2c,#120d38 55%,#0c0a2c);overflow:hidden;text-align:center;">
+    <div style="position:relative;z-index:2;max-width:900px;margin:0 auto;">
+      <div data-reveal style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;color:var(--marigold);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--marigold)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
+      <div data-reveal style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--marigold2);font-weight:500;margin-bottom:16px;">Save your plate</div>
+      <h2 data-reveal style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(36px,6.5vw,72px);line-height:.98;margin:0;color:var(--cream);text-wrap:balance;">Chip in</h2>
+      <p data-reveal style="margin:20px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.78);">After you RSVP, send <strong style="color:var(--goldLite);">$60 per person</strong> (kids free) via Zelle or Venmo to any one of the organizers below. Scan the code in your bank or payment app.</p>
+
+      <div class="pay-grid" data-reveal>
+        <div class="pay-card"><span class="pay-badge zelle">Zelle</span><img src="payments/zelle-kalyan.png" alt="Zelle QR code for Kalyan" loading="lazy"><p class="pay-name">Kalyan</p></div>
+        <div class="pay-card"><span class="pay-badge zelle">Zelle</span><img src="payments/zelle-sukrit.png" alt="Zelle QR code for Sukrit" loading="lazy"><p class="pay-name">Sukrit</p></div>
+        <div class="pay-card"><span class="pay-badge zelle">Zelle</span><img src="payments/zelle-ankur.png" alt="Zelle QR code for Ankur Basu" loading="lazy"><p class="pay-name">Ankur Basu</p></div>
+        <div class="pay-card"><span class="pay-badge venmo">Venmo</span><img src="payments/venmo-sukrit.png" alt="Venmo QR code for Sukrit Dasgupta" loading="lazy"><p class="pay-name">Sukrit Dasgupta</p></div>
+      </div>
+
+      <p class="pay-note" data-reveal>Please double-check the name in your app before sending. Add your own name in the payment note so we can match it to your RSVP.</p>
     </div>
   </section>
 
