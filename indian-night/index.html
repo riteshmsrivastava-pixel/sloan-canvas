@@ -137,10 +137,7 @@
       <svg width="24" height="16" viewBox="0 0 80 52" style="color:var(--marigold);display:block;flex:none;"><use href="#m-lotus"/></svg>
       <span style="display:block;">Indian Night</span>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <a href="#pay" class="nav-pay">💳 Pay</a>
-      <a href="#rsvp" class="nav-btn">Reserve your seat</a>
-    </div>
+    <a href="#rsvp" class="nav-btn" style="animation:ctaGlow 3.6s ease-in-out infinite;">Reserve &amp; Pay</a>
   </div>
 
   <!-- ░░ HERO ░░ -->
@@ -213,7 +210,7 @@
       <p data-reveal style="margin:14px auto 0;max-width:520px;font-size:clamp(13px,1.6vw,15px);color:rgba(253,236,203,.68);">SOs welcome. Kids eat free.</p>
 
       <div data-reveal style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;margin-top:clamp(28px,4vh,38px);">
-        <a href="#rsvp" class="btn-gold" style="font-size:clamp(14px,1.8vw,17px);padding:16px 34px;animation:ctaGlow 3.6s ease-in-out infinite;">Reserve your seat</a>
+        <a href="#rsvp" class="btn-gold" style="font-size:clamp(14px,1.8vw,17px);padding:16px 34px;animation:ctaGlow 3.6s ease-in-out infinite;">Reserve &amp; Pay</a>
       </div>
 
     </div>
@@ -317,6 +314,7 @@
         <div style="background:rgba(12,10,44,.36);backdrop-filter:blur(6px);border:1px solid rgba(255,216,122,.45);border-radius:14px;padding:clamp(14px,2.4vw,24px) clamp(16px,3vw,30px);min-width:clamp(64px,14vw,110px);"><div style="font-family:'Yeseva One',serif;font-size:clamp(30px,6vw,58px);line-height:1;color:var(--goldLite);font-variant-numeric:tabular-nums;" data-cd="s">--</div><div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(253,236,203,.7);margin-top:8px;">secs</div></div>
       </div>
 
+      <div data-reveal style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--goldLite);font-weight:500;margin-bottom:14px;">Step 1 · Your details</div>
       <div class="rsvp-card" data-reveal>
         <form id="rsvpForm" novalidate>
           <div class="f-group">
@@ -373,16 +371,11 @@
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ░░ PAYMENT ░░ -->
-  <section id="pay" style="position:relative;padding:clamp(72px,11vh,120px) clamp(22px,6vw,80px);background:linear-gradient(180deg,#0c0a2c,#120d38 55%,#0c0a2c);overflow:hidden;text-align:center;">
-    <div style="position:relative;z-index:2;max-width:900px;margin:0 auto;">
-      <div data-reveal style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;color:var(--marigold);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--marigold)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
-      <div data-reveal style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--marigold2);font-weight:500;margin-bottom:16px;">Save your plate</div>
-      <h2 data-reveal style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(36px,6.5vw,72px);line-height:.98;margin:0;color:var(--cream);text-wrap:balance;">Payment</h2>
-      <p data-reveal style="margin:20px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.78);">After you RSVP, send <strong style="color:var(--goldLite);">$60 per person</strong> (kids free) via Zelle or Venmo to any one of the organizers below. Scan the code in your bank or payment app.</p>
+      <div id="pay" data-reveal style="margin-top:clamp(48px,7vh,72px);background:rgba(12,10,44,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,216,122,.35);border-radius:24px;padding:clamp(28px,5vw,48px) clamp(18px,4vw,40px);">
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;color:var(--goldLite);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--goldLite)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--goldLite);font-weight:500;margin-bottom:14px;">Step 2 · Lock in your spot</div>
+        <h3 style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(30px,5vw,52px);line-height:1;margin:0;color:var(--cream);">Payment</h3>
+        <p style="margin:16px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.9);">Send <strong style="color:var(--goldLite);">$60 per person</strong> (kids free) via Zelle or Venmo to any one of the organizers below. Scan the code in your bank or payment app.</p>
 
       <div class="pay-grid" data-reveal>
         <div class="pay-card"><span class="pay-badge zelle">Zelle</span><img src="payments/zelle-kalyan.png" alt="Zelle QR code for Kalyan" loading="lazy"><p class="pay-name">Kalyan</p></div>
@@ -391,7 +384,8 @@
         <div class="pay-card"><span class="pay-badge venmo">Venmo</span><img src="payments/venmo-sukrit.png" alt="Venmo QR code for Sukrit Dasgupta" loading="lazy"><p class="pay-name">Sukrit Dasgupta</p></div>
       </div>
 
-      <p class="pay-note" data-reveal>Please double-check the name in your app before sending. Add your own name in the payment note so we can match it to your RSVP.</p>
+        <p class="pay-note">Please double-check the name in your app before sending. Add your own name in the payment note so we can match it to your RSVP.</p>
+      </div>
     </div>
   </section>
 
