@@ -305,7 +305,7 @@
         <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:rgba(12,10,44,.4);border:1px solid rgba(255,216,122,.5);font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--goldLite);margin-bottom:18px;">🎟️ Registration closed · Waitlist open</span>
         <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px;color:var(--goldLite);"><span style="height:1px;width:60px;background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="44" height="29" style="color:var(--goldLite)"><use href="#m-lotus"/></svg><span style="height:1px;width:60px;background:linear-gradient(90deg,currentColor,transparent);"></span></div>
         <h2 style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(42px,8vw,100px);line-height:.96;margin:0;color:var(--cream);text-wrap:balance;">We're at capacity.</h2>
-        <p style="margin:20px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.9);">Registration is officially closed. You can still add your name to the waitlist below. If a spot opens up, someone from the India Group will reach out to you by <strong style="color:var(--goldLite);">Tuesday, August 4</strong>.</p>
+        <p style="margin:20px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.9);">We're full, but still taking names for the waitlist. Drop your details below. If a spot opens up, someone from the India Group will reach out to you by <strong style="color:var(--goldLite);">Tuesday, August 4</strong>. Already RSVP'd? Just complete your payment below and your seat is confirmed.</p>
       </div>
 
       <div data-reveal style="margin-top:clamp(34px,6vh,52px);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--goldLite);font-weight:500;">The night begins in</div>
@@ -365,9 +365,9 @@
         </form>
         <div class="rsvp-success" id="rsvpSuccess">
           <svg width="52" height="34" viewBox="0 0 80 52" style="color:var(--marigold)"><use href="#m-lotus"/></svg>
-          <h3><span id="successTitle">You're on the waitlist</span><span id="successName"></span>!</h3>
-          <p id="successMsg">Thanks! We've got your details. If a spot opens up, a member of the India Group will reach out to you by Tuesday, August 4.</p>
-          <div id="calButtons" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;">
+          <h3>You're on the waitlist!</h3>
+          <p>Thanks, we've got your details. If a spot opens up, we'll reach out to you for payment.</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;">
             <a class="cal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Indian%20Night%20%C2%B7%20SFMBA&amp;dates=20260807T180000/20260807T220000&amp;ctz=America/New_York&amp;details=An%20evening%20of%20good%20food%2C%20music%20and%20dance%20with%20the%20SFMBA%20Indian%20Group.&amp;location=Graduate%20Tower%2C%20Site%204" target="_blank" rel="noopener">📅 Google Calendar</a>
             <a class="cal-btn" id="icsBtn" href="#">📥 Apple / Outlook (.ics)</a>
           </div>
@@ -377,8 +377,7 @@
         <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;color:var(--goldLite);"><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,transparent,currentColor);"></span><svg width="40" height="26" style="color:var(--goldLite)"><use href="#m-lotus"/></svg><span style="height:1px;width:clamp(36px,10vw,70px);background:linear-gradient(90deg,currentColor,transparent);"></span></div>
         <div style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--goldLite);font-weight:500;margin-bottom:14px;">Step 2 · Lock in your spot</div>
         <h3 style="font-family:'Yeseva One',serif;font-weight:400;font-size:clamp(30px,5vw,52px);line-height:1;margin:0;color:var(--cream);">Payment</h3>
-        <p style="margin:16px auto 0;max-width:560px;font-size:clamp(14px,1.8vw,16px);color:var(--goldLite);"><strong>Already RSVP'd?</strong> If you haven't paid yet, please send payment by <strong>Tuesday, August 4</strong> to keep your spot. Unpaid seats may be released to the waitlist after that date.</p>
-        <p style="margin:14px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.9);">Send <strong style="color:var(--goldLite);">$60 per person</strong> (kids free) via Zelle or Venmo to any one of the organizers below. Scan the code in your bank or payment app.</p>
+        <p style="margin:16px auto 0;max-width:560px;font-size:clamp(15px,1.9vw,17px);color:rgba(253,236,203,.9);">Send <strong style="color:var(--goldLite);">$60 per person</strong> (kids free) via Zelle or Venmo to any one of the organizers below. Scan the code in your bank or payment app.</p>
 
       <div class="pay-grid" data-reveal>
         <div class="pay-card"><span class="pay-badge zelle">Zelle</span><img src="payments/zelle-kalyan.png" alt="Zelle QR code for Kalyan" loading="lazy"><p class="pay-name">Kalyan</p></div>
@@ -550,29 +549,10 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
   const btn = document.getElementById('rsvpBtn');
   const errEl = document.getElementById('rsvpError');
   const successEl = document.getElementById('rsvpSuccess');
-  const nameSpan = document.getElementById('successName');
-  const titleSpan = document.getElementById('successTitle');
-  const msgEl = document.getElementById('successMsg');
-  const calButtons = document.getElementById('calButtons');
 
-  // Registration closed at this moment — anyone who RSVP'd before it is a
-  // confirmed guest; anyone after (including all future submissions) is on
-  // the waitlist. Keeps returning visitors' saved state correct either way.
-  const WAITLIST_CUTOFF = new Date('2026-08-01T17:20:11-04:00').getTime();
-
-  const showSuccess = (name, status) => {
+  const showSuccess = () => {
     form.style.display = 'none';
     successEl.style.display = 'block';
-    if (name) nameSpan.textContent = ', ' + name.trim().split(/\s+/)[0];
-    if (status === 'confirmed') {
-      titleSpan.textContent = "You're on the list";
-      msgEl.textContent = 'Your seat is reserved. Warm up those Bollywood moves. 🪔';
-      calButtons.style.display = 'flex';
-    } else {
-      titleSpan.textContent = "You're on the waitlist";
-      msgEl.textContent = "Thanks! We've got your details. If a spot opens up, a member of the India Group will reach out to you by Tuesday, August 4.";
-      calButtons.style.display = 'none';
-    }
   };
 
   // phone format check: optional +, 10 to 15 digits, common separators allowed
@@ -609,16 +589,6 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
-  // returning guest? show success state again, matching their original status
-  try {
-    const prev = localStorage.getItem('indianNightRSVP');
-    if (prev) {
-      const parsed = JSON.parse(prev);
-      const status = parsed.status || (parsed.at && parsed.at < WAITLIST_CUTOFF ? 'confirmed' : 'waitlist');
-      showSuccess(parsed.name || '', status);
-    }
-  } catch (e) { /* private mode etc. */ }
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errEl.style.display = 'none';
@@ -626,7 +596,6 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
     if (!form.reportValidity()) return;
 
     const data = new FormData(form);
-    const name = data.get('name');
     btn.disabled = true;
     btn.textContent = 'Adding you…';
 
@@ -634,8 +603,7 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
       if (!RSVP_ENDPOINT) throw new Error('RSVP endpoint not configured');
       const res = await fetch(RSVP_ENDPOINT, { method: 'POST', body: data });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      try { localStorage.setItem('indianNightRSVP', JSON.stringify({ name, at: Date.now(), status: 'waitlist' })); } catch (e2) {}
-      showSuccess(name, 'waitlist');
+      showSuccess();
     } catch (err) {
       console.error('RSVP submit failed:', err);
       errEl.style.display = 'block';
