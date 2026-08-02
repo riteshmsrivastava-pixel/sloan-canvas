@@ -365,9 +365,9 @@
         </form>
         <div class="rsvp-success" id="rsvpSuccess">
           <svg width="52" height="34" viewBox="0 0 80 52" style="color:var(--marigold)"><use href="#m-lotus"/></svg>
-          <h3>You're on the waitlist<span id="successName"></span>!</h3>
-          <p>Thanks! We've got your details. If a spot opens up, a member of the India Group will reach out to you by Tuesday, August 4.</p>
-          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;">
+          <h3><span id="successTitle">You're on the waitlist</span><span id="successName"></span>!</h3>
+          <p id="successMsg">Thanks! We've got your details. If a spot opens up, a member of the India Group will reach out to you by Tuesday, August 4.</p>
+          <div id="calButtons" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;">
             <a class="cal-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Indian%20Night%20%C2%B7%20SFMBA&amp;dates=20260807T180000/20260807T220000&amp;ctz=America/New_York&amp;details=An%20evening%20of%20good%20food%2C%20music%20and%20dance%20with%20the%20SFMBA%20Indian%20Group.&amp;location=Graduate%20Tower%2C%20Site%204" target="_blank" rel="noopener">📅 Google Calendar</a>
             <a class="cal-btn" id="icsBtn" href="#">📥 Apple / Outlook (.ics)</a>
           </div>
@@ -551,11 +551,28 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
   const errEl = document.getElementById('rsvpError');
   const successEl = document.getElementById('rsvpSuccess');
   const nameSpan = document.getElementById('successName');
+  const titleSpan = document.getElementById('successTitle');
+  const msgEl = document.getElementById('successMsg');
+  const calButtons = document.getElementById('calButtons');
 
-  const showSuccess = (name) => {
+  // Registration closed at this moment — anyone who RSVP'd before it is a
+  // confirmed guest; anyone after (including all future submissions) is on
+  // the waitlist. Keeps returning visitors' saved state correct either way.
+  const WAITLIST_CUTOFF = new Date('2026-08-01T17:20:11-04:00').getTime();
+
+  const showSuccess = (name, status) => {
     form.style.display = 'none';
     successEl.style.display = 'block';
     if (name) nameSpan.textContent = ', ' + name.trim().split(/\s+/)[0];
+    if (status === 'confirmed') {
+      titleSpan.textContent = "You're on the list";
+      msgEl.textContent = 'Your seat is reserved. Warm up those Bollywood moves. 🪔';
+      calButtons.style.display = 'flex';
+    } else {
+      titleSpan.textContent = "You're on the waitlist";
+      msgEl.textContent = "Thanks! We've got your details. If a spot opens up, a member of the India Group will reach out to you by Tuesday, August 4.";
+      calButtons.style.display = 'none';
+    }
   };
 
   // phone format check: optional +, 10 to 15 digits, common separators allowed
@@ -592,10 +609,14 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
-  // returning guest? show success state again
+  // returning guest? show success state again, matching their original status
   try {
     const prev = localStorage.getItem('indianNightRSVP');
-    if (prev) showSuccess(JSON.parse(prev).name || '');
+    if (prev) {
+      const parsed = JSON.parse(prev);
+      const status = parsed.status || (parsed.at && parsed.at < WAITLIST_CUTOFF ? 'confirmed' : 'waitlist');
+      showSuccess(parsed.name || '', status);
+    }
   } catch (e) { /* private mode etc. */ }
 
   form.addEventListener('submit', async (e) => {
@@ -613,8 +634,8 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKIXMuxxsItLu4Bl
       if (!RSVP_ENDPOINT) throw new Error('RSVP endpoint not configured');
       const res = await fetch(RSVP_ENDPOINT, { method: 'POST', body: data });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      try { localStorage.setItem('indianNightRSVP', JSON.stringify({ name, at: Date.now() })); } catch (e2) {}
-      showSuccess(name);
+      try { localStorage.setItem('indianNightRSVP', JSON.stringify({ name, at: Date.now(), status: 'waitlist' })); } catch (e2) {}
+      showSuccess(name, 'waitlist');
     } catch (err) {
       console.error('RSVP submit failed:', err);
       errEl.style.display = 'block';
