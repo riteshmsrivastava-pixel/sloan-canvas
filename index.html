@@ -368,7 +368,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 const SB_URL=''; /* e.g. 'https://xxxx.supabase.co' */
 const SB_KEY=''; /* the anon / public key (safe to embed) */
 const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
-let session=null, myProfile=null, overlay=null;
+let session=null, myProfile=null, overlay=null, authMode='login', authView='form', pendingEmail=null, pendingName=null;
 /* ============================================================ */
 const CERT={
   BA:{full:'Business Analytics',v:'--BA',c:'#7c5cff'},
@@ -926,29 +926,66 @@ function updateAcct(){const b=document.getElementById('acctBtn');if(b)b.textCont
 async function sbInit(){
   if(!SB){renderCommunity();return;}
   try{const{data}=await SB.auth.getSession();session=data.session;}catch(e){}
-  SB.auth.onAuthStateChange((_e,s)=>{session=s;onAuth();});
+  SB.auth.onAuthStateChange((e,s)=>{session=s;if(e==='PASSWORD_RECOVERY'){const np=prompt('Set a new password (min 6 chars):');if(np&&np.length>=6)SB.auth.updateUser({password:np}).then(()=>alert('Password updated — you’re signed in.'));}onAuth();});
   await onAuth();
 }
 async function onAuth(){
   if(!SB){return;}
   if(!session){myProfile=null;updateAcct();renderCommunity();return;}
+  authView='form';pendingEmail=null;
   const uid=session.user.id,email=session.user.email;
   let prof=null;
   try{const{data}=await SB.from('profiles').select('*').eq('id',uid).maybeSingle();prof=data;}catch(e){}
   if(!prof||!prof.name){
-    const name=prompt('Your name (how classmates find you):',(prof&&prof.name)||email.split('@')[0]);
-    if(name){try{await SB.from('profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};}
+    const name=(session.user.user_metadata&&session.user.user_metadata.name)||pendingName||email.split('@')[0];
+    try{await SB.from('profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};
   }
-  myProfile=prof;updateAcct();
+  myProfile=prof;pendingName=null;updateAcct();
   await syncUp();
   renderCommunity();
 }
-async function signIn(){
+function setAuthMode(m){authMode=m;authView='form';renderCommunity();}
+function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
+async function doRegister(){
+  if(!SB){amsg('Not connected yet — Supabase creds pending.');return;}
+  const name=(document.getElementById('rName').value||'').trim();
+  const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
+  const pw=(document.getElementById('rPw').value||'');
+  if(!name){amsg('Please enter your name.');return;}
+  if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
+  if(pw.length<6){amsg('Password must be at least 6 characters.');return;}
+  const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name},emailRedirectTo:location.href.split('#')[0]}});
+  if(error){amsg(error.message);return;}
+  pendingEmail=email;pendingName=name;
+  if(data.session){await onAuth();return;}
+  authView='verify';renderCommunity();
+}
+async function doVerify(){
   if(!SB)return;
-  const email=(document.getElementById('sbEmail').value||'').trim().toLowerCase();
-  if(!/@mit\.edu$/.test(email)){document.getElementById('sbMsg').textContent='Please use your @mit.edu email.';return;}
-  const{error}=await SB.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split('#')[0]}});
-  document.getElementById('sbMsg').textContent=error?('Error: '+error.message):'✉️ Check your MIT email for the sign-in link.';
+  const token=(document.getElementById('vCode').value||'').trim();
+  if(!token){amsg('Enter the code from your email.');return;}
+  let r=await SB.auth.verifyOtp({email:pendingEmail,token,type:'signup'});
+  if(r.error)r=await SB.auth.verifyOtp({email:pendingEmail,token,type:'email'});
+  if(r.error){amsg(r.error.message);return;}
+}
+async function resendCode(){
+  if(!SB||!pendingEmail)return;
+  const{error}=await SB.auth.resend({type:'signup',email:pendingEmail});
+  amsg(error?error.message:'Code re-sent ✉️',!error);
+}
+async function doLogin(){
+  if(!SB){amsg('Not connected yet — Supabase creds pending.');return;}
+  const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
+  const pw=(document.getElementById('lPw').value||'');
+  const{error}=await SB.auth.signInWithPassword({email,password:pw});
+  if(error){amsg(error.message);return;}
+}
+async function forgotPw(){
+  if(!SB)return;
+  const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
+  if(!/@mit\.edu$/.test(email)){amsg('Type your @mit.edu email above first.');return;}
+  const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
+  amsg(error?error.message:'Password-reset link sent ✉️',!error);
 }
 async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myProfile=null;overlay=null;updateAcct();renderCommunity();render();}
 async function syncUp(){
@@ -984,11 +1021,32 @@ async function overlayPerson(id,name){
 function clearOverlay(){overlay=null;render();}
 function renderCommunity(){
   const b=document.getElementById('commBody');if(!b)return;
-  if(!SB){b.innerHTML='<p style="color:var(--sub);font-size:13px;line-height:1.6;max-width:620px">The shared community layer isn’t connected yet (Supabase credentials pending). The planner works fully without it — sign-in, classmate search, and calendar overlay will switch on once it’s wired up.</p>';return;}
   if(!session){
-    b.innerHTML=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Sign in with your <b>@mit.edu</b> email to share your plan and see what classmates are taking — <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to spot swaps and common free time. Nothing is shared until you sign in &amp; sync; it stays SFMBA-only.</p>
-      <div style="display:flex;gap:8px;max-width:480px;margin-top:16px"><input id="sbEmail" class="inp" placeholder="you@mit.edu" type="email"><button class="btn" onclick="signIn()" style="background:var(--brand);color:#fff;border-color:var(--brand);white-space:nowrap">Send magic link</button></div>
-      <div id="sbMsg" style="font-size:12.5px;color:var(--green2);margin-top:10px"></div>`;
+    const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview — the shared layer turns on once the Supabase project is connected. The form below is inactive for now.</div>`;
+    if(authView==='verify'){
+      b.innerHTML=banner+`<div style="max-width:440px">
+        <p style="font-size:13px;color:var(--sub);line-height:1.6">We emailed a 6-digit code to <b>${pendingEmail||'your email'}</b>. Enter it to finish creating your profile (or click the link in the email).</p>
+        <input id="vCode" class="inp" placeholder="6-digit code" inputmode="numeric" style="max-width:220px;margin-top:12px">
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doVerify()">Verify &amp; create profile</button><button class="btn" onclick="resendCode()">Resend code</button><button class="btn" onclick="authView='form';renderCommunity()">Back</button></div>
+        <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div></div>`;
+      return;
+    }
+    const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Create an account to share your plan and see what classmates are taking — <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to plan swaps and find meeting times. SFMBA-only (<b>@mit.edu</b>); nothing is shared until you sign in &amp; sync.</p>`;
+    const seg=`<div class="seg" style="max-width:260px;margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
+    const form=authMode==='register'
+      ? `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
+           <input id="rName" class="inp" placeholder="Full name">
+           <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu">
+           <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
+           <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
+         </div>`
+      : `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
+           <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
+           <input id="lPw" class="inp" type="password" placeholder="Password">
+           <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doLogin()">Log in →</button>
+           <button onclick="forgotPw()" style="align-self:flex-start;background:none;border:none;color:var(--sub);text-decoration:underline;font-size:12px;cursor:pointer;padding:0">Forgot password?</button>
+         </div>`;
+    b.innerHTML=banner+intro+seg+form+`<div id="sbMsg" style="font-size:12.5px;margin-top:12px"></div>`;
     return;
   }
   b.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
