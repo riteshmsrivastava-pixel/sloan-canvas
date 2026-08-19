@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script data-goatcounter="https://muddyfalls.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --card:#FFFDF9; --line:#E7DECB; --line2:#EAE1CE; --grid:#F0E7D6; --inp:#FCF8F0; --seg:#EDE4D2; --chip:#F4EEE1;
@@ -219,6 +220,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <div><div class="k">Units left</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
       </div>
       <button class="helpbtn" onclick="openHelp()"><i>?</i> How to use</button>
+      <button class="helpbtn" id="acctBtn" onclick="setTab('community')">Sign in</button>
     </div>
   </div>
 
@@ -227,6 +229,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan Fall Bidding</button>
     <button id="tab-harvard" onclick="setTab('harvard')">🎓 Harvard cross-reg</button>
     <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
+    <button id="tab-community" onclick="setTab('community')">👥 Community</button>
   </div>
 
   <!-- VIEW: SLOAN -->
@@ -282,7 +285,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
               <button data-v="H1" onclick="setCalView('H1')">H1</button>
               <button data-v="H2" onclick="setCalView('H2')">H2</button>
             </div>
-            <span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span>
+            <span id="overlayInfo"></span><span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span>
           </div>
         </div>
         <div class="calwrap" id="calwrap"></div>
@@ -325,6 +328,14 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     </div>
   </div>
 
+  <!-- VIEW: COMMUNITY -->
+  <div id="view-community" style="display:none">
+    <div class="panel pad" style="max-width:920px">
+      <div class="ph"><h2>Community</h2><span class="count">see classmates · plan swaps · compare calendars</span></div>
+      <div id="commBody" style="margin-top:12px"></div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <div class="foot">
     <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
@@ -353,6 +364,12 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
 <script>
 /* ===================== certificates ===================== */
+/* ===== Supabase (shared community layer) — PASTE YOUR PROJECT CREDS HERE ===== */
+const SB_URL=''; /* e.g. 'https://xxxx.supabase.co' */
+const SB_KEY=''; /* the anon / public key (safe to embed) */
+const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
+let session=null, myProfile=null, overlay=null;
+/* ============================================================ */
 const CERT={
   BA:{full:'Business Analytics',v:'--BA',c:'#7c5cff'},
   DPM:{full:'Product Management',v:'--DPM',c:'#0a84ff'},
@@ -803,10 +820,14 @@ function renderCalendar(){
       col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
         ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
-    if(!evs.length&&d==='F')col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
+    if(overlay)overlay.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
+      const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24);
+      col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:3px;width:42%;background:rgba(76,90,110,.16);border-left:3px dashed #4c5a6e;pointer-events:none;z-index:3"><div class="bc" style="color:#3d4a5c;font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;}));
+    if(!evs.length&&d==='F'&&!overlay)col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
+  const oi=document.getElementById('overlayInfo');if(oi)oi.innerHTML=overlay?`<span class="clash" style="background:#e6eaef;color:#4c5a6e">👥 ${overlay.name} · <span onclick="clearOverlay()" style="cursor:pointer;text-decoration:underline">clear</span></span>`:'';
   const n=cs.filter(c=>conf.has(c.key)).length,cm=cs.filter(c=>isHv(c)&&commute.has(c.key)).length,el=document.getElementById('clash');
   if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'')+(cm?' · '+cm+' commute':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
   else if(cm){el.textContent='🚇 '+cm+' tight commute'+(cm>1?'s':'');el.style.background='#F5E7D6';el.style.color='#A65F28';}
@@ -826,12 +847,13 @@ if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
 /* ===================== MIT non-Sloan tab ===================== */
 let mitHideOff=true, mitBuilt=false, hvMarquee=false;
 function setTab(t){
-  ['sloan','harvard','mit'].forEach(v=>{
+  ['sloan','harvard','mit','community'].forEach(v=>{
     document.getElementById('view-'+v).style.display=(v===t)?'':'none';
     document.getElementById('tab-'+v).classList.toggle('on',v===t);
   });
   if(t==='mit'&&!mitBuilt){buildMit();mitBuilt=true;}
   if(t==='harvard')renderHarvard();
+  if(t==='community')renderCommunity();
 }
 function renderHarvard(){
   const list=document.getElementById('hvlist'); if(!list)return;
@@ -899,7 +921,90 @@ function renderMit(){
   if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} — refine search or pick a department to see more.</div>`);
 }
 
-applyCoreSection();computeHv();buildStatic();render();
+/* ===================== community (Supabase) ===================== */
+function updateAcct(){const b=document.getElementById('acctBtn');if(b)b.textContent=myProfile?('👤 '+(myProfile.name||'You').split(' ')[0]):(session?'Account':'Sign in');}
+async function sbInit(){
+  if(!SB){renderCommunity();return;}
+  try{const{data}=await SB.auth.getSession();session=data.session;}catch(e){}
+  SB.auth.onAuthStateChange((_e,s)=>{session=s;onAuth();});
+  await onAuth();
+}
+async function onAuth(){
+  if(!SB){return;}
+  if(!session){myProfile=null;updateAcct();renderCommunity();return;}
+  const uid=session.user.id,email=session.user.email;
+  let prof=null;
+  try{const{data}=await SB.from('profiles').select('*').eq('id',uid).maybeSingle();prof=data;}catch(e){}
+  if(!prof||!prof.name){
+    const name=prompt('Your name (how classmates find you):',(prof&&prof.name)||email.split('@')[0]);
+    if(name){try{await SB.from('profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};}
+  }
+  myProfile=prof;updateAcct();
+  await syncUp();
+  renderCommunity();
+}
+async function signIn(){
+  if(!SB)return;
+  const email=(document.getElementById('sbEmail').value||'').trim().toLowerCase();
+  if(!/@mit\.edu$/.test(email)){document.getElementById('sbMsg').textContent='Please use your @mit.edu email.';return;}
+  const{error}=await SB.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split('#')[0]}});
+  document.getElementById('sbMsg').textContent=error?('Error: '+error.message):'✉️ Check your MIT email for the sign-in link.';
+}
+async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myProfile=null;overlay=null;updateAcct();renderCommunity();render();}
+async function syncUp(){
+  if(!SB||!session)return;
+  const uid=session.user.id;
+  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,units:FU(c),half:c.half,route:c.route,sched:c.m,won:isWon(c.key)}));
+  try{await SB.from('enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('enrollments').insert(rows);}catch(e){}
+  const m=document.getElementById('sbSyncMsg');if(m)m.textContent='Synced ✓ '+rows.length+' classes shared';
+}
+async function searchPeople(){
+  if(!SB||!session)return;
+  const q=(document.getElementById('cq').value||'').trim();
+  let query=SB.from('profiles').select('id,name').order('name').limit(100);
+  if(q)query=query.ilike('name','%'+q+'%');
+  let data=[];try{const r=await query;data=r.data||[];}catch(e){}
+  const list=document.getElementById('peopleList');if(!list)return;
+  list.innerHTML=data.filter(p=>p.name).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No one here yet — be the first to sync your plan.</div>';
+}
+async function viewPerson(id,name){
+  if(!SB)return;
+  let data=[];try{const r=await SB.from('enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
+  const box=document.getElementById('personBox');if(!box)return;
+  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}</h2><button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button></div>
+    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>`<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${e.won?'<span class="corebadge">enrolled</span>':''}</div>`).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
+    <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat — you can see which classes you overlap on via the calendar overlay.</div>`;
+}
+async function overlayPerson(id,name){
+  if(!SB)return;
+  let data=[];try{const r=await SB.from('enrollments').select('course_id,title,sched,half').eq('user_id',id);data=r.data||[];}catch(e){}
+  overlay={name,courses:data.filter(e=>e.sched&&e.sched.length).map(e=>({id:e.course_id,title:e.title,m:e.sched,half:e.half}))};
+  setTab('sloan');render();
+}
+function clearOverlay(){overlay=null;render();}
+function renderCommunity(){
+  const b=document.getElementById('commBody');if(!b)return;
+  if(!SB){b.innerHTML='<p style="color:var(--sub);font-size:13px;line-height:1.6;max-width:620px">The shared community layer isn’t connected yet (Supabase credentials pending). The planner works fully without it — sign-in, classmate search, and calendar overlay will switch on once it’s wired up.</p>';return;}
+  if(!session){
+    b.innerHTML=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Sign in with your <b>@mit.edu</b> email to share your plan and see what classmates are taking — <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to spot swaps and common free time. Nothing is shared until you sign in &amp; sync; it stays SFMBA-only.</p>
+      <div style="display:flex;gap:8px;max-width:480px;margin-top:16px"><input id="sbEmail" class="inp" placeholder="you@mit.edu" type="email"><button class="btn" onclick="signIn()" style="background:var(--brand);color:#fff;border-color:var(--brand);white-space:nowrap">Send magic link</button></div>
+      <div id="sbMsg" style="font-size:12.5px;color:var(--green2);margin-top:10px"></div>`;
+    return;
+  }
+  b.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:13px">Signed in as <b>${myProfile?myProfile.name:session.user.email}</b></div>
+      <div style="display:flex;gap:8px"><button class="btn" onclick="syncUp().then(renderCommunity)" style="background:var(--brand);color:#fff;border-color:var(--brand)">↻ Sync my plan</button><button class="btn" onclick="signOut()">Sign out</button></div>
+    </div>
+    <div id="sbSyncMsg" style="font-size:12px;color:var(--green2);margin-bottom:12px"></div>
+    <input id="cq" class="inp" placeholder="⌕  Search classmates by name…" oninput="searchPeople()" style="max-width:460px;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:minmax(200px,1fr) 1.4fr;gap:16px">
+      <div id="peopleList" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div id="personBox" class="panel pad" style="align-self:start;min-height:80px"><div style="color:var(--mute2);font-size:13px">Pick a classmate to see their classes and overlay their calendar.</div></div>
+    </div>`;
+  searchPeople();
+}
+
+applyCoreSection();computeHv();buildStatic();render();sbInit();
 </script>
 </body>
 </html>
