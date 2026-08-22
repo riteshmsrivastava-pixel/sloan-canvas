@@ -218,10 +218,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       </div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-      <div class="round"><i></i> Bidding done · Add/Drop Jul 7–10</div>
+      <div class="round"><i></i> Fall 2026 · Classes begin Sep 9</div>
       <div class="meters">
-        <div><div class="k">Points left</div><div class="v" style="color:var(--brand)"><span id="m-points">1000</span><small> / 1000</small></div></div>
-        <div class="sep"></div>
         <div><div class="k">Units left</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
       </div>
       <button class="helpbtn" onclick="openHelp()"><i>?</i> How to use</button>
@@ -272,11 +270,10 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
           <div id="plan" style="display:flex;flex-direction:column;gap:9px;"></div>
         </div>
         <div class="panel pad" style="flex:1 1 250px;min-width:250px;">
-          <div class="ph" style="margin-bottom:16px;"><h2>Points &amp; Credits</h2><span class="okpill" id="okpill">Add courses</span></div>
-          <div class="barwrap"><div class="barhead"><span class="lab">Bid points</span><span class="val"><b id="cap-pts" style="color:var(--brand)">0</b> / 1000</span></div><div class="bar"><i id="bar-pts" style="background:linear-gradient(90deg,#B83A30,#97241F)"></i></div></div>
+          <div class="ph" style="margin-bottom:16px;"><h2>Credits</h2><span class="okpill" id="okpill">Add courses</span></div>
           <div class="barwrap"><div class="barhead"><span class="lab">Elective units</span><span class="val"><b id="cap-elec" style="color:var(--green)">0</b> / 57</span></div><div class="bar"><i id="bar-elec" style="background:linear-gradient(90deg,#6E8A5B,#5F7A4E)"></i></div></div>
           <div class="barwrap"><div class="barhead"><span class="lab">Total Fall units <span style="color:var(--mute2);font-weight:500">(incl. core)</span></span><span class="val"><b id="cap-tot" style="color:var(--terra)">9</b> / 66</span></div><div class="bar"><i id="bar-tot" style="background:linear-gradient(90deg,#D08043,#C8703D)"></i></div></div>
-          <div class="fineline"><b style="color:#6B6157">Units</b> are used the moment you add a course; <b style="color:#6B6157">points</b> only when you enter a bid. You pay the clearing price, not your bid — tiers are directional, check SloanBid’s closed-class history.</div>
+          <div class="fineline"><b style="color:#6B6157">Units</b> are used the moment you add a course. Bidding is closed for Fall 2026 — this is now your final-schedule &amp; add/drop planner. Always confirm on SloanBid/WebSIS.</div>
         </div>
       </div>
 
@@ -623,9 +620,9 @@ let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{}};}
-const STATUS={bidding:{label:'Bidding',color:'#0a84ff'},enrolled:{label:'Enrolled',color:'#34c759'},sampling:{label:'Sampling',color:'#e0a400'},waitlist:{label:'Waitlist',color:'#ff8a00'},dropping:{label:'Dropping',color:'#c2002a'}};
-const SDOT={bidding:'🔵',enrolled:'🟢',sampling:'🟡',waitlist:'🟠',dropping:'🔴'};
-const statusOf=k=>(state.status&&state.status[k])||'bidding';
+const STATUS={enrolled:{label:'Enrolled',color:'#34c759'},sampling:{label:'Sampling',color:'#e0a400'},waitlist:{label:'Waitlist',color:'#ff8a00'},dropping:{label:'Dropping',color:'#c2002a'}};
+const SDOT={enrolled:'🟢',sampling:'🟡',waitlist:'🟠',dropping:'🔴'};
+const statusOf=k=>{const v=state.status&&state.status[k];return (v&&STATUS[v])?v:'sampling';};
 function setStatus(k,v){if(!state.status)state.status={};state.status[k]=v;save();render();if(typeof syncUp==='function')syncUp();}
 const isWon=k=>statusOf(k)==='enrolled';
 let roster={}, mateOpen=null;
@@ -634,7 +631,7 @@ async function loadRoster(){
   try{
     const [en,pr]=await Promise.all([SB.from('mf_enrollments').select('course_id,user_id,status'),SB.from('mf_profiles').select('id,name,email')]);
     const info={};(pr.data||[]).forEach(p=>info[p.id]={name:p.name,email:p.email});
-    const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'bidding',uid:e.user_id});});
+    const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'sampling',uid:e.user_id});});
     roster=r;renderPlan();
   }catch(e){}
 }
@@ -642,7 +639,7 @@ function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.
 function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
-function withdraw(k){const c=byKey(k);if(!confirm('Withdraw '+(c?c.id:'this course')+'?\nYou drop the seat and your bid points are freed to use elsewhere.'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
+function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
@@ -658,14 +655,14 @@ function buildStatic(){
   document.getElementById('track').innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
   const steps=[
-    ['1','Three catalogs','Top tabs: 📋 Sloan bidding · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
+    ['1','Three catalogs','Top tabs: 📋 Sloan · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
     ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
-    ['3','Enter your bids','You have 1,000 points on Sloan electives — you pay the clearing price, not your bid.'],
-    ['4','Watch the limits','Bars track points /1000, electives /57 and total units /66, live. Harvard/MIT units count too.'],
+    ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping — so you (and classmates) can see where things stand.'],
+    ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed — this is your add/drop planner now.'],
     ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Hover for details; ✕ or double-click to remove.'],
     ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
-    ['7','After results','Hit 🔓 on a course you won to lock it in (can’t be deleted, bid frozen). To withdraw, tap 🔒 in the course list — your points come back for Round 2.'],
-    ['8','It’s private','Your plan saves only in this browser — nothing is shared. Always confirm on SloanBid / my.harvard before bidding.'],
+    ['7','See classmates','Sign in (Community tab) to see who else is in each class, their status, and email them — great for planning add/drop swaps together.'],
+    ['8','It’s private','Your plan saves in this browser; nothing is shared until you sign in & sync. Always confirm on SloanBid / WebSIS.'],
   ];
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
   // calendar hover tooltip (event-delegated, survives re-renders)
@@ -748,7 +745,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw (frees points)" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Enrolled — click to remove from plan" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
@@ -783,7 +780,7 @@ function renderPlan(){
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
-      ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" ${won?'readonly':''} oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route==='MITreg'?'MIT':c.route}</span>`}
+      ${c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):''}
       ${c.locked?'':`<select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select><button class="rm" onclick="remove('${c.key}')">−</button>`}
     </div>${mateOpen===c.key&&ms.length?`<div class="matebox">${ms.map(m=>`<div class="mrow"><span style="color:${(STATUS[m.status]||{}).color||'#888'}">●</span><span style="flex:1">${m.name}</span><span style="font-size:10px;color:var(--mute)">${(STATUS[m.status]||{}).label||m.status}</span>${m.email?`<a href="mailto:${m.email}" class="btn" style="padding:2px 9px;font-size:11px">email</a>`:''}</div>`).join('')}</div>`:''}`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
@@ -791,21 +788,18 @@ function renderPlan(){
 
 /* ===================== credits ===================== */
 function renderCredits(){
-  const cs=planned();let pts=0,elec=0,tot=0;
-  cs.forEach(c=>{tot+=FU(c);if(!c.locked)elec+=FU(c);if(biddable(c))pts+=(state.bids[c.key]||0);});
+  const cs=planned();let elec=0,tot=0;
+  cs.forEach(c=>{tot+=FU(c);if(!c.locked)elec+=FU(c);});
   const pc=(v,m)=>Math.min(100,Math.round(v/m*100));
-  document.getElementById('cap-pts').textContent=pts;document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
-  document.getElementById('bar-pts').style.width=pc(pts,1000)+'%';
+  document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
   document.getElementById('bar-elec').style.width=pc(elec,57)+'%';
   document.getElementById('bar-tot').style.width=pc(tot,66)+'%';
-  document.getElementById('m-points').textContent=Math.max(0,1000-pts);
   document.getElementById('m-units').textContent=Math.max(0,57-elec);
-  const w=[];const hasBid=cs.some(biddable);
-  if(pts>1000)w.push('over 1000 pts');else if(hasBid&&pts<1000)w.push((1000-pts)+' pts unused');
+  const w=[];
   if(elec>57)w.push('over 57 units');if(tot>66)w.push('over 66 units');
   const p=document.getElementById('okpill');
   if(w.length){p.textContent='⚠ '+w.join(' · ');p.style.background='var(--bsoft)';p.style.color='var(--brand2)';}
-  else if(hasBid){p.textContent='✓ Within limits';p.style.background='var(--gsoft)';p.style.color='var(--green2)';}
+  else if(cs.length>1){p.textContent='✓ Within limits';p.style.background='var(--gsoft)';p.style.color='var(--green2)';}
   else{p.textContent='Add courses';p.style.background='var(--seg)';p.style.color='var(--sub)';}
 }
 
