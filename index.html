@@ -1009,7 +1009,7 @@ async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myPr
 async function syncUp(){
   if(!SB||!session)return;
   const uid=session.user.id;
-  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,units:FU(c),half:c.half,route:c.route,sched:c.m,status:statusOf(c.key),won:isWon(c.key)}));
+  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,half:c.half,sched:c.m,status:statusOf(c.key)}));
   try{await SB.from('mf_enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('mf_enrollments').insert(rows);}catch(e){}
   const m=document.getElementById('sbSyncMsg');if(m)m.textContent='Synced ✓ '+rows.length+' classes shared';
 }
@@ -1027,7 +1027,7 @@ async function viewPerson(id,name){
   let data=[];try{const r=await SB.from('mf_enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
   const box=document.getElementById('personBox');if(!box)return;
   box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}</h2><button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button></div>
-    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>`<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${e.won?'<span class="corebadge">enrolled</span>':''}</div>`).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
     <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat — you can see which classes you overlap on via the calendar overlay.</div>`;
 }
 async function overlayPerson(id,name){
