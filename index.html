@@ -874,7 +874,7 @@ function renderCalendar(){
     const nov=overlays.length,cw=nov?44/nov:0;
     overlays.forEach((ov,oi2)=>ov.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
       const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24),rp=oi2*cw;
-      col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:calc(${rp}% + 3px);width:calc(${cw}% - 3px);background:${tint(ov.color,.16)};border-left:3px dashed ${ov.color};pointer-events:none;z-index:3"><div class="bc" style="color:${ov.color};font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;}));
+      col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:calc(${rp}% + 3px);width:calc(${cw}% - 3px);background:${tint(ov.color,.16)};border-left:3px dashed ${ov.color};pointer-events:none;z-index:3"><div class="bc" style="color:${ov.color};font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;})));
     if(!evs.length&&d==='F'&&!overlays.length)col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
   });
