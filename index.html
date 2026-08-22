@@ -1065,7 +1065,8 @@ async function syncUp(){
 }
 async function searchPeople(){
   if(!SB||!session)return;
-  const q=(document.getElementById('cq').value||'').trim();
+  const cqEl=document.getElementById('cq');if(!cqEl)return;
+  const q=(cqEl.value||'').trim();
   let query=SB.from('mf_profiles').select('id,name').order('name').limit(100);
   if(q)query=query.ilike('name','%'+q+'%');
   let data=[];try{const r=await query;data=r.data||[];}catch(e){}
