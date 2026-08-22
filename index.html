@@ -253,7 +253,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
         <div>
           <div class="t">Only courses I can take <span>(SFMBA)</span></div>
-          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats — only what SFMBAs can actually enroll in. <i>(SloanBid’s “205” counts all those.)</i></div>
+          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats - only what SFMBAs can actually enroll in. <i>(SloanBid’s “205” counts all those.)</i></div>
         </div>
       </div>
       <div class="legend" id="legend"></div>
@@ -273,7 +273,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
           <div class="ph" style="margin-bottom:16px;"><h2>Credits</h2><span class="okpill" id="okpill">Add courses</span></div>
           <div class="barwrap"><div class="barhead"><span class="lab">Elective units</span><span class="val"><b id="cap-elec" style="color:var(--green)">0</b> / 57</span></div><div class="bar"><i id="bar-elec" style="background:linear-gradient(90deg,#6E8A5B,#5F7A4E)"></i></div></div>
           <div class="barwrap"><div class="barhead"><span class="lab">Total Fall units <span style="color:var(--mute2);font-weight:500">(incl. core)</span></span><span class="val"><b id="cap-tot" style="color:var(--terra)">9</b> / 66</span></div><div class="bar"><i id="bar-tot" style="background:linear-gradient(90deg,#D08043,#C8703D)"></i></div></div>
-          <div class="fineline"><b style="color:#6B6157">Units</b> are used the moment you add a course. Bidding is closed for Fall 2026 — this is now your final-schedule &amp; add/drop planner. Always confirm on SloanBid/WebSIS.</div>
+          <div class="fineline"><b style="color:#6B6157">Units</b> are used the moment you add a course. Bidding is closed for Fall 2026 - this is now your final-schedule &amp; add/drop planner. Always confirm on SloanBid/WebSIS.</div>
         </div>
       </div>
 
@@ -291,7 +291,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
           </div>
         </div>
         <div class="calwrap" id="calwrap"></div>
-        <div class="traveldisc">🚇 <b>Harvard is across town</b> — HBS (Allston) and HKS/HLS (Cambridge) sit ~30–40 min from Sloan (Kendall). Leave a buffer between a Harvard class and a Sloan one; back-to-back isn’t realistic. <b>Set each Harvard course’s days</b> in My Fall Plan (confirm on my.harvard) and it appears here; an amber outline flags a tight commute.</div>
+        <div class="traveldisc">🚇 <b>Harvard is across town</b> - HBS (Allston) and HKS/HLS (Cambridge) sit ~30–40 min from Sloan (Kendall). Leave a buffer between a Harvard class and a Sloan one; back-to-back isn’t realistic. <b>Set each Harvard course’s days</b> in My Fall Plan (confirm on my.harvard) and it appears here; an amber outline flags a tight commute.</div>
       </div>
     </div>
   </div>
@@ -303,12 +303,12 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     <div class="panel pad">
       <div class="ph"><h2>Harvard Cross-Registration</h2><span class="count"><span id="hvCount">0</span> courses</span></div>
       <div style="margin:8px 0 12px;padding:11px 13px;border-radius:12px;background:#F6EAE7;border:1px solid #E8CFC9;font-size:12px;color:#8C1515;line-height:1.55;max-width:760px">
-        📋 <b>What’s included:</b> the full <b>HBS</b> Fall listing — with real meeting <b>days &amp; times</b>, so HBS courses plot on your calendar. <b>HKS (Kennedy)</b> courses are listed for reference but their Fall meeting times are <b>TBA</b> on my.harvard, so they don’t plot. <b>HLS (Law) isn’t included</b> — 200+ courses, mostly clinics/seminars not relevant to Fellows.
+        📋 <b>What’s included:</b> the full <b>HBS</b> Fall listing - with real meeting <b>days &amp; times</b>, so HBS courses plot on your calendar. <b>HKS (Kennedy)</b> courses are listed for reference but their Fall meeting times are <b>TBA</b> on my.harvard, so they don’t plot. <b>HLS (Law) isn’t included</b> - 200+ courses, mostly clinics/seminars not relevant to Fellows.
       </div>
-      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-register via MIT Add/Drop + the Harvard instructor’s OK (HKS/FAS are the easy path; HBS is petition + lottery). Fellows take <b>~3 Harvard courses total across the whole degree</b>. Units shown are the <b>MIT conversion</b> and count toward your 57/66 caps. <b>Add a course here, then set its days in My Fall Plan</b> (Sloan tab) to see it on your calendar with a commute check. ⭐ = marquee. HBS times are the 2025 listing; HKS is TBA — confirm on my.harvard.</p>
+      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-register via MIT Add/Drop + the Harvard instructor’s OK (HKS/FAS are the easy path; HBS is petition + lottery). Fellows take <b>~3 Harvard courses total across the whole degree</b>. Units shown are the <b>MIT conversion</b> and count toward your 57/66 caps. <b>Add a course here, then set its days in My Fall Plan</b> (Sloan tab) to see it on your calendar with a commute check. ⭐ = marquee. HBS times are the 2025 listing; HKS is TBA - confirm on my.harvard.</p>
       <div class="filters">
         <input id="hq" class="inp" placeholder="⌕  Search title, course #, faculty…" oninput="renderHarvard()">
-        <select id="hschool" class="inp" onchange="renderHarvard()"><option value="">All schools</option><option value="HBS">HBS — Business</option><option value="HKS">HKS — Kennedy</option><option value="HLS">HLS — Law</option></select>
+        <select id="hschool" class="inp" onchange="renderHarvard()"><option value="">All schools</option><option value="HBS">HBS - Business</option><option value="HKS">HKS - Kennedy</option><option value="HLS">HLS - Law</option></select>
       </div>
       <label class="toggle" style="margin-bottom:14px" onclick="hvMarquee=!hvMarquee;document.getElementById('hvmq').classList.toggle('on',hvMarquee);renderHarvard()"><span class="switch" id="hvmq"><i></i></span> Show only ⭐ marquee picks</label>
       <div id="hvlist" class="list" style="max-height:none"></div>
@@ -319,7 +319,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <div id="view-mit" style="display:none">
     <div class="panel pad">
       <div class="ph"><h2>MIT Non-Sloan Graduate Subjects</h2><span class="count"><span id="mitCount">0</span> shown</span></div>
-      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-registration reference for Sloan Fellows — graduate (G) subjects across MIT departments. These are <b>register / instructor-permission</b> (not bid), and meeting times aren’t in this dataset, so treat it as a browse-and-plan reference: email the professor early and confirm on the live MIT catalog before you register.</p>
+      <p style="font-size:12px;color:var(--sub);margin:6px 0 14px;line-height:1.55;max-width:760px">Cross-registration reference for Sloan Fellows - graduate (G) subjects across MIT departments. These are <b>register / instructor-permission</b> (not bid), and meeting times aren’t in this dataset, so treat it as a browse-and-plan reference: email the professor early and confirm on the live MIT catalog before you register.</p>
       <div class="filters">
         <input id="mq" class="inp" placeholder="⌕  Search title, course #, instructor…" oninput="renderMit()">
         <select id="mdept" class="inp" onchange="renderMit()"></select>
@@ -340,7 +340,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
   <!-- FOOTER -->
   <div class="foot">
-    <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved in this browser until you sign in &amp; sync. Always confirm on SloanBid / WebSIS.
+    <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort - not affiliated with MIT Sloan. Your plan is saved in this browser until you sign in &amp; sync. Always confirm on SloanBid / WebSIS.
   </div>
 </div>
 
@@ -370,7 +370,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
 <script>
 /* ===================== certificates ===================== */
-/* ===== Supabase (shared community layer) — PASTE YOUR PROJECT CREDS HERE ===== */
+/* ===== Supabase (shared community layer) - PASTE YOUR PROJECT CREDS HERE ===== */
 const SB_URL='https://htbhfahaddsbqjemoiaj.supabase.co';
 const SB_KEY='sb_publishable_9Ii2rmOjf6dIhtW-Vz9mXA_ZuaP4Ce7'; /* publishable key (safe to embed) */
 const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
@@ -458,10 +458,10 @@ const COURSES=[
   K({id:'15.C57',sec:'C',title:'Optimization Methods',units:12,half:'F',fac:'S. Amin',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'20 Sloan seats'}),
   K({id:'15.S23',title:'SSIM: AI Builder Space Proseminar',units:3,half:'F',fac:'R. Card',certs:['BA'],route:'Apply',m:mt('M','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.572',title:'Analytics Lab (A-Lab)',units:9,half:'F',fac:'A. Almaatouq',certs:['BA'],route:'Apply',m:mt('Th','16:00-17:30'),note:'Permission · a-lab@mit.edu'}),
-  K({id:'15.900',sec:'A',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','8:30-10:00'),note:'MBA 1st-yr — SFMBA waitlist'}),
-  K({id:'15.900',sec:'B',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','10:00-11:30'),note:'MBA 1st-yr — SFMBA waitlist'}),
-  K({id:'15.900',sec:'C',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','13:00-14:30'),note:'MBA 1st-yr — SFMBA waitlist'}),
-  K({id:'15.900',sec:'D',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','14:30-16:00'),note:'MBA 1st-yr — SFMBA waitlist'}),
+  K({id:'15.900',sec:'A',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','8:30-10:00'),note:'MBA 1st-yr - SFMBA waitlist'}),
+  K({id:'15.900',sec:'B',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','10:00-11:30'),note:'MBA 1st-yr - SFMBA waitlist'}),
+  K({id:'15.900',sec:'C',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','13:00-14:30'),note:'MBA 1st-yr - SFMBA waitlist'}),
+  K({id:'15.900',sec:'D',title:'Competitive Strategy',units:9,half:'F',fac:'D. Sull · E. Zuckerman Sivan',certs:['EM'],route:'Waitlist',tier:'Medium',m:mt('MW','14:30-16:00'),note:'MBA 1st-yr - SFMBA waitlist'}),
   K({id:'15.906',title:'Competitive Strategy Boot Camp',units:3,half:'H1',fac:'D. Li',certs:[],route:'Bid',tier:'Low',m:[],note:'Sloan Fellows · meets 9/8 & 9/11'}),
   K({id:'15.223',sec:'A',title:'Global Markets, National Policies & Competitive Advantage',units:6,half:'H2',fac:'S. Johnson · R. Locke · L. Videgaray',certs:[],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.223',sec:'B',title:'Global Markets, National Policies & Competitive Advantage',units:6,half:'H2',fac:'S. Johnson · R. Locke · L. Videgaray',certs:[],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
@@ -500,7 +500,7 @@ const COURSES=[
   K({id:'15.767',title:'Intro to Healthcare Delivery in the US',units:9,half:'F',fac:'A. Quaadgras',certs:['HC'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30')}),
   K({id:'15.777',title:'Healthcare Lab (H-Lab)',units:15,fu:9,half:'F',fac:'A. Quaadgras',certs:['HC','EM'],route:'Bid',tier:'Medium',m:mt('TTh','10:00-11:30'),note:'9u Fall + 6u IAP'}),
   K({id:'15.136',title:'Principles & Practice of Drug Development',units:9,half:'F',fac:'S. Finkelstein',certs:['HC'],route:'Bid',tier:'Medium',m:mt('W','15:00-18:00')}),
-  K({id:'15.S13',title:'SSIM: CATAPULT Bio — Theory into Practice',units:9,half:'F',fac:'A. Lo',certs:['HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
+  K({id:'15.S13',title:'SSIM: CATAPULT Bio - Theory into Practice',units:9,half:'F',fac:'A. Lo',certs:['HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.S05',title:'SSIM: CATAPULT Advanced Energy Technologies',units:9,half:'F',fac:'A. Lo',certs:['SUS','HC'],route:'Apply',m:mt('T','16:00-19:00'),note:'Permission of instructor'}),
   K({id:'15.016',title:'Climate & Energy in the Global Economy',units:12,half:'F',fac:'N. Kala · C. Wolfram',certs:['SUS'],route:'Bid',tier:'Medium',m:mt('MW','13:00-14:30'),note:'Graduate'}),
   K({id:'15.662',sec:'A',title:'People & Profits: Shaping the Future of Work',units:12,half:'F',fac:'A. Stansbury',certs:['SUS'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30')}),
@@ -538,7 +538,7 @@ const COURSES=[
   K({id:'15.S51',title:'SSIM: Transactions, Strategic Dealmaking, and the Law',units:6,half:'H2',fac:'H. Stone',certs:['FIN','EI'],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00'),note:'New this term'}),
   K({id:'15.S55',title:'SSIM: Family Offices: Purpose, Design, Functions & Ecosystem',units:6,half:'H2',fac:'J. Davis · T. Vanparys',certs:['FIN'],route:'Bid',tier:'Low',m:mt('M','16:00-19:00'),note:'New this term · Graduate'}),
   /* ---- Harvard cross-registration · units = MIT conversion · register via MIT Add/Drop + instructor OK · ⭐ = marquee · set days in plan ---- */
-  /* HBS (2025 Fall listing — confirm on my.harvard) */
+  /* HBS (2025 Fall listing - confirm on my.harvard) */
   K({id:'HBS-1624',title:'Entrepreneurial Finance',units:12,half:'F',fac:'Howell · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1440',title:'Private Equity Finance',units:12,half:'F',fac:'Berk · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-2240',title:'Negotiation',units:12,half:'F',fac:'Zlatev / Norton / Coffman · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
@@ -581,13 +581,13 @@ const COURSES=[
   K({id:'LAW-2101',title:'Law in Global Affairs',units:12,half:'F',fac:'D. Kennedy · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 3cr→12u'}),
   K({id:'LAW-2020',title:'Capital Punishment in America',units:12,half:'F',fac:'Steiker · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 4cr→12u'}),
   K({id:'LAW-2169',title:'Legal Profession',units:12,half:'F',fac:'Gordon-Reed · HLS',certs:[],route:'Crossreg',m:[],note:'HLS · 3cr→12u'}),
-  /* ---- Not biddable by SFMBA — shown only when the eligibility filter is OFF ---- */
+  /* ---- Not biddable by SFMBA - shown only when the eligibility filter is OFF ---- */
   K({id:'15.401',title:'Managerial Finance',units:9,half:'F',fac:'T. Choukhmane',certs:['FIN','EM'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Non-Sloan/MBA sections only · overlaps core 15.414'}),
-  K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take — repeats core'}),
+  K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take - repeats core'}),
   K({id:'15.516',title:'Corporate Financial Accounting',units:12,half:'F',fac:'G. Sabin',certs:['FIN'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Repeats Summer core 15.511'}),
   K({id:'15.761',title:'Introduction to Operations Management',units:9,half:'F',fac:'R. Levi',certs:['EM','BA','DPM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'Repeats Summer core 15.778'}),
-  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not take in Fall'}),
-  K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not take in Fall'}),
+  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 - do not take in Fall'}),
+  K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 - do not take in Fall'}),
 ];
 
 const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core',Ineligible:'r-Ineligible',Crossreg:'r-Crossreg',MITreg:'r-Register'};
@@ -615,7 +615,7 @@ function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up
 function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const d=effDays(c),t=HV_TIME[c.key];c.m=(d&&t)?d.flatMap(x=>mt(x,t)):[];});}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
 const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
-/* Sold out after Round I (Round II) — closed, can't bid. Update keys here each round. */
+/* Sold out after Round I (Round II) - closed, can't bid. Update keys here each round. */
 const FULL=new Set(['15.S03','15.563','15.774','15.095','15.C57·B','15.C57·C','15.223·A','15.223·B','15.768·A','15.768·B','15.431·B','15.456','15.483','15.451','15.S07','15.818·A','15.275','15.665·A','15.665·B','15.284·A','15.325']);
 const isFull=c=>FULL.has(c.key);
 
@@ -637,13 +637,13 @@ async function loadRoster(){
   try{
     const [en,pr]=await Promise.all([SB.from('mf_enrollments').select('course_id,user_id,status'),SB.from('mf_profiles').select('id,name,email')]);
     const info={};(pr.data||[]).forEach(p=>info[p.id]={name:p.name,email:p.email});
-    const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'sampling',uid:e.user_id});});
+    const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||' - ',email:(info[e.user_id]||{}).email,status:e.status||'sampling',uid:e.user_id});});
     roster=r;render();
   }catch(e){}
 }
 function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.id):[];}
 function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
-// Classmates popup — click any class to see who else is in it (refreshes live on open)
+// Classmates popup - click any class to see who else is in it (refreshes live on open)
 async function showClassmates(key){
   const c=byKey(key);if(!c)return;
   const modal=document.getElementById('matesModal'),box=document.getElementById('matesBox');
@@ -657,10 +657,10 @@ async function showClassmates(key){
   const mine=(roster[key]||[]).some(m=>m.uid===session.user.id);
   let body;
   if(!people.length){
-    body=`<div style="padding:20px 0;color:var(--mute2);font-size:13px;line-height:1.6">No classmates here yet${mine?' — you’re the first in this class':''}. As people join and add their courses, they’ll show up here automatically.</div>`;
+    body=`<div style="padding:20px 0;color:var(--mute2);font-size:13px;line-height:1.6">No classmates here yet${mine?' - you’re the first in this class':''}. As people join and add their courses, they’ll show up here automatically.</div>`;
   }else{
     body=`<div style="font-size:13px;color:var(--sub);margin:12px 0 12px"><b style="color:var(--ink);font-size:15px">${people.length}</b> classmate${people.length>1?'s':''} in this class${mine?' (plus you)':''}</div>
-      <div style="display:flex;flex-direction:column;gap:8px">${people.map(m=>{const stc=(STATUS[m.status]||{}).color||'#888',stl=(STATUS[m.status]||{}).label||'';return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px"><span style="flex:1;font-weight:600;min-width:0">${m.name||'—'}</span>${stl?`<span style="font-size:11.5px;font-weight:600;color:${stc};display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="font-size:13px">●</span>${stl}</span>`:''}</div>`;}).join('')}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">${people.map(m=>{const stc=(STATUS[m.status]||{}).color||'#888',stl=(STATUS[m.status]||{}).label||'';return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px"><span style="flex:1;font-weight:600;min-width:0">${m.name||' - '}</span>${stl?`<span style="font-size:11.5px;font-weight:600;color:${stc};display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="font-size:13px">●</span>${stl}</span>`:''}</div>`;}).join('')}</div>
       <div style="margin-top:16px;font-size:11.5px;color:var(--sub2);line-height:1.5">Reach out by email or on your cohort WhatsApp to compare plans or swap sections.</div>`;
   }
   box.innerHTML=head+body;
@@ -686,11 +686,11 @@ function buildStatic(){
   const steps=[
     ['1','Three catalogs','Top tabs: 📋 Sloan · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
     ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
-    ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping — so you (and classmates) can see where things stand.'],
-    ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed — this is your add/drop planner now.'],
+    ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping - so you (and classmates) can see where things stand.'],
+    ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed - this is your add/drop planner now.'],
     ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Hover for details; ✕ or double-click to remove.'],
     ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
-    ['7','See classmates','Sign in (Community tab) to see who else is in each class, their status, and email them — great for planning add/drop swaps together.'],
+    ['7','See classmates','Sign in (Community tab) to see who else is in each class, their status, and email them - great for planning add/drop swaps together.'],
     ['8','It’s private','Your plan saves in this browser; nothing is shared until you sign in & sync. Always confirm on SloanBid / WebSIS.'],
   ];
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
@@ -714,7 +714,7 @@ function tipHTML(c){
   const col=colorOf(c);
   let extra='';
   const a=ALSO[c.base];if(a)extra+=`<div class="trow" style="color:#A9D49B">🔁 Also offered in ${a.join(', ')}</div>`;
-  const s=SIM[c.base];if(s)extra+=`<div class="trow" style="color:#AFC2DC">≈ Similar: ${s.id} — ${s.why}</div>`;
+  const s=SIM[c.base];if(s)extra+=`<div class="trow" style="color:#AFC2DC">≈ Similar: ${s.id} - ${s.why}</div>`;
   if(c.note)extra+=`<div class="trow" style="color:#E7B27E">◔ ${c.note}</div>`;
   return `<div class="tc" style="color:${tint(col,.55)}">${c.id}${c.sec||''}</div>
     <div class="tt">${c.title}</div>
@@ -767,7 +767,7 @@ function render(){
     return `<div class="course" data-key="${c.key}" style="border-left-color:${full?'#c2002a':col};background:${full?'#fdecee':tint(col,.05)};${inelig?'opacity:.72;':''}">
       <div style="flex:1;min-width:0">
         <div class="crow">
-          ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick — top reputation/demand">⭐</span>':''}
+          ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick - top reputation/demand">⭐</span>':''}
           <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
           <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}
         </div>
@@ -781,7 +781,7 @@ function render(){
         <div class="fac">👤 ${c.fac}</div>
         <div class="notes">${noteChips(c)}</div>
       </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Enrolled — click to remove from plan" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
+      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Enrolled - click to remove from plan" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
   document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
@@ -926,7 +926,7 @@ function renderHarvard(){
         <div class="fac">👤 ${c.fac}</div>
         ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
       </div>
-      ${added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
+      ${added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won - click to withdraw" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No Harvard courses match.</div>`;
 }
@@ -969,9 +969,9 @@ function renderMit(){
         ${c.ds?`<div style="font-size:11.5px;color:var(--sub);margin-top:8px;line-height:1.45">${c.ds}</div>`:''}
         ${c.x?`<div class="fac" style="margin-top:4px">↔ ${c.x}</div>`:''}
       </div>
-      ${state.plan.includes('MIT:'+c.id)?(isWon('MIT:'+c.id)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won — click to withdraw" onclick="withdraw('MIT:${c.id}')">🔒</button>`:`<button class="add in" onclick="remove('MIT:${c.id}')">✓</button>`):`<button class="add" onclick="add('MIT:${c.id}')">+</button>`}
+      ${state.plan.includes('MIT:'+c.id)?(isWon('MIT:'+c.id)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won - click to withdraw" onclick="withdraw('MIT:${c.id}')">🔒</button>`:`<button class="add in" onclick="remove('MIT:${c.id}')">✓</button>`):`<button class="add" onclick="add('MIT:${c.id}')">+</button>`}
     </div>`).join('')||`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);padding:40px 0">No subjects match these filters.</div>`;
-  if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} — refine search or pick a department to see more.</div>`);
+  if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} - refine search or pick a department to see more.</div>`);
 }
 
 /* ===================== community (Supabase) ===================== */
@@ -979,7 +979,7 @@ function updateAcct(){const b=document.getElementById('acctBtn');if(b)b.textCont
 async function sbInit(){
   if(!SB){renderCommunity();return;}
   try{const{data}=await SB.auth.getSession();session=data.session;}catch(e){}
-  SB.auth.onAuthStateChange((e,s)=>{session=s;if(e==='PASSWORD_RECOVERY'){const np=prompt('Set a new password (min 6 chars):');if(np&&np.length>=6)SB.auth.updateUser({password:np}).then(()=>alert('Password updated — you’re signed in.'));}onAuth();});
+  SB.auth.onAuthStateChange((e,s)=>{session=s;if(e==='PASSWORD_RECOVERY'){const np=prompt('Set a new password (min 6 chars):');if(np&&np.length>=6)SB.auth.updateUser({password:np}).then(()=>alert('Password updated - you’re signed in.'));}onAuth();});
   await onAuth();
 }
 async function onAuth(){
@@ -1013,14 +1013,14 @@ async function syncDown(){
 function setAuthMode(m){authMode=m;authView='form';renderCommunity();}
 function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
 async function doRegister(){
-  if(!SB){amsg('Not connected yet — Supabase creds pending.');return;}
+  if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const name=(document.getElementById('rName').value||'').trim();
   const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
   const email2=(document.getElementById('rEmail2').value||'').trim().toLowerCase();
   const pw=(document.getElementById('rPw').value||'');
   if(!name){amsg('Please enter your name.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
-  if(email!==email2){amsg('The two emails don’t match — please re-type it.');return;}
+  if(email!==email2){amsg('The two emails don’t match - please re-type it.');return;}
   if(pw.length<6){amsg('Password must be at least 6 characters.');return;}
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name},emailRedirectTo:location.href.split('#')[0]}});
   if(error){amsg(error.message);return;}
@@ -1042,7 +1042,7 @@ async function resendCode(){
   amsg(error?error.message:'Code re-sent ✉️',!error);
 }
 async function doLogin(){
-  if(!SB){amsg('Not connected yet — Supabase creds pending.');return;}
+  if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
   const pw=(document.getElementById('lPw').value||'');
   const{error}=await SB.auth.signInWithPassword({email,password:pw});
@@ -1071,7 +1071,7 @@ async function searchPeople(){
   if(q)query=query.ilike('name','%'+q+'%');
   let data=[];try{const r=await query;data=r.data||[];}catch(e){}
   const list=document.getElementById('peopleList');if(!list)return;
-  list.innerHTML=data.filter(p=>p.name&&(!session||p.id!==session.user.id)).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No classmates yet — you’re the first. Share the link with your cohort.</div>';
+  list.innerHTML=data.filter(p=>p.name&&(!session||p.id!==session.user.id)).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No classmates yet - you’re the first. Share the link with your cohort.</div>';
 }
 async function viewPerson(id,name){
   if(!SB)return;
@@ -1081,7 +1081,7 @@ async function viewPerson(id,name){
   const onCal=overlays.some(o=>o.id===id);
   box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay calendar'}</button>`}</div>
     <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
-    <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat — you can see which classes you overlap on via the calendar overlay.</div>`;
+    <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat - you can see which classes you overlap on via the calendar overlay.</div>`;
 }
 async function overlayPerson(id,name){
   if(!SB)return;
@@ -1098,7 +1098,7 @@ function clearOverlay(){overlays=[];render();}
 function renderCommunity(){
   const b=document.getElementById('commBody');if(!b)return;
   if(!session){
-    const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview — the shared layer turns on once the Supabase project is connected. The form below is inactive for now.</div>`;
+    const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview - the shared layer turns on once the Supabase project is connected. The form below is inactive for now.</div>`;
     if(authView==='verify'){
       b.innerHTML=banner+`<div style="max-width:440px">
         <p style="font-size:13px;color:var(--sub);line-height:1.6">We emailed a 6-digit code to <b>${pendingEmail||'your email'}</b>. Enter it to finish creating your profile (or click the link in the email).</p>
@@ -1107,7 +1107,7 @@ function renderCommunity(){
         <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div></div>`;
       return;
     }
-    const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Create an account to share your plan and see what classmates are taking — <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to plan swaps and find meeting times. SFMBA-only (<b>@mit.edu</b>); nothing is shared until you sign in &amp; sync.</p>`;
+    const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Create an account to share your plan and see what classmates are taking - <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to plan swaps and find meeting times. SFMBA-only (<b>@mit.edu</b>); nothing is shared until you sign in &amp; sync.</p>`;
     const seg=`<div class="seg" style="max-width:260px;margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
     const form=authMode==='register'
       ? `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
@@ -1116,7 +1116,7 @@ function renderCommunity(){
            <input id="rEmail2" class="inp" type="email" placeholder="Re-type your @mit.edu email" autocomplete="off" onpaste="return false" oncopy="return false">
            <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
            <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
-           <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email — classmates will use it to reach you, and there's no verification step.</div>
+           <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email - classmates will use it to reach you, and there's no verification step.</div>
          </div>`
       : `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
            <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
