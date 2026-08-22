@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Muddy Falls · Fall 2026 Bidding</title>
+<title>Muddy Falls · Fall 2026 Course Organizer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -214,7 +214,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div class="logo">MF</div>
       <div>
         <div class="brand-name">Muddy Falls</div>
-        <div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 Bidding</div>
+        <div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 Course Organizer</div>
       </div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
@@ -229,7 +229,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
   <!-- TABS -->
   <div class="tabs">
-    <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan Fall Bidding</button>
+    <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan courses</button>
     <button id="tab-harvard" onclick="setTab('harvard')">🎓 Harvard cross-reg</button>
     <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
     <button id="tab-community" onclick="setTab('community')">👥 Community</button>
@@ -252,8 +252,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div class="elig">
         <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
         <div>
-          <div class="t">Only courses I can bid for <span>(SFMBA)</span></div>
-          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats — only what SFMBAs can actually bid or apply for. <i>(SloanBid’s “205” counts all those.)</i></div>
+          <div class="t">Only courses I can take <span>(SFMBA)</span></div>
+          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats — only what SFMBAs can actually enroll in. <i>(SloanBid’s “205” counts all those.)</i></div>
         </div>
       </div>
       <div class="legend" id="legend"></div>
@@ -340,7 +340,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
   <!-- FOOTER -->
   <div class="foot">
-    <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved only in this browser. Always confirm on SloanBid before bidding.
+    <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort — not affiliated with MIT Sloan. Your plan is saved in this browser until you sign in &amp; sync. Always confirm on SloanBid / WebSIS.
   </div>
 </div>
 
@@ -355,12 +355,12 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div>
         <div class="tagpill">Getting started</div>
         <h2 class="big">How to use Muddy Falls</h2>
-        <p style="margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.5;">Plan your Fall 2026 electives and bids in a few minutes.</p>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.5;">Plan your Fall 2026 courses and weekly schedule in a few minutes.</p>
       </div>
       <button class="close" onclick="closeHelp()">×</button>
     </div>
     <div class="steps" id="steps"></div>
-    <div class="reopen"><b>Reopen anytime</b> with “? How to use” in the top bar. Always confirm everything on SloanBid before you actually bid.</div>
+    <div class="reopen"><b>Reopen anytime</b> with “? How to use” in the top bar. Always confirm everything on SloanBid / WebSIS.</div>
   </div>
 </div>
 
@@ -446,7 +446,7 @@ const COURSES=[
   K({id:'15.561',title:'Digital Revolution: Foundations to Future Trends',units:9,half:'F',fac:'A. Almaatouq',certs:['DPM','BA'],route:'Bid',tier:'Medium',m:mt('TTh','13:00-14:30')}),
   K({id:'15.071',title:'The AI Edge',units:12,half:'F',fac:'A. Jacquillat',certs:['BA','FIN','DPM'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00')}),
   K({id:'15.774',title:'AI for Operations',units:12,half:'F',fac:'M. Fazel-Zarandi',certs:['BA','DPM'],route:'Bid',tier:'Medium',m:mt('MW','14:30-16:00')}),
-  K({id:'15.095',title:'Machine Learning Under a Modern Optimization Lens',units:12,half:'F',fac:'D. Bertsimas',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','16:00-17:30'),note:'34 seats for Sloan bidding'}),
+  K({id:'15.095',title:'Machine Learning Under a Modern Optimization Lens',units:12,half:'F',fac:'D. Bertsimas',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','16:00-17:30'),note:'34 Sloan seats'}),
   K({id:'15.099',title:'Seminar in OR: Deep Learning & Generative AI',units:12,half:'F',fac:'D. Bertsimas · G. Stamou',certs:['BA'],route:'Bid',tier:'Medium',m:mt('TTh','17:30-19:00'),note:'Graduate only'}),
   K({id:'15.C57',sec:'B',title:'Optimization Methods',units:12,half:'F',fac:'S. Gupta',certs:['BA'],route:'Bid',tier:'Medium',m:mt('TTh','14:30-16:00'),note:'20 Sloan seats'}),
   K({id:'15.C57',sec:'C',title:'Optimization Methods',units:12,half:'F',fac:'S. Amin',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'20 Sloan seats'}),
@@ -525,12 +525,12 @@ const COURSES=[
   K({id:'15.671',title:'U-Lab: Transforming Self, Business & Society',units:6,half:'H1',fac:'O. Scharmer',certs:['SUS'],route:'Bid',tier:'Low',m:mt('Th','17:30-21:00')}),
   K({id:'15.S21',title:'SSIM: The Successful Family Business',units:9,half:'F',fac:'J. Davis',certs:[],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00')}),
   K({id:'15.618',title:'Startups and the Law',units:6,half:'F',fac:'J. Akula',certs:['EI'],route:'Bid',tier:'Low',m:mt('W','17:30-19:00')}),
-  /* ---- New for Round II ---- */
-  K({id:'15.S50',sec:'A',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00'),note:'New for Round II · SFMBA + 2nd-yr MBA · ~10 SFMBA seats'}),
-  K({id:'15.S50',sec:'B',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'New for Round II · SFMBA + 2nd-yr MBA · ~10 SFMBA seats'}),
-  K({id:'15.S50',sec:'C',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','16:00-17:30'),note:'New for Round II · section C has recorded fireside chats · ~20 SFMBA seats'}),
-  K({id:'15.S51',title:'SSIM: Transactions, Strategic Dealmaking, and the Law',units:6,half:'H2',fac:'H. Stone',certs:['FIN','EI'],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00'),note:'New for Round II'}),
-  K({id:'15.S55',title:'SSIM: Family Offices: Purpose, Design, Functions & Ecosystem',units:6,half:'H2',fac:'J. Davis · T. Vanparys',certs:['FIN'],route:'Bid',tier:'Low',m:mt('M','16:00-19:00'),note:'New for Round II · Graduate'}),
+  /* ---- New this term ---- */
+  K({id:'15.S50',sec:'A',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','8:30-10:00'),note:'New this term · SFMBA + 2nd-yr MBA · ~10 SFMBA seats'}),
+  K({id:'15.S50',sec:'B',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','10:00-11:30'),note:'New this term · SFMBA + 2nd-yr MBA · ~10 SFMBA seats'}),
+  K({id:'15.S50',sec:'C',title:'SSIM: Leading Agentic AI Transformation in Organizations',units:6,half:'H1',fac:'K. Kellogg',certs:['BA'],route:'Bid',tier:'Medium',m:mt('MW','16:00-17:30'),note:'New this term · section C has recorded fireside chats · ~20 SFMBA seats'}),
+  K({id:'15.S51',title:'SSIM: Transactions, Strategic Dealmaking, and the Law',units:6,half:'H2',fac:'H. Stone',certs:['FIN','EI'],route:'Bid',tier:'Low',m:mt('MW','8:30-10:00'),note:'New this term'}),
+  K({id:'15.S55',title:'SSIM: Family Offices: Purpose, Design, Functions & Ecosystem',units:6,half:'H2',fac:'J. Davis · T. Vanparys',certs:['FIN'],route:'Bid',tier:'Low',m:mt('M','16:00-19:00'),note:'New this term · Graduate'}),
   /* ---- Harvard cross-registration · units = MIT conversion · register via MIT Add/Drop + instructor OK · ⭐ = marquee · set days in plan ---- */
   /* HBS (2025 Fall listing — confirm on my.harvard) */
   K({id:'HBS-1624',title:'Entrepreneurial Finance',units:12,half:'F',fac:'Howell · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
@@ -580,14 +580,14 @@ const COURSES=[
   K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take — repeats core'}),
   K({id:'15.516',title:'Corporate Financial Accounting',units:12,half:'F',fac:'G. Sabin',certs:['FIN'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Repeats Summer core 15.511'}),
   K({id:'15.761',title:'Introduction to Operations Management',units:9,half:'F',fac:'R. Levi',certs:['EM','BA','DPM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'Repeats Summer core 15.778'}),
-  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not bid in Fall'}),
-  K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not bid in Fall'}),
+  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not take in Fall'}),
+  K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 — do not take in Fall'}),
 ];
 
 const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core',Ineligible:'r-Ineligible',Crossreg:'r-Crossreg',MITreg:'r-Register'};
-const ROUTELABEL={Bid:'Bid',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core',Ineligible:'Not for SFMBA',Crossreg:'Harvard · cross-reg',MITreg:'MIT · register'};
+const ROUTELABEL={Bid:'Elective',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core',Ineligible:'Not for SFMBA',Crossreg:'Harvard · cross-reg',MITreg:'MIT · register'};
 const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
-const TIERLAB={High:'High demand',Medium:'Medium',Low:'Low · token'};
+const TIERLAB={High:'Hard to get',Medium:'Moderate',Low:'Usually open'};
 const biddable=c=>c.route==='Bid';
 const FU=c=>(c.fu??c.units); // Fall units (some labs split Fall+IAP)
 const isHv=c=>c.route==='Crossreg';
@@ -683,7 +683,7 @@ function tipHTML(c){
   return `<div class="tc" style="color:${tint(col,.55)}">${c.id}${c.sec||''}</div>
     <div class="tt">${c.title}</div>
     <div class="td">
-      <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+c.tier+' tier':''}
+      <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+TIERLAB[c.tier]:''}
       <div class="trow">🕑 ${c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program')}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
@@ -733,7 +733,7 @@ function render(){
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick — top reputation/demand">⭐</span>':''}
           <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
-          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Full — Round I</span>':''}
+          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}
         </div>
         <div class="ctitle">${c.title}</div>
         <div class="meta">
