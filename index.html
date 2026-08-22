@@ -700,6 +700,13 @@ function buildStatic(){
   document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
   cal.addEventListener('scroll',()=>tip.style.display='none');
   document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked||isWon(c.key))return;tip.style.display='none';remove(c.key);});
+  // Click any course card (catalog / Harvard / MIT / plan) → classmates popup. Controls still work.
+  document.addEventListener('click',e=>{
+    if(e.target.closest('button,select,a,input,.stsel,.mate,.note,.rk,.add,.rm,.hvsel'))return;
+    if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan'))return;
+    const card=e.target.closest('[data-key]');
+    if(card&&card.dataset.key){tip.style.display='none';showClassmates(card.dataset.key);}
+  });
 }
 function tipHTML(c){
   const col=colorOf(c);
@@ -799,7 +806,7 @@ function renderPlan(){
   document.getElementById('planCount').textContent=cs.length;
   document.getElementById('plan').innerHTML=cs.map(c=>{
     const col=colorOf(c),st=statusOf(c.key),won=isWon(c.key),bcol=(st!=='bidding'&&!c.locked)?STATUS[st].color:col,ms=c.locked?[]:mates(c.key);
-    return `<div class="prow" style="border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
+    return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
           <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>
@@ -1060,13 +1067,14 @@ async function searchPeople(){
   if(q)query=query.ilike('name','%'+q+'%');
   let data=[];try{const r=await query;data=r.data||[];}catch(e){}
   const list=document.getElementById('peopleList');if(!list)return;
-  list.innerHTML=data.filter(p=>p.name).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No one here yet — be the first to sync your plan.</div>';
+  list.innerHTML=data.filter(p=>p.name&&(!session||p.id!==session.user.id)).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No classmates yet — you’re the first. Share the link with your cohort.</div>';
 }
 async function viewPerson(id,name){
   if(!SB)return;
   let data=[];try{const r=await SB.from('mf_enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
   const box=document.getElementById('personBox');if(!box)return;
-  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}</h2><button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button></div>
+  const isSelf=session&&id===session.user.id;
+  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button>`}</div>
     <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
     <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat — you can see which classes you overlap on via the calendar overlay.</div>`;
 }
