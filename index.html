@@ -700,10 +700,10 @@ function buildStatic(){
   document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
   cal.addEventListener('scroll',()=>tip.style.display='none');
   document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked||isWon(c.key))return;tip.style.display='none';remove(c.key);});
-  // Click any course card (catalog / Harvard / MIT / plan) → classmates popup. Controls still work.
+  // Click any course anywhere (catalog / Harvard / MIT / plan / calendar block) → classmates popup. Controls still work.
   document.addEventListener('click',e=>{
-    if(e.target.closest('button,select,a,input,.stsel,.mate,.note,.rk,.add,.rm,.hvsel'))return;
-    if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan'))return;
+    if(e.target.closest('button,select,a,input,.stsel,.mate,.note,.rk,.add,.rm,.hvsel,.bx'))return;
+    if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan,#calwrap'))return;
     const card=e.target.closest('[data-key]');
     if(card&&card.dataset.key){tip.style.display='none';showClassmates(card.dataset.key);}
   });
