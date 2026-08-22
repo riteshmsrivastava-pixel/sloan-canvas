@@ -1071,7 +1071,11 @@ async function searchPeople(){
   if(q)query=query.ilike('name','%'+q+'%');
   let data=[];try{const r=await query;data=r.data||[];}catch(e){}
   const list=document.getElementById('peopleList');if(!list)return;
-  list.innerHTML=data.filter(p=>p.name&&(!session||p.id!==session.user.id)).map(p=>`<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span><span class="btn">view</span></div>`).join('')||'<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">No classmates yet - you’re the first. Share the link with your cohort.</div>';
+  const people=data.filter(p=>p.name&&p.id!==session.user.id);
+  const sharedCount=id=>(state.plan||[]).filter(k=>(roster[k]||[]).some(m=>m.uid===id)).length;
+  if(!people.length){list.innerHTML='<div style="color:var(--mute2);padding:24px;text-align:center;font-size:13px">'+(q?'No classmates match “'+q+'”.':'No classmates yet - you’re the first. Share the link with your cohort.')+'</div>';return;}
+  const header=`<div style="font-family:var(--fm);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);padding:0 2px 8px">${q?'Matches':'All classmates'} · ${people.length}</div>`;
+  list.innerHTML=header+people.map(p=>{const sc=sharedCount(p.id);return `<div class="prow" style="cursor:pointer" onclick="viewPerson('${p.id}',${JSON.stringify(p.name).replace(/"/g,'&quot;')})"><span class="ptitle" style="flex:1">${p.name}</span>${sc?`<span style="font-size:11px;color:var(--sub);white-space:nowrap;margin-right:8px">${sc} shared</span>`:''}<span class="btn">view</span></div>`;}).join('');
 }
 async function viewPerson(id,name){
   if(!SB)return;
