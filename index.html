@@ -374,7 +374,9 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 const SB_URL='https://htbhfahaddsbqjemoiaj.supabase.co';
 const SB_KEY='sb_publishable_9Ii2rmOjf6dIhtW-Vz9mXA_ZuaP4Ce7'; /* publishable key (safe to embed) */
 const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
-let session=null, myProfile=null, overlay=null, authMode='login', authView='form', pendingEmail=null, pendingName=null;
+let session=null, myProfile=null, overlays=[], authMode='login', authView='form', pendingEmail=null, pendingName=null;
+const OVL_COLORS=['#4c5a6e','#9c5a2e','#3f7d54'];
+const OVL_MAX=3;
 /* ============================================================ */
 const CERT={
   BA:{full:'Business Analytics',v:'--BA',c:'#7c5cff'},
@@ -869,14 +871,15 @@ function renderCalendar(){
       col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}${st==='dropping'?';opacity:.5':''}${(st==='sampling'||st==='waitlist')?';border-left-style:dashed':''}">
         ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${(st!=='bidding'&&st!=='enrolled')?`<span style="color:${STATUS[st].color}">●</span> `:''}${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
-    if(overlay)overlay.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
-      const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24);
-      col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:3px;width:42%;background:rgba(76,90,110,.16);border-left:3px dashed #4c5a6e;pointer-events:none;z-index:3"><div class="bc" style="color:#3d4a5c;font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;}));
-    if(!evs.length&&d==='F'&&!overlay)col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
+    const nov=overlays.length,cw=nov?44/nov:0;
+    overlays.forEach((ov,oi2)=>ov.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
+      const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24),rp=oi2*cw;
+      col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:calc(${rp}% + 3px);width:calc(${cw}% - 3px);background:${tint(ov.color,.16)};border-left:3px dashed ${ov.color};pointer-events:none;z-index:3"><div class="bc" style="color:${ov.color};font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;}));
+    if(!evs.length&&d==='F'&&!overlays.length)col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
-  const oi=document.getElementById('overlayInfo');if(oi)oi.innerHTML=overlay?`<span class="clash" style="background:#e6eaef;color:#4c5a6e">👥 ${overlay.name} · <span onclick="clearOverlay()" style="cursor:pointer;text-decoration:underline">clear</span></span>`:'';
+  const oi=document.getElementById('overlayInfo');if(oi)oi.innerHTML=overlays.map(o=>`<span class="clash" style="background:${tint(o.color,.18)};color:${o.color}">👥 ${o.name} <span onclick="removeOverlay('${o.id}')" title="Remove from calendar" style="cursor:pointer;font-weight:800;margin-left:5px">×</span></span>`).join('')+(overlays.length>1?`<span class="clash" style="cursor:pointer;background:#ece7df;color:#6B6157" onclick="clearOverlay()">clear all</span>`:'');
   const n=cs.filter(c=>conf.has(c.key)).length,cm=cs.filter(c=>isHv(c)&&commute.has(c.key)).length,el=document.getElementById('clash');
   if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'')+(cm?' · '+cm+' commute':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
   else if(cm){el.textContent='🚇 '+cm+' tight commute'+(cm>1?'s':'');el.style.background='#F5E7D6';el.style.color='#A65F28';}
@@ -1052,7 +1055,7 @@ async function forgotPw(){
   const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
   amsg(error?error.message:'Password-reset link sent ✉️',!error);
 }
-async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myProfile=null;overlay=null;updateAcct();renderCommunity();render();}
+async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myProfile=null;overlays=[];updateAcct();renderCommunity();render();}
 async function syncUp(){
   if(!SB||!session)return;
   const uid=session.user.id;
@@ -1074,18 +1077,23 @@ async function viewPerson(id,name){
   let data=[];try{const r=await SB.from('mf_enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
   const box=document.getElementById('personBox');if(!box)return;
   const isSelf=session&&id===session.user.id;
-  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button>`}</div>
+  const onCal=overlays.some(o=>o.id===id);
+  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay calendar'}</button>`}</div>
     <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
     <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat — you can see which classes you overlap on via the calendar overlay.</div>`;
 }
 async function overlayPerson(id,name){
   if(!SB)return;
+  if(overlays.some(o=>o.id===id)){removeOverlay(id);renderCommunity();return;} // clicking again removes it
+  if(overlays.length>=OVL_MAX){alert('You can overlay up to '+OVL_MAX+' classmates at a time. Remove one first (tap its ✕ above the calendar).');return;}
   let data=[];try{const r=await SB.from('mf_enrollments').select('course_id,title,sched,half').eq('user_id',id);data=r.data||[];}catch(e){}
   const parseSched=v=>{if(Array.isArray(v))return v;if(typeof v==='string'){try{return JSON.parse(v);}catch(_){return null;}}return null;};
-  overlay={name,courses:data.map(e=>({id:e.course_id,title:e.title,m:parseSched(e.sched),half:e.half})).filter(e=>e.m&&e.m.length)};
+  const courses=data.map(e=>({id:e.course_id,title:e.title,m:parseSched(e.sched),half:e.half})).filter(e=>e.m&&e.m.length);
+  overlays.push({id,name,courses,color:OVL_COLORS[overlays.length%OVL_COLORS.length]});
   setTab('sloan');render();
 }
-function clearOverlay(){overlay=null;render();}
+function removeOverlay(id){overlays=overlays.filter(o=>o.id!==id);render();}
+function clearOverlay(){overlays=[];render();}
 function renderCommunity(){
   const b=document.getElementById('commBody');if(!b)return;
   if(!session){
