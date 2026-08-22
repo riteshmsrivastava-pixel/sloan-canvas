@@ -688,10 +688,11 @@ function buildStatic(){
     ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
     ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping - so you (and classmates) can see where things stand.'],
     ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed - this is your add/drop planner now.'],
-    ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Hover for details; ✕ or double-click to remove.'],
-    ['6','Use the hints','🔁 Also-offered = take it in Spring/IAP instead. ≈ Similar = a close swap.'],
-    ['7','See classmates','Sign in (Community tab) to see who else is in each class, their status, and email them - great for planning add/drop swaps together.'],
-    ['8','It’s private','Your plan saves in this browser; nothing is shared until you sign in & sync. Always confirm on SloanBid / WebSIS.'],
+    ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Tap a course to see who’s in it; ✕ to remove.'],
+    ['6','Join the community','Sign in on the Community tab with your @mit.edu. You’ll see every classmate and how many classes you share - no searching needed.'],
+    ['7','See who’s in a class','Tap any course - in the catalog, your plan, or the calendar - to open a popup of which classmates are in it and their status. Reach out on WhatsApp or email to compare or swap.'],
+    ['8','Compare calendars','Overlay up to 3 classmates’ schedules on yours (colored ghost blocks) to find where you line up. Tap a chip’s ✕ to remove one.'],
+    ['9','It’s private','Your plan saves in this browser; nothing is shared until you sign in. SFMBA-only (@mit.edu). Always confirm on SloanBid / WebSIS.'],
   ];
   document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
   // calendar hover tooltip (event-delegated, survives re-renders)
