@@ -1088,7 +1088,24 @@ function renderCommunity(){
   searchPeople();
 }
 
-applyCoreSection();computeHv();buildStatic();render();sbInit();
+function applyPreload(){
+  try{
+    const q=new URLSearchParams(location.search);
+    const p=q.get('plan'); if(!p)return;
+    const keys=p.split(',').map(x=>decodeURIComponent(x.trim())).filter(Boolean);
+    const valid=keys.filter(k=>byKey(k));
+    if(!valid.length)return;
+    if(!state.plan.includes('15.414'))valid.unshift('15.414');
+    state.plan=[...new Set([...valid])];
+    const core=(q.get('core')||'').toUpperCase(); if(core==='A'||core==='B')state.coreSec=core;
+    const st=q.get('status');
+    if(st){if(!state.status)state.status={};st.split(',').forEach(pair=>{const[k,v]=pair.split(':').map(x=>decodeURIComponent((x||'').trim()));if(byKey(k)&&STATUS[v])state.status[k]=v;});}
+    else if(q.get('allenrolled')==='1'){if(!state.status)state.status={};state.plan.forEach(k=>{if(k!=='15.414')state.status[k]='enrolled';});}
+    save();
+    history.replaceState(null,'',location.pathname);
+  }catch(e){}
+}
+applyPreload();applyCoreSection();computeHv();buildStatic();render();sbInit();
 </script>
 </body>
 </html>
