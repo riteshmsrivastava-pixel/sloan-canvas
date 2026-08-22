@@ -364,6 +364,10 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   </div>
 </div>
 
+<div class="overlay" id="matesModal" onclick="if(event.target===this)closeMates()">
+  <div class="modal" style="max-width:460px" id="matesBox"></div>
+</div>
+
 <script>
 /* ===================== certificates ===================== */
 /* ===== Supabase (shared community layer) — PASTE YOUR PROJECT CREDS HERE ===== */
@@ -632,11 +636,34 @@ async function loadRoster(){
     const [en,pr]=await Promise.all([SB.from('mf_enrollments').select('course_id,user_id,status'),SB.from('mf_profiles').select('id,name,email')]);
     const info={};(pr.data||[]).forEach(p=>info[p.id]={name:p.name,email:p.email});
     const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'sampling',uid:e.user_id});});
-    roster=r;renderPlan();
+    roster=r;render();
   }catch(e){}
 }
 function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.id):[];}
 function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
+// Classmates popup — click any class to see who else is in it (refreshes live on open)
+async function showClassmates(key){
+  const c=byKey(key);if(!c)return;
+  const modal=document.getElementById('matesModal'),box=document.getElementById('matesBox');
+  modal.classList.add('show');
+  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${c.id}${c.sec||''}</h2><div style="font-size:13px;color:var(--sub);margin-top:3px">${c.title}</div></div><button class="close" onclick="closeMates()">×</button></div>`;
+  if(!session){box.innerHTML=head+`<div style="padding:20px 0;color:var(--sub);font-size:13px;line-height:1.6">Sign in on the <b>Community</b> tab to see which classmates are in this class and how to reach them.</div>`;return;}
+  box.innerHTML=head+`<div style="padding:26px 0;text-align:center;color:var(--mute2);font-size:13px">Loading classmates…</div>`;
+  await loadRoster();
+  if(!modal.classList.contains('show'))return;
+  const people=(roster[key]||[]).filter(m=>m.uid!==session.user.id);
+  const mine=(roster[key]||[]).some(m=>m.uid===session.user.id);
+  let body;
+  if(!people.length){
+    body=`<div style="padding:20px 0;color:var(--mute2);font-size:13px;line-height:1.6">No classmates here yet${mine?' — you’re the first in this class':''}. As people join and add their courses, they’ll show up here automatically.</div>`;
+  }else{
+    body=`<div style="font-size:13px;color:var(--sub);margin:12px 0 12px"><b style="color:var(--ink);font-size:15px">${people.length}</b> classmate${people.length>1?'s':''} in this class${mine?' (plus you)':''}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">${people.map(m=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--line);border-radius:12px"><span style="color:${(STATUS[m.status]||{}).color||'#888'};font-size:15px">●</span><span style="flex:1;font-weight:600;min-width:0">${m.name||'—'}</span><span style="font-size:11px;color:var(--mute);white-space:nowrap">${(STATUS[m.status]||{}).label||''}</span>${m.email?`<a href="mailto:${m.email}" class="btn" style="padding:4px 12px;font-size:11.5px">email</a>`:''}</div>`).join('')}</div>
+      <div style="margin-top:16px;font-size:11.5px;color:var(--sub2);line-height:1.5">Reach out by email or on your cohort WhatsApp to compare plans or swap sections.</div>`;
+  }
+  box.innerHTML=head+body;
+}
+function closeMates(){document.getElementById('matesModal').classList.remove('show');}
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
 function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
@@ -775,14 +802,14 @@ function renderPlan(){
     return `<div class="prow" style="border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
-          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}${ms.length?`<span class="mate" onclick="toggleMates('${c.key}')" title="Classmates in this course">👥 ${ms.length}</span>`:''}
+          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>
         </div>
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
       ${c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):''}
       ${c.locked?'':`<select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select><button class="rm" onclick="remove('${c.key}')">−</button>`}
-    </div>${mateOpen===c.key&&ms.length?`<div class="matebox">${ms.map(m=>`<div class="mrow"><span style="color:${(STATUS[m.status]||{}).color||'#888'}">●</span><span style="flex:1">${m.name}</span><span style="font-size:10px;color:var(--mute)">${(STATUS[m.status]||{}).label||m.status}</span>${m.email?`<a href="mailto:${m.email}" class="btn" style="padding:2px 9px;font-size:11px">email</a>`:''}</div>`).join('')}</div>`:''}`;
+    </div>`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
 }
 
@@ -1085,7 +1112,7 @@ function renderCommunity(){
   }
   b.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
       <div style="font-size:13px">Signed in as <b>${myProfile?myProfile.name:session.user.email}</b></div>
-      <div style="display:flex;gap:8px"><button class="btn" onclick="syncUp().then(renderCommunity)" style="background:var(--brand);color:#fff;border-color:var(--brand)">↻ Sync my plan</button><button class="btn" onclick="signOut()">Sign out</button></div>
+      <button class="btn" onclick="signOut()">Sign out</button>
     </div>
     <div id="sbSyncMsg" style="font-size:12px;color:var(--green2);margin-bottom:12px"></div>
     <input id="cq" class="inp" placeholder="⌕  Search classmates by name…" oninput="searchPeople()" style="max-width:460px;margin-bottom:14px">
