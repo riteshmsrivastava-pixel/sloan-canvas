@@ -639,7 +639,7 @@ function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.
 function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
-function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
+function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
@@ -850,8 +850,9 @@ function renderCalendar(){
 }
 
 /* ===================== actions ===================== */
-function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();}}
-function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
+function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();pushIf();}}
+function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
+function pushIf(){if(SB&&session&&typeof syncUp==='function')syncUp();}
 function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
 function resetPlan(){if(!confirm('Clear your plan & bids? (Core 15.414 stays.)'))return;state={plan:['15.414'],bids:{}};save();render();}
 function openHelp(){document.getElementById('help').classList.add('show');}
@@ -956,9 +957,21 @@ async function onAuth(){
     try{await SB.from('mf_profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};
   }
   myProfile=prof;pendingName=null;updateAcct();
-  await syncUp();
+  await syncDown();
   await loadRoster();
   renderCommunity();
+}
+// On login: if you've built a plan locally, push it up; if local is empty (fresh browser), pull your synced plan down. Never silently wipe the server.
+async function syncDown(){
+  if(!SB||!session)return;
+  const uid=session.user.id;
+  const localReal=(state.plan||[]).filter(k=>k!=='15.414').length;
+  if(localReal>0){await syncUp();return;}
+  let data=[];try{const r=await SB.from('mf_enrollments').select('course_id,status').eq('user_id',uid);data=r.data||[];}catch(e){}
+  if(!data.length)return;
+  const plan=['15.414'],status={};
+  data.forEach(e=>{if(e.course_id&&byKey(e.course_id)){if(!plan.includes(e.course_id))plan.push(e.course_id);if(e.status)status[e.course_id]=e.status;}});
+  state.plan=[...new Set(plan)];state.status=status;save();render();
 }
 function setAuthMode(m){authMode=m;authView='form';renderCommunity();}
 function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
