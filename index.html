@@ -370,8 +370,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 <script>
 /* ===================== certificates ===================== */
 /* ===== Supabase (shared community layer) — PASTE YOUR PROJECT CREDS HERE ===== */
-const SB_URL=''; /* e.g. 'https://xxxx.supabase.co' */
-const SB_KEY=''; /* the anon / public key (safe to embed) */
+const SB_URL='https://htbhfahaddsbqjemoiaj.supabase.co';
+const SB_KEY='sb_publishable_9Ii2rmOjf6dIhtW-Vz9mXA_ZuaP4Ce7'; /* publishable key (safe to embed) */
 const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
 let session=null, myProfile=null, overlay=null, authMode='login', authView='form', pendingEmail=null, pendingName=null;
 /* ============================================================ */
@@ -632,7 +632,7 @@ let roster={}, mateOpen=null;
 async function loadRoster(){
   if(!SB||!session)return;
   try{
-    const [en,pr]=await Promise.all([SB.from('enrollments').select('course_id,user_id,status'),SB.from('profiles').select('id,name,email')]);
+    const [en,pr]=await Promise.all([SB.from('mf_enrollments').select('course_id,user_id,status'),SB.from('mf_profiles').select('id,name,email')]);
     const info={};(pr.data||[]).forEach(p=>info[p.id]={name:p.name,email:p.email});
     const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'bidding',uid:e.user_id});});
     roster=r;renderPlan();
@@ -956,10 +956,10 @@ async function onAuth(){
   authView='form';pendingEmail=null;
   const uid=session.user.id,email=session.user.email;
   let prof=null;
-  try{const{data}=await SB.from('profiles').select('*').eq('id',uid).maybeSingle();prof=data;}catch(e){}
+  try{const{data}=await SB.from('mf_profiles').select('*').eq('id',uid).maybeSingle();prof=data;}catch(e){}
   if(!prof||!prof.name){
     const name=(session.user.user_metadata&&session.user.user_metadata.name)||pendingName||email.split('@')[0];
-    try{await SB.from('profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};
+    try{await SB.from('mf_profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};
   }
   myProfile=prof;pendingName=null;updateAcct();
   await syncUp();
@@ -1014,13 +1014,13 @@ async function syncUp(){
   if(!SB||!session)return;
   const uid=session.user.id;
   const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,units:FU(c),half:c.half,route:c.route,sched:c.m,status:statusOf(c.key),won:isWon(c.key)}));
-  try{await SB.from('enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('enrollments').insert(rows);}catch(e){}
+  try{await SB.from('mf_enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('mf_enrollments').insert(rows);}catch(e){}
   const m=document.getElementById('sbSyncMsg');if(m)m.textContent='Synced ✓ '+rows.length+' classes shared';
 }
 async function searchPeople(){
   if(!SB||!session)return;
   const q=(document.getElementById('cq').value||'').trim();
-  let query=SB.from('profiles').select('id,name').order('name').limit(100);
+  let query=SB.from('mf_profiles').select('id,name').order('name').limit(100);
   if(q)query=query.ilike('name','%'+q+'%');
   let data=[];try{const r=await query;data=r.data||[];}catch(e){}
   const list=document.getElementById('peopleList');if(!list)return;
@@ -1028,7 +1028,7 @@ async function searchPeople(){
 }
 async function viewPerson(id,name){
   if(!SB)return;
-  let data=[];try{const r=await SB.from('enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
+  let data=[];try{const r=await SB.from('mf_enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
   const box=document.getElementById('personBox');if(!box)return;
   box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}</h2><button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:var(--brand);color:#fff;border-color:var(--brand)">Overlay calendar</button></div>
     <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>`<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${e.won?'<span class="corebadge">enrolled</span>':''}</div>`).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
@@ -1036,7 +1036,7 @@ async function viewPerson(id,name){
 }
 async function overlayPerson(id,name){
   if(!SB)return;
-  let data=[];try{const r=await SB.from('enrollments').select('course_id,title,sched,half').eq('user_id',id);data=r.data||[];}catch(e){}
+  let data=[];try{const r=await SB.from('mf_enrollments').select('course_id,title,sched,half').eq('user_id',id);data=r.data||[];}catch(e){}
   overlay={name,courses:data.filter(e=>e.sched&&e.sched.length).map(e=>({id:e.course_id,title:e.title,m:e.sched,half:e.half}))};
   setTab('sloan');render();
 }
