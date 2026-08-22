@@ -127,6 +127,11 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 @keyframes hvpulse{0%,100%{box-shadow:0 1px 4px rgba(20,12,6,.15);}50%{box-shadow:0 0 0 3px rgba(140,21,21,.22);}}
 .block.caution{outline:2px dashed #C8703D;outline-offset:-2px;}
 .hvsel{font-family:var(--fb);font-size:10.5px;border:1px solid var(--line2);border-radius:8px;padding:3px 5px;background:#fff;color:var(--sub);cursor:pointer;}
+.stsel{font-family:var(--fb);font-size:10.5px;font-weight:600;border:1.5px solid var(--line2);border-radius:8px;padding:3px 4px;background:#fff;cursor:pointer;max-width:104px;}
+.mate{font-size:10px;font-weight:700;color:#4c5a6e;background:#e6eaef;padding:2px 7px;border-radius:99px;cursor:pointer;}
+.mate:hover{background:#d9e0ea;}
+.matebox{margin:-4px 0 2px;padding:8px 10px;background:#f6f4ef;border:1px solid var(--line2);border-radius:12px;display:flex;flex-direction:column;gap:5px;}
+.mrow{display:flex;align-items:center;gap:8px;font-size:12.5px;}
 .traveldisc{margin-top:12px;font-size:11.5px;color:#8C1515;background:#F6EAE7;border:1px solid #E8CFC9;border-radius:12px;padding:10px 12px;line-height:1.5;}
 .block .bc{font-family:var(--fm);font-size:9.5px;font-weight:700;}
 .block{cursor:help;}
@@ -617,8 +622,24 @@ let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[]};}
-const isWon=k=>state.won&&state.won.includes(k);
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{}};}
+const STATUS={bidding:{label:'Bidding',color:'#0a84ff'},enrolled:{label:'Enrolled',color:'#34c759'},sampling:{label:'Sampling',color:'#e0a400'},waitlist:{label:'Waitlist',color:'#ff8a00'},dropping:{label:'Dropping',color:'#c2002a'}};
+const SDOT={bidding:'🔵',enrolled:'🟢',sampling:'🟡',waitlist:'🟠',dropping:'🔴'};
+const statusOf=k=>(state.status&&state.status[k])||'bidding';
+function setStatus(k,v){if(!state.status)state.status={};state.status[k]=v;save();render();if(typeof syncUp==='function')syncUp();}
+const isWon=k=>statusOf(k)==='enrolled';
+let roster={}, mateOpen=null;
+async function loadRoster(){
+  if(!SB||!session)return;
+  try{
+    const [en,pr]=await Promise.all([SB.from('enrollments').select('course_id,user_id,status'),SB.from('profiles').select('id,name,email')]);
+    const info={};(pr.data||[]).forEach(p=>info[p.id]={name:p.name,email:p.email});
+    const r={};(en.data||[]).forEach(e=>{(r[e.course_id]=r[e.course_id]||[]).push({name:(info[e.user_id]||{}).name||'—',email:(info[e.user_id]||{}).email,status:e.status||'bidding',uid:e.user_id});});
+    roster=r;renderPlan();
+  }catch(e){}
+}
+function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.id):[];}
+function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
 function withdraw(k){const c=byKey(k);if(!confirm('Withdraw '+(c?c.id:'this course')+'?\nYou drop the seat and your bid points are freed to use elsewhere.'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();}
@@ -753,18 +774,18 @@ function renderPlan(){
   const cs=planned().sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
   document.getElementById('planCount').textContent=cs.length;
   document.getElementById('plan').innerHTML=cs.map(c=>{
-    const col=colorOf(c),won=isWon(c.key);
-    return `<div class="prow" style="border-left-color:${col};${won?'background:#F1F6EC;':''}">
+    const col=colorOf(c),st=statusOf(c.key),won=isWon(c.key),bcol=(st!=='bidding'&&!c.locked)?STATUS[st].color:col,ms=c.locked?[]:mates(c.key);
+    return `<div class="prow" style="border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
+          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}${ms.length?`<span class="mate" onclick="toggleMates('${c.key}')" title="Classmates in this course">👥 ${ms.length}</span>`:''}
         </div>
         <div class="ptitle">${c.title}</div>
       </div>
       <span class="time">${FU(c)}u</span>
       ${biddable(c)?`<div class="bidbox"><input type="number" min="0" value="${state.bids[c.key]??''}" placeholder="0" ${won?'readonly':''} oninput="setBid('${c.key}',this.value)"><small>pts</small></div>`:c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):c.locked?`<span style="font-size:11px;color:var(--mute2);font-style:italic">auto</span>`:`<span style="font-size:10.5px;color:var(--mute)">${c.route==='MITreg'?'MIT':c.route}</span>`}
-      ${c.locked?'':`<button class="rm" title="${won?'Won — locked in (click to unlock)':'Lock in (won this seat)'}" onclick="${won?`unlockWon('${c.key}')`:`lockWon('${c.key}')`}" style="${won?'background:#E7EDDD;color:#4F6B3E;border-color:#cfe0c4':''}">${won?'🔒':'🔓'}</button>${won?'':`<button class="rm" onclick="remove('${c.key}')">−</button>`}`}
-    </div>`;
+      ${c.locked?'':`<select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select><button class="rm" onclick="remove('${c.key}')">−</button>`}
+    </div>${mateOpen===c.key&&ms.length?`<div class="matebox">${ms.map(m=>`<div class="mrow"><span style="color:${(STATUS[m.status]||{}).color||'#888'}">●</span><span style="flex:1">${m.name}</span><span style="font-size:10px;color:var(--mute)">${(STATUS[m.status]||{}).label||m.status}</span>${m.email?`<a href="mailto:${m.email}" class="btn" style="padding:2px 9px;font-size:11px">email</a>`:''}</div>`).join('')}</div>`:''}`;
   }).join('')||`<div style="text-align:center;color:var(--mute2);padding:30px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on a course to add it</div>`;
 }
 
@@ -815,10 +836,10 @@ function renderCalendar(){
     cs.forEach(c=>c.m.forEach(([dd,s,e])=>{if(dd===d)evs.push({c,s,e});}));
     layoutLanes(evs);
     evs.forEach(({c,s,e,lane,cols})=>{
-      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),won=isWon(c.key),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
+      const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),won=isWon(c.key),st=statusOf(c.key),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
       const w=100/cols,left=lane*w,caution=commute.has(c.key)&&!conf.has(c.key);
-      col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}">
-        ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
+      col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}${st==='dropping'?';opacity:.5':''}${(st==='sampling'||st==='waitlist')?';border-left-style:dashed':''}">
+        ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${(st!=='bidding'&&st!=='enrolled')?`<span style="color:${STATUS[st].color}">●</span> `:''}${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
     });
     if(overlay)overlay.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
       const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24);
@@ -942,6 +963,7 @@ async function onAuth(){
   }
   myProfile=prof;pendingName=null;updateAcct();
   await syncUp();
+  await loadRoster();
   renderCommunity();
 }
 function setAuthMode(m){authMode=m;authView='form';renderCommunity();}
@@ -991,7 +1013,7 @@ async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myPr
 async function syncUp(){
   if(!SB||!session)return;
   const uid=session.user.id;
-  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,units:FU(c),half:c.half,route:c.route,sched:c.m,won:isWon(c.key)}));
+  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,units:FU(c),half:c.half,route:c.route,sched:c.m,status:statusOf(c.key),won:isWon(c.key)}));
   try{await SB.from('enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('enrollments').insert(rows);}catch(e){}
   const m=document.getElementById('sbSyncMsg');if(m)m.textContent='Synced ✓ '+rows.length+' classes shared';
 }
