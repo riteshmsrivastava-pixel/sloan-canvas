@@ -972,9 +972,11 @@ async function doRegister(){
   if(!SB){amsg('Not connected yet — Supabase creds pending.');return;}
   const name=(document.getElementById('rName').value||'').trim();
   const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
+  const email2=(document.getElementById('rEmail2').value||'').trim().toLowerCase();
   const pw=(document.getElementById('rPw').value||'');
   if(!name){amsg('Please enter your name.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
+  if(email!==email2){amsg('The two emails don’t match — please re-type it.');return;}
   if(pw.length<6){amsg('Password must be at least 6 characters.');return;}
   const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name},emailRedirectTo:location.href.split('#')[0]}});
   if(error){amsg(error.message);return;}
@@ -1058,9 +1060,11 @@ function renderCommunity(){
     const form=authMode==='register'
       ? `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
            <input id="rName" class="inp" placeholder="Full name">
-           <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu">
+           <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu" autocomplete="off" onpaste="return false" oncopy="return false">
+           <input id="rEmail2" class="inp" type="email" placeholder="Re-type your @mit.edu email" autocomplete="off" onpaste="return false" oncopy="return false">
            <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
            <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
+           <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email — classmates will use it to reach you, and there's no verification step.</div>
          </div>`
       : `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
            <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
