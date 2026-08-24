@@ -368,6 +368,10 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <div class="modal" style="max-width:460px" id="matesBox"></div>
 </div>
 
+<div class="overlay" id="meetModal" onclick="if(event.target===this)closeMeet()">
+  <div class="modal" style="max-width:460px" id="meetBox"></div>
+</div>
+
 <script>
 /* ===================== certificates ===================== */
 /* ===== Supabase (shared community layer) - PASTE YOUR PROJECT CREDS HERE ===== */
@@ -666,6 +670,33 @@ async function showClassmates(key){
   box.innerHTML=head+body;
 }
 function closeMates(){document.getElementById('matesModal').classList.remove('show');}
+// "Find us a time" - common free windows for you + the overlaid classmates
+function fmtMin(m){let h=Math.floor(m/60),mm=m%60,ap=h<12?'am':'pm',hr=h%12||12;return hr+(mm?':'+String(mm).padStart(2,'0'):'')+ap;}
+function closeMeet(){document.getElementById('meetModal').classList.remove('show');}
+function findMeetTimes(){
+  if(!overlays.length){alert('First add a classmate to your calendar: open a classmate (Community tab) and tap “Overlay calendar”. Then find a time.');return;}
+  const WIN_S=480,WIN_E=1320,MIN=45; // weekday gaps 8am-10pm, 45 min minimum
+  const days=[['M','Monday'],['T','Tuesday'],['W','Wednesday'],['Th','Thursday'],['F','Friday']];
+  const busy={M:[],T:[],W:[],Th:[],F:[]};
+  const add=cs=>cs.forEach(c=>(c.m||[]).forEach(([d,s,e])=>{if(busy[d])busy[d].push([Math.max(s,WIN_S),Math.min(e,WIN_E)]);}));
+  add(planned());                        // your classes
+  overlays.forEach(o=>add(o.courses));   // each overlaid classmate
+  const names=['you',...overlays.map(o=>o.name)];
+  let rows='',anyFree=false;
+  days.forEach(([d,dl])=>{
+    const iv=busy[d].filter(x=>x[1]>x[0]).sort((a,b)=>a[0]-b[0]);
+    const merged=[];iv.forEach(x=>{const last=merged[merged.length-1];if(last&&x[0]<=last[1])last[1]=Math.max(last[1],x[1]);else merged.push([x[0],x[1]]);});
+    const fr=[];let cur=WIN_S;merged.forEach(([s,e])=>{if(s-cur>=MIN)fr.push([cur,s]);cur=Math.max(cur,e);});if(WIN_E-cur>=MIN)fr.push([cur,WIN_E]);
+    if(fr.length)anyFree=true;
+    const chips=fr.map(([s,e])=>`<span style="display:inline-block;font-size:11.5px;font-weight:600;color:var(--green2);background:var(--gsoft);border-radius:8px;padding:4px 9px;margin:4px 5px 0 0">${fmtMin(s)} - ${fmtMin(e)}</span>`).join('');
+    rows+=`<div style="padding:10px 0;border-top:1px solid var(--line)"><div style="font-size:12px;font-weight:700;color:var(--ink)">${dl}</div><div style="margin-top:1px">${chips||'<span style="font-size:11.5px;color:var(--mute)">no shared gap</span>'}</div></div>`;
+  });
+  document.getElementById('meetBox').innerHTML=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:17px;margin:0">🕒 When you’re all free</h2><div style="font-size:12.5px;color:var(--sub);margin-top:3px">${names.join(' · ')}</div></div><button class="close" onclick="closeMeet()">×</button></div>
+    <div style="font-size:11.5px;color:var(--mute);margin:2px 0 2px">Weekday openings of 45 min or more, 8am to 10pm. Weekends are wide open.</div>
+    ${rows}
+    <div style="font-size:11px;color:var(--sub2);margin-top:13px;line-height:1.5">Based on class times only - double-check for labs, treks and personal plans.</div>`;
+  document.getElementById('meetModal').classList.add('show');
+}
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
 function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
@@ -880,7 +911,7 @@ function renderCalendar(){
     col+='</div></div>';daysHtml+=col;
   });
   document.getElementById('calwrap').innerHTML=`<div class="gutter">${gut}</div><div class="days">${daysHtml}</div>`;
-  const oi=document.getElementById('overlayInfo');if(oi)oi.innerHTML=overlays.map(o=>`<span class="clash" style="background:${tint(o.color,.18)};color:${o.color}">👥 ${o.name} <span onclick="removeOverlay('${o.id}')" title="Remove from calendar" style="cursor:pointer;font-weight:800;margin-left:5px">×</span></span>`).join('')+(overlays.length>1?`<span class="clash" style="cursor:pointer;background:#ece7df;color:#6B6157" onclick="clearOverlay()">clear all</span>`:'');
+  const oi=document.getElementById('overlayInfo');if(oi)oi.innerHTML=overlays.map(o=>`<span class="clash" style="background:${tint(o.color,.18)};color:${o.color}">👥 ${o.name} <span onclick="removeOverlay('${o.id}')" title="Remove from calendar" style="cursor:pointer;font-weight:800;margin-left:5px">×</span></span>`).join('')+(overlays.length?`<span class="clash" style="cursor:pointer;background:var(--brand);color:#fff" onclick="findMeetTimes()">🕒 Find us a time</span>`:'')+(overlays.length>1?`<span class="clash" style="cursor:pointer;background:#ece7df;color:#6B6157" onclick="clearOverlay()">clear all</span>`:'');
   const n=cs.filter(c=>conf.has(c.key)).length,cm=cs.filter(c=>isHv(c)&&commute.has(c.key)).length,el=document.getElementById('clash');
   if(n){el.textContent='⚠ '+n+' time clash'+(n>1?'es':'')+(cm?' · '+cm+' commute':'');el.style.background='var(--bsoft)';el.style.color='var(--brand2)';}
   else if(cm){el.textContent='🚇 '+cm+' tight commute'+(cm>1?'s':'');el.style.background='#F5E7D6';el.style.color='#A65F28';}
