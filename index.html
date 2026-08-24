@@ -266,7 +266,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <!-- PLAN + POINTS -->
       <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;">
         <div class="panel pad" style="flex:1 1 340px;min-width:280px;">
-          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="resetPlan()">Reset</button></div></div>
+          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="downloadICS()" title="Download your schedule as a calendar file">📅 .ics</button><button class="btn" onclick="resetPlan()">Reset</button></div></div>
           <div id="plan" style="display:flex;flex-direction:column;gap:9px;"></div>
         </div>
         <div class="panel pad" style="flex:1 1 250px;min-width:250px;">
@@ -924,6 +924,44 @@ function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];s
 function pushIf(){if(SB&&session&&typeof syncUp==='function')syncUp();}
 function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
 function resetPlan(){if(!confirm('Clear your plan & bids? (Core 15.414 stays.)'))return;state={plan:['15.414'],bids:{}};save();render();}
+// Export your plan as an .ics calendar file (client-side, no backend). Fall 2026 weekly recurrences.
+function icsEsc(s){return (s||'').replace(/([,;\\])/g,'\\$1').replace(/\r?\n/g,'\\n');}
+function buildICS(){
+  const cs=planned().filter(c=>c.m&&c.m.length);
+  if(!cs.length)return null;
+  const pad=n=>String(n).padStart(2,'0');
+  const DOW={M:1,T:2,W:3,Th:4,F:5};
+  const TERM_START=new Date(2026,8,9);   // Wed, Sep 9 2026 - first day of classes
+  const H2_START=new Date(2026,9,26);    // ~week 8
+  const H1_UNTIL='20261023', TERM_UNTIL='20261211';
+  const fmtDay=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+  const firstOn=(from,day)=>{const d=new Date(from);let g=0;while(d.getDay()!==DOW[day]&&g<7){d.setDate(d.getDate()+1);g++;}return d;};
+  const stamp=fmtDay(new Date())+'T000000';
+  let ev='';
+  cs.forEach(c=>{
+    const half=c.half||'F';
+    (c.m||[]).forEach(([day,s,e],i)=>{
+      if(!DOW[day])return;
+      const from=half==='H2'?H2_START:TERM_START;
+      const until=half==='H1'?H1_UNTIL:TERM_UNTIL;
+      const d0=firstOn(from,day);
+      const ds=`${fmtDay(d0)}T${pad(Math.floor(s/60))}${pad(s%60)}00`;
+      const de=`${fmtDay(d0)}T${pad(Math.floor(e/60))}${pad(e%60)}00`;
+      const code=(c.id+(c.sec||'')).replace('MIT:','');
+      const uid=code.replace(/[^a-z0-9]/gi,'')+'-'+day+'-'+i+'@muddyfalls';
+      ev+=`BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTAMP:${stamp}\r\nDTSTART:${ds}\r\nDTEND:${de}\r\nRRULE:FREQ=WEEKLY;UNTIL=${until}T235900\r\nSUMMARY:${icsEsc(code+' '+c.title)}\r\nEND:VEVENT\r\n`;
+    });
+  });
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Muddy Falls//Fall 2026//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Muddy Falls - Fall 2026\r\n${ev}END:VCALENDAR\r\n`;
+}
+function downloadICS(){
+  const ics=buildICS();
+  if(!ics){alert('Add some courses with meeting times first, then export.');return;}
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='muddy-falls-fall-2026.ics';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
 function openHelp(){document.getElementById('help').classList.add('show');}
 function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('mf_seen','1');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
