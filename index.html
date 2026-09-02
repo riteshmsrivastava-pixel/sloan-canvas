@@ -128,6 +128,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .block.caution{outline:2px dashed #C8703D;outline-offset:-2px;}
 .hvsel{font-family:var(--fb);font-size:10.5px;border:1px solid var(--line2);border-radius:8px;padding:3px 5px;background:#fff;color:var(--sub);cursor:pointer;}
 .stsel{font-family:var(--fb);font-size:10.5px;font-weight:600;border:1.5px solid var(--line2);border-radius:8px;padding:3px 4px;background:#fff;cursor:pointer;max-width:104px;}
+.cxdl{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:6px 10px;cursor:pointer;}
 .mate{font-size:10px;font-weight:700;color:#4c5a6e;background:#e6eaef;padding:2px 7px;border-radius:99px;cursor:pointer;}
 .mate:hover{background:#d9e0ea;}
 .matebox{margin:-4px 0 2px;padding:8px 10px;background:#f6f4ef;border:1px solid var(--line2);border-radius:12px;display:flex;flex-direction:column;gap:5px;}
@@ -266,7 +267,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <!-- PLAN + POINTS -->
       <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;">
         <div class="panel pad" style="flex:1 1 340px;min-width:280px;">
-          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="downloadICS()" title="Download your schedule as a calendar file">📅 .ics</button><button class="btn" onclick="resetPlan()">Reset</button></div></div>
+          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="openCustom()" title="Add a course that isn't in the catalog">+ custom</button><button class="btn" onclick="downloadICS()" title="Download your schedule as a calendar file">📅 .ics</button><button class="btn" onclick="resetPlan()">Reset</button></div></div>
           <div id="plan" style="display:flex;flex-direction:column;gap:9px;"></div>
         </div>
         <div class="panel pad" style="flex:1 1 250px;min-width:250px;">
@@ -370,6 +371,27 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
 <div class="overlay" id="meetModal" onclick="if(event.target===this)closeMeet()">
   <div class="modal" style="max-width:460px" id="meetBox"></div>
+</div>
+
+<div class="overlay" id="customModal" onclick="if(event.target===this)closeCustom()">
+  <div class="modal" style="max-width:440px">
+    <div class="ph" style="align-items:flex-start;margin-bottom:6px"><div><h2 style="font-size:18px;margin:0">Add your own course</h2><div style="font-size:12px;color:var(--sub);margin-top:3px">For anything not in the catalog (a seminar, a Harvard/Law class). Saved to your plan on this device.</div></div><button class="close" onclick="closeCustom()">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+      <input id="cxTitle" class="inp" placeholder="Course name (e.g. Systems for Scaling Ventures)">
+      <div style="display:flex;gap:8px"><input id="cxCode" class="inp" placeholder="Short code (e.g. HBS-SSV)" style="flex:1"><select id="cxHalf" class="inp" style="max-width:140px"><option value="F">Full term</option><option value="H1">First half (H1)</option><option value="H2">Second half (H2)</option></select></div>
+      <div><div style="font-size:11.5px;font-weight:600;color:var(--sub);margin-bottom:6px">Days</div><div id="cxDays" style="display:flex;gap:6px;flex-wrap:wrap">
+        <label class="cxdl"><input type="checkbox" value="M" class="cxDay">Mon</label>
+        <label class="cxdl"><input type="checkbox" value="T" class="cxDay">Tue</label>
+        <label class="cxdl"><input type="checkbox" value="W" class="cxDay">Wed</label>
+        <label class="cxdl"><input type="checkbox" value="Th" class="cxDay">Thu</label>
+        <label class="cxdl"><input type="checkbox" value="F" class="cxDay">Fri</label>
+      </div></div>
+      <div style="display:flex;gap:8px;align-items:center"><span style="font-size:12.5px;color:var(--sub)">Time</span><input id="cxStart" class="inp" type="time" value="13:00" style="flex:1"><span style="color:var(--mute)">to</span><input id="cxEnd" class="inp" type="time" value="14:30" style="flex:1"></div>
+      <div style="display:flex;gap:8px;align-items:center"><span style="font-size:12.5px;color:var(--sub)">Units</span><input id="cxUnits" class="inp" type="number" min="0" placeholder="optional" style="max-width:120px"></div>
+      <div id="cxMsg" style="font-size:12px;color:#c2002a;min-height:14px"></div>
+      <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="addCustomCourse()">Add to my plan</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -630,7 +652,7 @@ let state=load();
 let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{}};}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};if(!s.custom)s.custom={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{},custom:{}};}
 const STATUS={enrolled:{label:'Enrolled',color:'#34c759'},sampling:{label:'Sampling',color:'#e0a400'},waitlist:{label:'Waitlist',color:'#ff8a00'},dropping:{label:'Dropping',color:'#c2002a'}};
 const SDOT={enrolled:'🟢',sampling:'🟡',waitlist:'🟠',dropping:'🔴'};
 const statusOf=k=>{const v=state.status&&state.status[k];return (v&&STATUS[v])?v:'sampling';};
@@ -707,7 +729,7 @@ function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 let MITIDX=null;
 function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
-const byKey=k=>k&&k.slice(0,4)==='MIT:'?mitIndex()[k]:COURSES.find(c=>c.key===k);
+const byKey=k=>!k?undefined:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k)));
 const planned=()=>state.plan.map(byKey).filter(Boolean);
 
 /* ===================== static UI ===================== */
@@ -921,7 +943,7 @@ function renderCalendar(){
 
 /* ===================== actions ===================== */
 function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();pushIf();}}
-function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
+function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];if(k.slice(0,7)==='CUSTOM:'&&state.custom)delete state.custom[k];save();render();pushIf();}
 function pushIf(){if(SB&&session&&typeof syncUp==='function')syncUp();}
 function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
 function resetPlan(){if(!confirm('Clear your plan & bids? (Core 15.414 stays.)'))return;state={plan:['15.414'],bids:{}};save();render();}
@@ -962,6 +984,29 @@ function downloadICS(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='muddy-falls-fall-2026.ics';document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+// Add-your-own-course (personal, saved to this device's plan)
+function openCustom(){document.getElementById('customModal').classList.add('show');}
+function closeCustom(){document.getElementById('customModal').classList.remove('show');}
+function addCustomCourse(){
+  const msg=document.getElementById('cxMsg'),set=t=>{msg.textContent=t;};
+  const title=(document.getElementById('cxTitle').value||'').trim();
+  const code=((document.getElementById('cxCode').value||'').trim())||title.split(/\s+/).slice(0,2).join('-').toUpperCase()||'MY';
+  const half=document.getElementById('cxHalf').value;
+  const days=[...document.querySelectorAll('.cxDay:checked')].map(x=>x.value);
+  const start=document.getElementById('cxStart').value, end=document.getElementById('cxEnd').value;
+  const units=parseInt(document.getElementById('cxUnits').value||'0',10)||0;
+  if(!title){set('Please enter a course name.');return;}
+  if(!days.length){set('Pick at least one day.');return;}
+  if(!start||!end||toMin(end)<=toMin(start)){set('Enter a valid start and end time.');return;}
+  if(!state.custom)state.custom={};
+  const key='CUSTOM:'+Date.now().toString(36);
+  const m=days.map(d=>[d,toMin(start),toMin(end)]);
+  state.custom[key]={key,id:code,base:code,title,units,half,m,route:'Custom',fac:'Added by you',certs:[],custom:true};
+  if(!state.plan.includes(key))state.plan.push(key);
+  save();render();closeCustom();
+  document.getElementById('cxTitle').value='';document.getElementById('cxCode').value='';document.getElementById('cxUnits').value='';
+  document.querySelectorAll('.cxDay:checked').forEach(x=>x.checked=false); msg.textContent='';
 }
 function openHelp(){document.getElementById('help').classList.add('show');}
 function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('mf_seen','1');}
@@ -1130,7 +1175,7 @@ async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myPr
 async function syncUp(){
   if(!SB||!session)return;
   const uid=session.user.id;
-  const rows=planned().map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,half:c.half,sched:c.m,status:statusOf(c.key)}));
+  const rows=planned().filter(c=>!c.custom).map(c=>({user_id:uid,course_id:c.key,title:c.id+(c.sec||'')+' · '+c.title,half:c.half,sched:c.m,status:statusOf(c.key)}));
   try{await SB.from('mf_enrollments').delete().eq('user_id',uid);if(rows.length)await SB.from('mf_enrollments').insert(rows);}catch(e){}
   const m=document.getElementById('sbSyncMsg');if(m)m.textContent='Synced ✓ '+rows.length+' classes shared';
 }
