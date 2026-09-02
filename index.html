@@ -548,6 +548,7 @@ const COURSES=[
   K({id:'HBS-2240',title:'Negotiation',units:12,half:'F',fac:'Zlatev / Norton / Coffman · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1676',title:'The Founder Mindset',units:12,half:'F',fac:'Satchu · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-6728',title:'Field Course: Venture Capital Journey',units:12,half:'F',fac:'Bussgang · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · field course→12u (2025 listing)'}),
+  K({id:'HBS-SSV',title:'Systems for Scaling Ventures',units:12,half:'H2',fac:'HBS',certs:['EI'],route:'Crossreg',m:[],note:'HBS · H2 · W/Th/F 1:30-2:50 · added by request - confirm on my.harvard'}),
   K({id:'HBS-2157',title:'U.S. Healthcare Strategy',units:12,half:'F',fac:'Dafny · HBS',certs:[],route:'Crossreg',m:[],star:1,hvdays:['T'],note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1286',title:'Strategy and Technology',units:12,half:'F',fac:'Yoffie · HBS',certs:[],route:'Crossreg',m:[],star:1,note:'HBS · 3cr→12u (2025 listing)'}),
   K({id:'HBS-1914',title:'The Business of Entertainment, Media & Sports',units:12,half:'F',fac:'Elberse · HBS',certs:[],route:'Crossreg',m:[],star:1,hvdays:['M','W'],note:'HBS · 3cr→12u (2025 listing)'}),
@@ -590,7 +591,7 @@ const COURSES=[
   K({id:'15.402',title:'Corporate Finance',units:9,half:'F',fac:'V. TBD',certs:['FIN','EM'],route:'Ineligible',m:mt('MW','10:00-11:30'),note:'Sloan Fellows should not take - repeats core'}),
   K({id:'15.516',title:'Corporate Financial Accounting',units:12,half:'F',fac:'G. Sabin',certs:['FIN'],route:'Ineligible',m:mt('TTh','10:00-11:30'),note:'Repeats Summer core 15.511'}),
   K({id:'15.761',title:'Introduction to Operations Management',units:9,half:'F',fac:'R. Levi',certs:['EM','BA','DPM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'Repeats Summer core 15.778'}),
-  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 - do not take in Fall'}),
+  K({id:'15.871',title:'Introduction to System Dynamics',units:6,half:'H1',fac:'V. Yang',certs:['SUS','EM'],route:'Register',m:mt('MW','13:00-14:30'),note:'H1 · MW 1-2:30 · note: SFMBA usually take the SD core in Spring H3 - confirm before adding'}),
   K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 - do not take in Fall'}),
 ];
 
@@ -606,12 +607,12 @@ const HV_TIME={
   'HBS-6756':'15:10-17:10','HBS-1231':'13:30-14:50','HBS-6345':'11:50-13:10','HBS-6728':'15:10-17:10','HBS-1655':'13:30-14:50',
   'HBS-2120':'8:30-9:50','HBS-2120B':'10:10-11:30','HBS-2158':'10:10-11:30','HBS-1581':'10:10-11:30','HBS-1588':'15:10-17:10',
   'HBS-1350':'8:30-9:50','HBS-2077':'10:10-11:30','HBS-2157':'15:10-17:10','HBS-2165':'10:10-11:30','HBS-1440':'11:50-13:10',
-  'HBS-2240':'10:10-11:30','HBS-1676':'11:50-13:10','HBS-1914':'11:50-13:10','HBS-1286':'10:10-11:30','HBS-1624':'10:10-11:30','HBS-1166':'13:30-14:50',
+  'HBS-2240':'10:10-11:30','HBS-1676':'11:50-13:10','HBS-1914':'11:50-13:10','HBS-1286':'10:10-11:30','HBS-1624':'10:10-11:30','HBS-1166':'13:30-14:50','HBS-SSV':'13:30-14:50',
   'LAW-2185':'13:30-15:30','LAW-1003':'10:15-12:15','LAW-2830':'15:45-17:45','LAW-2101':'10:15-12:15','LAW-2020':'10:15-12:15','LAW-2169':'15:45-17:15',
 };
 const PAT={MW:['M','W'],TTh:['T','Th'],MTW:['M','T','W'],WThF:['W','Th','F'],M:['M'],T:['T'],W:['W'],Th:['Th'],F:['F']};
 // real HBS meeting days from the my.harvard Fall listing (HBS electives meet in 3-day blocks)
-const HV_DAYS={'HBS-1624':['W','Th','F'],'HBS-1440':['W','Th','F'],'HBS-2240':['M','T','W'],'HBS-1676':['M','T','W'],'HBS-2157':['T'],'HBS-1286':['W','Th','F'],'HBS-1914':['M','T','W'],'HBS-1655':['W','Th','F'],'HBS-2165':['W','Th','F'],'HBS-2120':['M','T','W'],'HBS-1581':['W','Th','F'],'HBS-1166':['M','T','W']};
+const HV_DAYS={'HBS-1624':['W','Th','F'],'HBS-1440':['W','Th','F'],'HBS-2240':['M','T','W'],'HBS-1676':['M','T','W'],'HBS-2157':['T'],'HBS-1286':['W','Th','F'],'HBS-1914':['M','T','W'],'HBS-1655':['W','Th','F'],'HBS-2165':['W','Th','F'],'HBS-2120':['M','T','W'],'HBS-1581':['W','Th','F'],'HBS-1166':['M','T','W'],'HBS-SSV':['W','Th','F']};
 const fmtRange=t=>{const[s,e]=t.split('-').map(toMin);return fmtTime(s)+'–'+fmtTime(e);};
 function patternOf(days){return days?(Object.keys(PAT).find(k=>PAT[k].length===days.length&&PAT[k].every((x,i)=>x===days[i]))||''):'';}
 function hvSel(c){return (state.hvPat&&state.hvPat[c.key])||patternOf(HV_DAYS[c.key]||c.hvdays)||'';}
