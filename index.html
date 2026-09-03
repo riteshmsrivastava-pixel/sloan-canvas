@@ -641,7 +641,7 @@ function hvSel(c){return (state.hvPat&&state.hvPat[c.key])||patternOf(HV_DAYS[c.
 function effDays(c){const up=state.hvPat&&state.hvPat[c.key];if(up)return PAT[up];if(HV_DAYS[c.key])return HV_DAYS[c.key];if(c.hvdays)return c.hvdays;return null;}
 function computeHv(){COURSES.forEach(c=>{if(!isHv(c))return;const d=effDays(c),t=HV_TIME[c.key];c.m=(d&&t)?d.flatMap(x=>mt(x,t)):[];});}
 function setHvDays(k,v){if(!state.hvPat)state.hvPat={};state.hvPat[k]=v;computeHv();save();render();}
-const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg';
+const isEligible=c=>c.route==='Bid'||c.route==='Apply'||c.route==='Register'||c.route==='Crossreg'||c.route==='Waitlist';
 /* Sold out after Round I (Round II) - closed, can't bid. Update keys here each round. */
 const FULL=new Set(['15.S03','15.563','15.774','15.095','15.C57·B','15.C57·C','15.223·A','15.223·B','15.768·A','15.768·B','15.431·B','15.456','15.483','15.451','15.S07','15.818·A','15.275','15.665·A','15.665·B','15.284·A','15.325']);
 const isFull=c=>FULL.has(c.key);
