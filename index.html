@@ -727,7 +727,7 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 let MITIDX=null;
-function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
+function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:m.hf||'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
 const byKey=k=>!k?undefined:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k)));
 const planned=()=>state.plan.map(byKey).filter(Boolean);
