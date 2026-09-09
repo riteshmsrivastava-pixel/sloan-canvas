@@ -129,6 +129,9 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .hvsel{font-family:var(--fb);font-size:10.5px;border:1px solid var(--line2);border-radius:8px;padding:3px 5px;background:#fff;color:var(--sub);cursor:pointer;}
 .stsel{font-family:var(--fb);font-size:10.5px;font-weight:600;border:1.5px solid var(--line2);border-radius:8px;padding:3px 4px;background:#fff;cursor:pointer;max-width:104px;}
 .cxdl{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:6px 10px;cursor:pointer;}
+.rchip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#9a7a00;background:#F7EED6;border:1px solid #EAD9A8;border-radius:999px;padding:2px 8px;cursor:pointer;white-space:nowrap;}
+.rchip.on{color:#8a6a00;} .rchip:not(.on){color:#B0A48E;background:var(--card2);border-color:var(--line);}
+#reviewBox .inp{width:100%;margin-bottom:8px;} #reviewBox textarea.inp{resize:vertical;line-height:1.4;font-family:var(--fb);}
 .mate{font-size:10px;font-weight:700;color:#4c5a6e;background:#e6eaef;padding:2px 7px;border-radius:99px;cursor:pointer;}
 .mate:hover{background:#d9e0ea;}
 .matebox{margin:-4px 0 2px;padding:8px 10px;background:#f6f4ef;border:1px solid var(--line2);border-radius:12px;display:flex;flex-direction:column;gap:5px;}
@@ -371,6 +374,10 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
 <div class="overlay" id="meetModal" onclick="if(event.target===this)closeMeet()">
   <div class="modal" style="max-width:460px" id="meetBox"></div>
+</div>
+
+<div class="overlay" id="reviewModal" onclick="if(event.target===this)closeReview()">
+  <div class="modal" style="max-width:480px" id="reviewBox"></div>
 </div>
 
 <div class="overlay" id="customModal" onclick="if(event.target===this)closeCustom()">
@@ -670,6 +677,81 @@ async function loadRoster(){
 }
 function mates(k){return session?(roster[k]||[]).filter(m=>m.uid!==session.user.id):[];}
 function toggleMates(k){mateOpen=mateOpen===k?null:k;renderPlan();}
+// ---- Course reviews (non-anonymous, from people who took the class) ----
+let reviews={}, reviewDraftRating=0;
+const escH=s=>(''+(s==null?'':s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+async function loadReviews(){
+  if(!SB||!session)return;
+  try{
+    const [rv,pr]=await Promise.all([SB.from('mf_reviews').select('*'),SB.from('mf_profiles').select('id,name')]);
+    const info={};(pr.data||[]).forEach(p=>info[p.id]=p.name);
+    const r={};(rv.data||[]).forEach(v=>{(r[v.course_id]=r[v.course_id]||[]).push(Object.assign({},v,{name:info[v.user_id]||'—'}));});
+    reviews=r;
+  }catch(e){}
+}
+function ratingOf(k){const rs=reviews[k]||[];if(!rs.length)return null;return {avg:rs.reduce((a,b)=>a+(b.rating||0),0)/rs.length,count:rs.length};}
+function starRow(n,size){let h='';for(let i=1;i<=5;i++)h+=`<span style="color:${i<=Math.round(n)?'#E0A400':'#D8CDBB'};font-size:${size||13}px">★</span>`;return h;}
+function reviewChip(key){
+  if(!session)return '';
+  const r=ratingOf(key);
+  return r?`<span class="rchip on" onclick="event.stopPropagation();showReviews('${key}')" title="See classmate reviews">★ ${r.avg.toFixed(1)} <b>(${r.count})</b></span>`
+          :`<span class="rchip" onclick="event.stopPropagation();showReviews('${key}')" title="No reviews yet - add yours">★ rate</span>`;
+}
+function closeReview(){document.getElementById('reviewModal').classList.remove('show');}
+function setRvRating(n){reviewDraftRating=n;document.querySelectorAll('#rvStars span').forEach((s,i)=>s.style.color=(i<n)?'#E0A400':'#D8CDBB');}
+async function showReviews(key){
+  const c=byKey(key);if(!c)return;
+  const modal=document.getElementById('reviewModal'),box=document.getElementById('reviewBox');
+  reviewDraftRating=0; modal.classList.add('show');
+  const code=(''+c.id).replace('MIT:','')+(c.sec||'');
+  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${escH(code)} · reviews</h2><div style="font-size:12.5px;color:var(--sub);margin-top:3px">${escH(c.title)}</div></div><button class="close" onclick="closeReview()">×</button></div>`;
+  if(!session){box.innerHTML=head+`<div style="padding:20px 0;color:var(--sub);font-size:13px">Sign in on the Community tab to read and write course reviews.</div>`;return;}
+  box.innerHTML=head+`<div style="padding:24px 0;text-align:center;color:var(--mute2);font-size:13px">Loading reviews…</div>`;
+  await loadReviews();
+  if(!modal.classList.contains('show'))return;
+  const rs=reviews[key]||[], mine=rs.find(v=>v.user_id===session.user.id), r=ratingOf(key);
+  const summary=r?`<div style="display:flex;align-items:center;gap:9px;margin:6px 0 14px"><span style="font-size:22px;font-weight:800;font-family:var(--fh)">${r.avg.toFixed(1)}</span><span>${starRow(r.avg,17)}</span><span style="font-size:12px;color:var(--sub)">${r.count} review${r.count>1?'s':''}</span></div>`
+    :`<div style="font-size:12.5px;color:var(--mute);margin:6px 0 14px">No reviews yet. Add yours if you took the class 🙂</div>`;
+  const sect=(l,v)=>v?`<div style="margin-top:8px"><div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)">${l}</div><div style="font-size:13px;color:var(--ink);line-height:1.5;margin-top:2px;white-space:pre-wrap">${escH(v)}</div></div>`:'';
+  const list=rs.map(v=>`<div style="border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700">${escH(v.name)}</span><span style="margin-left:auto">${starRow(v.rating,14)}</span></div>
+      ${v.verdict?`<div style="font-family:var(--fh);font-weight:700;font-size:15px;margin-top:6px;color:var(--brand2)">${escH(v.verdict)}</div>`:''}
+      ${sect('What it is',v.what_it_is)}${sect('What stuck',v.what_stuck)}${sect('Who should take it',v.who_take)}${sect('Who can skip it',v.who_skip)}
+      ${v.user_id===session.user.id?`<div style="margin-top:10px"><button class="btn" style="font-size:11px;padding:3px 9px" onclick="deleteReview('${key}')">Delete mine</button></div>`:''}
+    </div>`).join('');
+  const f=mine||{}, q=s=>escH(s).replace(/"/g,'&quot;');
+  const form=`<div style="border-top:1px solid var(--line);margin-top:6px;padding-top:14px">
+    <div style="font-family:var(--fh);font-weight:700;font-size:15px;margin-bottom:8px">${mine?'Edit your review':'Write a review'}</div>
+    <div style="font-size:11.5px;color:var(--sub);margin-bottom:4px">Your rating</div>
+    <div id="rvStars" style="letter-spacing:5px;margin-bottom:11px">${[1,2,3,4,5].map(n=>`<span onclick="setRvRating(${n})" style="cursor:pointer;font-size:28px;color:#D8CDBB">★</span>`).join('')}</div>
+    <input id="rvVerdict" class="inp" placeholder="Verdict (e.g. Amazing. Take it.)" value="${q(f.verdict)}">
+    <textarea id="rvWhat" class="inp" rows="2" placeholder="What it is">${escH(f.what_it_is)}</textarea>
+    <textarea id="rvStuck" class="inp" rows="2" placeholder="What stuck with you">${escH(f.what_stuck)}</textarea>
+    <textarea id="rvTake" class="inp" rows="1" placeholder="Who should take it">${escH(f.who_take)}</textarea>
+    <textarea id="rvSkip" class="inp" rows="1" placeholder="Who can skip it">${escH(f.who_skip)}</textarea>
+    <div id="rvMsg" style="font-size:12px;min-height:14px;margin-top:2px"></div>
+    <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="submitReview('${key}')">${mine?'Update review':'Post review'}</button>
+    <div style="font-size:11px;color:var(--mute);margin-top:8px">Posted with your name - reviews aren't anonymous, so they carry weight.</div>
+  </div>`;
+  box.innerHTML=head+summary+list+form;
+  if(mine){reviewDraftRating=mine.rating||0;setRvRating(reviewDraftRating);}
+}
+async function submitReview(key){
+  const msg=document.getElementById('rvMsg');
+  if(!reviewDraftRating){msg.style.color='#c2002a';msg.textContent='Pick a star rating first.';return;}
+  const verdict=(document.getElementById('rvVerdict').value||'').trim();
+  if(!verdict){msg.style.color='#c2002a';msg.textContent='Add a one-line verdict.';return;}
+  const g=id=>{const v=(document.getElementById(id).value||'').trim();return v||null;};
+  const row={user_id:session.user.id,course_id:key,rating:reviewDraftRating,verdict,what_it_is:g('rvWhat'),what_stuck:g('rvStuck'),who_take:g('rvTake'),who_skip:g('rvSkip')};
+  msg.style.color='var(--sub)';msg.textContent='Posting…';
+  try{const{error}=await SB.from('mf_reviews').upsert(row,{onConflict:'user_id,course_id'});if(error){msg.style.color='#c2002a';msg.textContent=error.message;return;}}catch(e){msg.style.color='#c2002a';msg.textContent='Could not post - try again.';return;}
+  await loadReviews();render();showReviews(key);
+}
+async function deleteReview(key){
+  if(!confirm('Delete your review?'))return;
+  try{await SB.from('mf_reviews').delete().eq('user_id',session.user.id).eq('course_id',key);}catch(e){}
+  await loadReviews();render();showReviews(key);
+}
 // Classmates popup - click any class to see who else is in it (refreshes live on open)
 async function showClassmates(key){
   const c=byKey(key);if(!c)return;
@@ -759,7 +841,7 @@ function buildStatic(){
   document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked||isWon(c.key))return;tip.style.display='none';remove(c.key);});
   // Click any course anywhere (catalog / Harvard / MIT / plan / calendar block) → classmates popup. Controls still work.
   document.addEventListener('click',e=>{
-    if(e.target.closest('button,select,a,input,.stsel,.mate,.note,.rk,.add,.rm,.hvsel,.bx'))return;
+    if(e.target.closest('button,select,a,input,textarea,.stsel,.mate,.rchip,.note,.rk,.add,.rm,.hvsel,.bx'))return;
     if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan,#calwrap'))return;
     const card=e.target.closest('[data-key]');
     if(card&&card.dataset.key){tip.style.display='none';showClassmates(card.dataset.key);}
@@ -824,7 +906,7 @@ function render(){
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick - top reputation/demand">⭐</span>':''}
           <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
-          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}
+          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}${reviewChip(c.key)}
         </div>
         <div class="ctitle">${c.title}</div>
         <div class="meta">
@@ -866,7 +948,7 @@ function renderPlan(){
     return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
-          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>
+          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}
         </div>
         <div class="ptitle">${c.title}</div>
       </div>
@@ -1120,6 +1202,8 @@ async function onAuth(){
   myProfile=prof;pendingName=null;updateAcct();
   await syncDown();
   await loadRoster();
+  await loadReviews();
+  render();
   renderCommunity();
 }
 // On login: if you've built a plan locally, push it up; if local is empty (fresh browser), pull your synced plan down. Never silently wipe the server.
