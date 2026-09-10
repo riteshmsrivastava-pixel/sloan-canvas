@@ -252,6 +252,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <input id="q" class="inp" placeholder="⌕  Search courses…" oninput="render()">
         <select id="cert" class="inp" onchange="render()"></select>
         <select id="track" class="inp" onchange="render()"></select>
+        <select id="units" class="inp" onchange="render()"></select>
       </div>
       <div class="elig">
         <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
@@ -313,6 +314,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div class="filters">
         <input id="hq" class="inp" placeholder="⌕  Search title, course #, faculty…" oninput="renderHarvard()">
         <select id="hschool" class="inp" onchange="renderHarvard()"><option value="">All schools</option><option value="HBS">HBS - Business</option><option value="HKS">HKS - Kennedy</option><option value="HLS">HLS - Law</option></select>
+        <select id="hunits" class="inp" onchange="renderHarvard()"></select>
       </div>
       <label class="toggle" style="margin-bottom:14px" onclick="hvMarquee=!hvMarquee;document.getElementById('hvmq').classList.toggle('on',hvMarquee);renderHarvard()"><span class="switch" id="hvmq"><i></i></span> Show only ⭐ marquee picks</label>
       <div id="hvlist" class="list" style="max-height:none"></div>
@@ -328,6 +330,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <input id="mq" class="inp" placeholder="⌕  Search title, course #, instructor…" oninput="renderMit()">
         <select id="mdept" class="inp" onchange="renderMit()"></select>
         <select id="mterm" class="inp" onchange="renderMit()"><option value="">All terms</option><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="IAP">IAP</option></select>
+        <select id="munits" class="inp" onchange="renderMit()"></select>
       </div>
       <label class="toggle" style="margin-bottom:14px" onclick="mitHideOff=!mitHideOff;document.getElementById('mitoff').classList.toggle('on',mitHideOff);renderMit()"><span class="switch on" id="mitoff"><i></i></span> Hide subjects not offered this year</label>
       <div id="mitlist" class="mitgrid"></div>
@@ -656,7 +659,7 @@ const isFull=c=>FULL.has(c.key);
 /* ===================== state ===================== */
 const KEY='sloanCanvas_fall_v1';
 let state=load();
-let filter={q:'',route:'all',cert:'',track:'',eligibleOnly:true};
+let filter={q:'',route:'all',cert:'',track:'',units:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};if(!s.custom)s.custom={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{},custom:{}};}
@@ -818,6 +821,8 @@ const planned=()=>state.plan.map(byKey).filter(Boolean);
 function buildStatic(){
   document.getElementById('cert').innerHTML='<option value="">All certificates</option>'+CERT_KEYS.map(k=>`<option value="${k}">${CERT[k].full}</option>`).join('');
   document.getElementById('track').innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  const us=[...new Set(COURSES.filter(c=>!c.locked&&!isHv(c)).map(c=>FU(c)).filter(u=>u>0))].sort((a,b)=>a-b);
+  document.getElementById('units').innerHTML='<option value="">All units</option>'+us.map(u=>`<option value="${u}">${u} units</option>`).join('');
   document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
   const steps=[
     ['1','Three catalogs','Top tabs: 📋 Sloan · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
@@ -889,12 +894,14 @@ function render(){
   filter.q=document.getElementById('q').value.toLowerCase().trim();
   filter.cert=document.getElementById('cert').value;
   filter.track=document.getElementById('track').value;
+  filter.units=document.getElementById('units').value;
   routeTabs();
   let items=COURSES.filter(c=>!c.locked&&!isHv(c));
   if(filter.eligibleOnly)items=items.filter(isEligible);
   if(filter.q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(filter.q));
   if(filter.route!=='all')items=items.filter(c=>c.route===filter.route);
   if(filter.cert)items=items.filter(c=>c.certs.includes(filter.cert));
+  if(filter.units)items=items.filter(c=>FU(c)===+filter.units);
   let rk=null;
   if(filter.track){const o=TRACK_RANK[filter.track]||[];rk={};o.forEach((id,i)=>rk[id]=i+1);items=items.filter(c=>rk[c.base]).sort((a,b)=>rk[a.base]-rk[b.base]);}
   else items.sort((a,b)=>a.id.localeCompare(b.id));
@@ -1116,10 +1123,13 @@ function setTab(t){
 }
 function renderHarvard(){
   const list=document.getElementById('hvlist'); if(!list)return;
-  const q=document.getElementById('hq').value.toLowerCase().trim(), sch=document.getElementById('hschool').value;
+  const q=document.getElementById('hq').value.toLowerCase().trim(), sch=document.getElementById('hschool').value, hu=document.getElementById('hunits').value;
+  const hsel=document.getElementById('hunits');
+  if(hsel&&!hsel.options.length){const hus=[...new Set(COURSES.filter(isHv).map(c=>c.units).filter(u=>u>0))].sort((a,b)=>a-b);hsel.innerHTML='<option value="">All units</option>'+hus.map(u=>`<option value="${u}">${u} units</option>`).join('');}
   let items=COURSES.filter(isHv);
   if(q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(q));
   if(sch)items=items.filter(c=>c.fac.includes(sch));
+  if(hu)items=items.filter(c=>c.units===+hu);
   if(hvMarquee)items=items.filter(c=>c.star);
   document.getElementById('hvCount').textContent=items.length;
   list.innerHTML=items.map(c=>{
@@ -1139,17 +1149,20 @@ function renderHarvard(){
 function buildMit(){
   const depts=window.MIT_DEPTS||{};
   document.getElementById('mdept').innerHTML='<option value="">All departments</option>'+Object.entries(depts).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  const mus=[...new Set((window.MIT_COURSES||[]).map(c=>c.u||0).filter(u=>u>0))].sort((a,b)=>a-b);
+  document.getElementById('munits').innerHTML='<option value="">All units</option>'+mus.map(u=>`<option value="${u}">${u} units</option>`).join('');
   renderMit();
 }
 function renderMit(){
   const data=window.MIT_COURSES||[];
   const q=document.getElementById('mq').value.toLowerCase().trim();
-  const dep=document.getElementById('mdept').value, term=document.getElementById('mterm').value;
+  const dep=document.getElementById('mdept').value, term=document.getElementById('mterm').value, munits=document.getElementById('munits').value;
   const depts=window.MIT_DEPTS||{};
   let items=data.filter(c=>{
     if(mitHideOff&&c.off)return false;
     if(dep&&c.d!==dep)return false;
     if(term&&!(c.tm||[]).includes(term))return false;
+    if(munits&&(c.u||0)!==+munits)return false;
     if(q&&!((c.id+' '+c.t+' '+(c.ins||'')).toLowerCase().includes(q)))return false;
     return true;
   });
