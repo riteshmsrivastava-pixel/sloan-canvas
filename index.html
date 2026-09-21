@@ -253,6 +253,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <select id="cert" class="inp" onchange="render()"></select>
         <select id="track" class="inp" onchange="render()"></select>
         <select id="units" class="inp" onchange="render()"></select>
+        <select id="half" class="inp" onchange="render()"><option value="">Any half</option><option value="F">Full term</option><option value="H1">First half · H1</option><option value="H2">Second half · H2</option></select>
       </div>
       <div class="elig">
         <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
@@ -331,6 +332,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
         <select id="mdept" class="inp" onchange="renderMit()"></select>
         <select id="mterm" class="inp" onchange="renderMit()"><option value="">All terms</option><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="IAP">IAP</option></select>
         <select id="munits" class="inp" onchange="renderMit()"></select>
+        <select id="mhalf" class="inp" onchange="renderMit()"><option value="">Any half</option><option value="F">Full term</option><option value="H1">First half · H1</option><option value="H2">Second half · H2</option></select>
       </div>
       <label class="toggle" style="margin-bottom:14px" onclick="mitHideOff=!mitHideOff;document.getElementById('mitoff').classList.toggle('on',mitHideOff);renderMit()"><span class="switch on" id="mitoff"><i></i></span> Hide subjects not offered this year</label>
       <div id="mitlist" class="mitgrid"></div>
@@ -661,7 +663,7 @@ const isFull=c=>FULL.has(c.key);
 /* ===================== state ===================== */
 const KEY='sloanCanvas_fall_v1';
 let state=load();
-let filter={q:'',route:'all',cert:'',track:'',units:'',eligibleOnly:true};
+let filter={q:'',route:'all',cert:'',track:'',units:'',half:'',eligibleOnly:true};
 let calView='all';
 function setCalView(v){calView=v;renderCalendar();}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.plan){if(!s.coreSec)s.coreSec='A';if(!s.hvPat)s.hvPat={};if(!s.won)s.won=[];if(!s.status)s.status={};if(!s.custom)s.custom={};s.won.forEach(k=>{if(!s.status[k])s.status[k]='enrolled';});return s;}}catch(e){}return{plan:['15.414'],bids:{},coreSec:'A',hvPat:{},won:[],status:{},custom:{}};}
@@ -897,6 +899,7 @@ function render(){
   filter.cert=document.getElementById('cert').value;
   filter.track=document.getElementById('track').value;
   filter.units=document.getElementById('units').value;
+  filter.half=document.getElementById('half').value;
   routeTabs();
   let items=COURSES.filter(c=>!c.locked&&!isHv(c));
   if(filter.eligibleOnly)items=items.filter(isEligible);
@@ -904,6 +907,7 @@ function render(){
   if(filter.route!=='all')items=items.filter(c=>c.route===filter.route);
   if(filter.cert)items=items.filter(c=>c.certs.includes(filter.cert));
   if(filter.units)items=items.filter(c=>FU(c)===+filter.units);
+  if(filter.half)items=items.filter(c=>(c.half||'F')===filter.half);
   let rk=null;
   if(filter.track){const o=TRACK_RANK[filter.track]||[];rk={};o.forEach((id,i)=>rk[id]=i+1);items=items.filter(c=>rk[c.base]).sort((a,b)=>rk[a.base]-rk[b.base]);}
   else items.sort((a,b)=>a.id.localeCompare(b.id));
@@ -1158,13 +1162,14 @@ function buildMit(){
 function renderMit(){
   const data=window.MIT_COURSES||[];
   const q=document.getElementById('mq').value.toLowerCase().trim();
-  const dep=document.getElementById('mdept').value, term=document.getElementById('mterm').value, munits=document.getElementById('munits').value;
+  const dep=document.getElementById('mdept').value, term=document.getElementById('mterm').value, munits=document.getElementById('munits').value, mhalf=document.getElementById('mhalf').value;
   const depts=window.MIT_DEPTS||{};
   let items=data.filter(c=>{
     if(mitHideOff&&c.off)return false;
     if(dep&&c.d!==dep)return false;
     if(term&&!(c.tm||[]).includes(term))return false;
     if(munits&&(c.u||0)!==+munits)return false;
+    if(mhalf&&(c.hf||'F')!==mhalf)return false;
     if(q&&!((c.id+' '+c.t+' '+(c.ins||'')).toLowerCase().includes(q)))return false;
     return true;
   });
