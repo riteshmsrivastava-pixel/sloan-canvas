@@ -320,7 +320,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <!-- VIEW: IAP (Jan 2027) -->
   <div id="view-iap" style="display:none">
     <div style="margin:0 0 16px;padding:12px 15px;border-radius:14px;background:#EFEAD8;border:1px solid #E4DAC4;font-size:12.5px;color:var(--sub);line-height:1.55;max-width:900px">
-      🗓️ <b>IAP — January 2027</b> (Jan 4–29). Short, intensive courses. These are <b>register / lottery / instructor-permission</b>, not bid. Many are <b>Executive electives</b> open to Sloan Fellows (marked below). Units shown are the <b>IAP portion</b> — a few labs (G-Lab, H-Lab, EM-Lab, Finance/PM Lab) split across Fall/IAP/Spring. Add a course to see it on the January calendar, who else is in it, and its reviews. Always confirm on SloanBid / WebSIS.
+      🗓️ <b>IAP - January 2027</b> (Jan 4-29). Short, intensive courses. These are <b>register / lottery / instructor-permission</b>, not bid. Many are <b>Executive electives</b> open to Sloan Fellows (marked below). Units shown are the <b>IAP portion</b> - a few labs (G-Lab, H-Lab, EM-Lab, Finance/PM Lab) split across Fall/IAP/Spring. Add a course to see it on the January calendar, who else is in it, and its reviews. Always confirm on SloanBid / WebSIS.
     </div>
     <div class="main">
       <div class="left panel pad">
@@ -738,7 +738,7 @@ async function loadReviews(){
   try{
     const [rv,pr]=await Promise.all([SB.from('mf_reviews').select('*'),SB.from('mf_profiles').select('id,name')]);
     const info={};(pr.data||[]).forEach(p=>info[p.id]=p.name);
-    const r={};(rv.data||[]).forEach(v=>{(r[v.course_id]=r[v.course_id]||[]).push(Object.assign({},v,{name:info[v.user_id]||'—'}));});
+    const r={};(rv.data||[]).forEach(v=>{(r[v.course_id]=r[v.course_id]||[]).push(Object.assign({},v,{name:info[v.user_id]||'-'}));});
     reviews=r;
   }catch(e){}
 }
@@ -1481,8 +1481,8 @@ const IAP_COURSES=[
   KI({id:'15.877',title:'Creating Effective Work Using Dynamic Work Design',units:3,fac:'N. Repenning',perm:1,sched:'Tue–Thu 1/19–1/21, 9a–4p · E52-164',note:'Grad · was 15.S20',cal:[{dom:[19,20,21],s:540,e:960}]}),
   KI({id:'15.960',title:'Independent Study in Management (P/D/F)',units:0,fac:'C. Beck',perm:1,note:'Units arranged'}),
   KI({id:'15.961',title:'Independent Study in Management (A–F)',units:0,fac:'C. Beck',perm:1,note:'Units arranged'}),
-  KI({id:'15.S03',title:'SSIM: Operations Lab — January Hong Kong Project',units:3,fac:'D. Fitzgerald · T. Roemer',perm:1,note:'2nd-year LGOs only'}),
-  KI({id:'15.S20',title:'SSIM: U-Lab — Transforming Self, Business & Society (2-day)',units:3,fac:'O. Scharmer',exec:1}),
+  KI({id:'15.S03',title:'SSIM: Operations Lab - January Hong Kong Project',units:3,fac:'D. Fitzgerald · T. Roemer',perm:1,note:'2nd-year LGOs only'}),
+  KI({id:'15.S20',title:'SSIM: U-Lab - Transforming Self, Business & Society (2-day)',units:3,fac:'O. Scharmer',exec:1}),
   KI({id:'15.S21',title:'SSIM: Investing in People for Innovation',units:3,fac:'C. Palmer',exec:1}),
   KI({id:'15.S22',title:'SSIM: Mergers and Acquisitions',units:3,fac:'E. Matveyev',certs:['FIN'],exec:1}),
   KI({id:'15.S23',title:'SSIM: Power and Politics',units:3,fac:'E. Rixey',exec:1}),
@@ -1493,9 +1493,9 @@ const IAP_COURSES=[
   KI({id:'15.S52',title:'SSIM: AI in Finance',units:3,fac:'H. Chen',certs:['FIN','BA'],exec:1}),
   KI({id:'15.S53',title:'SSIM: AI and the Law',units:3,fac:'J. Akula',exec:1}),
   KI({id:'15.S54',title:'SSIM: Entrepreneurship Through Acquisition',units:3,fac:'D. Giambrone · P. Russell',exec:1}),
-  KI({id:'15.S55',title:'SSIM: Crossing the Line — Entrepreneurial Ethics',units:3,fac:'F. Murray · A. Shklarek',certs:['EI'],exec:1}),
+  KI({id:'15.S55',title:'SSIM: Crossing the Line - Entrepreneurial Ethics',units:3,fac:'F. Murray · A. Shklarek',certs:['EI'],exec:1}),
   KI({id:'15.S56',title:'SSIM: Entrepreneurial Finance',units:3,fac:'A. Schoar',exec:1}),
-  KI({id:'15.S58',title:'SSIM: Prescriptive AI — The Edge of Optimization',units:3,fac:'A. Jacquillat',certs:['BA'],exec:1}),
+  KI({id:'15.S58',title:'SSIM: Prescriptive AI - The Edge of Optimization',units:3,fac:'A. Jacquillat',certs:['BA'],exec:1}),
   KI({id:'15.S59',title:'SSIM: AI, Strategy, Governance & Ethics',units:3,fac:'J. Saviano',certs:['BA'],exec:1}),
   KI({id:'15.S60',title:'SSIM: Computing in Optimization and Statistics',units:3,fac:'K. Ligris · C. Tucker',sched:'Tue & Thu 1/5–1/28, 9a–12p · E51-395',cal:[{dom:[5,7,12,14,19,21,26,28],s:540,e:720}]}),
   KI({id:'15.S62',title:'SSIM: Management of Services (2-day)',units:3,fac:'Z. Ton',certs:['SUS'],exec:1}),
@@ -1584,11 +1584,11 @@ function renderIapCal(cs){
   weeks.forEach((w,wi)=>{
     html+=`<div class="iaprow"><div class="iapwk">Jan ${w[0]}</div>`+w.map((dom,di)=>{
       const mlk=(dom===18);
-      return `<div class="iapcell">${mlk?'<span class="iaphol">MLK — no class</span>':''}${(cell[wi+'-'+di]||[]).join('')}</div>`;
+      return `<div class="iapcell">${mlk?'<span class="iaphol">MLK - no class</span>':''}${(cell[wi+'-'+di]||[]).join('')}</div>`;
     }).join('')+'</div>';
   });
   const undated=(cs||[]).filter(c=>!c.cal||!c.cal.length);
-  if(undated.length)html+=`<div class="iapund"><b>Dates set by program (not on grid):</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. Many exec electives and labs schedule sessions after registration — confirm on WebSIS.</div>`;
+  if(undated.length)html+=`<div class="iapund"><b>Dates not published yet:</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. These are set by the program after you register - confirm on WebSIS.</div>`;
   el.innerHTML=html;
 }
 applyPreload();applyCoreSection();computeHv();buildStatic();render();sbInit();
