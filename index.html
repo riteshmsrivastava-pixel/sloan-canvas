@@ -912,7 +912,7 @@ function tipHTML(c){
     <div class="tt">${c.title}</div>
     <div class="td">
       <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+TIERLAB[c.tier]:''}
-      <div class="trow">🕑 ${c.term==='IAP'?(c.sched||'Dates set by program'):(c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program'))}</div>
+      <div class="trow">🕑 ${c.term==='IAP'?(c.sched||'Dates not published yet'):(c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program'))}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
       ${extra}
@@ -1536,7 +1536,7 @@ function renderIAP(){
         <div class="ctitle">${c.title}</div>
         <div class="meta">
           <span class="unit">${c.units?c.units+'u':'arr'}</span>
-          <span class="time">🗓 ${c.sched||'Dates set by program'}</span>
+          <span class="time">🗓 ${c.sched||'Dates not published yet'}</span>
           ${certBadges(c.certs)}
         </div>
         <div class="fac">👤 ${c.fac}</div>
@@ -1559,7 +1559,7 @@ function renderIapPlan(){
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap"><span class="pcode">${c.id}${c.sec||''}</span><span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}</div>
         <div class="ptitle">${c.title}</div>
-        <div style="font-size:11px;color:var(--mute);margin-top:2px">🗓 ${c.sched||'Dates set by program'}</div>
+        <div style="font-size:11px;color:var(--mute);margin-top:2px">🗓 ${c.sched||'Dates not published yet'}</div>
       </div>
       <span class="time">${c.units?c.units+'u':'arr'}</span>
       <select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select>
