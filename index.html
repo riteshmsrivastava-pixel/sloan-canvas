@@ -203,9 +203,21 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .tabs button.on{background:var(--card);color:var(--brand);box-shadow:0 1px 3px rgba(80,55,30,.16);}
 .mitgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:820px){.mitgrid{grid-template-columns:1fr;}}
+/* IAP January agenda */
+.iaprow{display:flex;gap:6px;margin-bottom:6px;}
+.iaphead .iapd,.iaphead .iapwk{font-family:var(--fm);font-size:10px;color:var(--mute2);text-transform:uppercase;letter-spacing:.05em;}
+.iapwk{flex:0 0 46px;font-family:var(--fm);font-size:10.5px;color:var(--sub);display:flex;align-items:center;}
+.iaphead .iapwk{color:var(--mute2);}
+.iapd{flex:1;text-align:center;}
+.iapcell{flex:1;min-height:42px;border:1px solid var(--grid);border-radius:9px;background:var(--inp);padding:4px;display:flex;flex-direction:column;gap:3px;}
+.iapchip{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--ink);border-radius:5px;padding:2px 5px;line-height:1.25;}
+.iapchip .iapt{font-weight:400;color:var(--sub);font-size:9px;}
+.iaphol{font-size:9px;color:var(--mute2);font-style:italic;}
+.iapund{margin-top:12px;font-size:11.5px;color:var(--sub);background:var(--inp);border:1px dashed var(--line2);border-radius:11px;padding:9px 11px;line-height:1.55;}
 @media(max-width:760px){
   .meters{order:3;} .mhint{display:inline;} .left{max-width:none;}
   .list{max-height:60vh;} .days{min-width:520px;}
+  .iapwk{flex:0 0 38px;font-size:9.5px;} .iapchip{font-size:9px;}
 }
 </style>
 </head>
@@ -234,6 +246,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <!-- TABS -->
   <div class="tabs">
     <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan courses</button>
+    <button id="tab-iap" onclick="setTab('iap')">🗓️ IAP · Jan ’27</button>
     <button id="tab-harvard" onclick="setTab('harvard')">🎓 Harvard cross-reg</button>
     <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
     <button id="tab-community" onclick="setTab('community')">👥 Community</button>
@@ -303,6 +316,39 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   </div>
 
   </div><!-- /view-sloan -->
+
+  <!-- VIEW: IAP (Jan 2027) -->
+  <div id="view-iap" style="display:none">
+    <div style="margin:0 0 16px;padding:12px 15px;border-radius:14px;background:#EFEAD8;border:1px solid #E4DAC4;font-size:12.5px;color:var(--sub);line-height:1.55;max-width:900px">
+      🗓️ <b>IAP — January 2027</b> (Jan 4–29). Short, intensive courses. These are <b>register / lottery / instructor-permission</b>, not bid. Many are <b>Executive electives</b> open to Sloan Fellows (marked below). Units shown are the <b>IAP portion</b> — a few labs (G-Lab, H-Lab, EM-Lab, Finance/PM Lab) split across Fall/IAP/Spring. Add a course to see it on the January calendar, who else is in it, and its reviews. Always confirm on SloanBid / WebSIS.
+    </div>
+    <div class="main">
+      <div class="left panel pad">
+        <div class="ph"><h2>IAP Catalog</h2><span class="count"><span id="iapCount">0</span> courses</span></div>
+        <div class="seg" id="iapSeg">
+          <button data-v="all" class="on" onclick="setIapCat('all')">All</button>
+          <button data-v="noexec" onclick="setIapCat('noexec')">Standard</button>
+          <button data-v="exec" onclick="setIapCat('exec')">Exec electives</button>
+        </div>
+        <div class="filters">
+          <input id="iq" class="inp" placeholder="⌕  Search IAP courses…" oninput="renderIAP()">
+          <select id="icert" class="inp" onchange="renderIAP()"></select>
+          <select id="iunits" class="inp" onchange="renderIAP()"></select>
+        </div>
+        <div class="list" id="iaplist"></div>
+      </div>
+      <div class="right">
+        <div class="panel pad">
+          <div class="ph" style="margin-bottom:14px"><h2>My IAP Plan</h2><span class="count"><span id="iapPlanCount">0</span> courses · <b id="iapUnits">0</b>u</span></div>
+          <div id="iapPlan" style="display:flex;flex-direction:column;gap:9px"></div>
+        </div>
+        <div class="panel pad">
+          <div class="ph" style="margin-bottom:12px"><h2>January 2027</h2><span class="count">your IAP courses by week</span></div>
+          <div id="iapCal"></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /view-iap -->
 
   <!-- VIEW: HARVARD -->
   <div id="view-harvard" style="display:none">
@@ -631,8 +677,8 @@ const COURSES=[
   K({id:'15.873',title:'System Dynamics for Business & Policy',units:9,half:'F',fac:'V. Yang',certs:['SUS','EM','BA'],route:'Ineligible',m:mt('MW','13:00-14:30'),note:'SFMBA take SD core in Spring H3 - do not take in Fall'}),
 ];
 
-const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core',Ineligible:'r-Ineligible',Crossreg:'r-Crossreg',MITreg:'r-Register'};
-const ROUTELABEL={Bid:'Elective',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core',Ineligible:'Not for SFMBA',Crossreg:'Harvard · cross-reg',MITreg:'MIT · register'};
+const ROUTECLASS={Bid:'r-Bid',Apply:'r-Apply',Register:'r-Register',Waitlist:'r-Waitlist',Core:'r-Core',Ineligible:'r-Ineligible',Crossreg:'r-Crossreg',MITreg:'r-Register',IAP:'r-Register'};
+const ROUTELABEL={Bid:'Elective',Apply:'Apply',Register:'Register',Waitlist:'Waitlist',Core:'Core',Ineligible:'Not for SFMBA',Crossreg:'Harvard · cross-reg',MITreg:'MIT · register',IAP:'IAP · register'};
 const TIERCOL={High:'#A8312B',Medium:'#C8703D',Low:'#5F7A4E'};
 const TIERLAB={High:'Hard to get',Medium:'Moderate',Low:'Usually open'};
 const biddable=c=>c.route==='Bid';
@@ -818,7 +864,7 @@ function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 let MITIDX=null;
 function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:m.hf||'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
-const byKey=k=>!k?undefined:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k)));
+const byKey=k=>!k?undefined:(k.slice(0,4)==='IAP:'?IAP_IDX[k]:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k))));
 const planned=()=>state.plan.map(byKey).filter(Boolean);
 
 /* ===================== static UI ===================== */
@@ -829,7 +875,7 @@ function buildStatic(){
   document.getElementById('units').innerHTML='<option value="">All units</option>'+us.map(u=>`<option value="${u}">${u} units</option>`).join('');
   document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
   const steps=[
-    ['1','Three catalogs','Top tabs: 📋 Sloan · 🎓 Harvard cross-reg (HBS plots on your calendar) · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
+    ['1','Four catalogs','Top tabs: 📋 Sloan · 🗓️ IAP (Jan ’27) · 🎓 Harvard cross-reg · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
     ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
     ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping - so you (and classmates) can see where things stand.'],
     ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed - this is your add/drop planner now.'],
@@ -851,7 +897,7 @@ function buildStatic(){
   // Click any course anywhere (catalog / Harvard / MIT / plan / calendar block) → classmates popup. Controls still work.
   document.addEventListener('click',e=>{
     if(e.target.closest('button,select,a,input,textarea,.stsel,.mate,.rchip,.note,.rk,.add,.rm,.hvsel,.bx'))return;
-    if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan,#calwrap'))return;
+    if(!e.target.closest('#catalog,#hvlist,#mitlist,#plan,#calwrap,#iaplist,#iapPlan,#iapCal'))return;
     const card=e.target.closest('[data-key]');
     if(card&&card.dataset.key){tip.style.display='none';showClassmates(card.dataset.key);}
   });
@@ -866,7 +912,7 @@ function tipHTML(c){
     <div class="tt">${c.title}</div>
     <div class="td">
       <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+TIERLAB[c.tier]:''}
-      <div class="trow">🕑 ${c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program')}</div>
+      <div class="trow">🕑 ${c.term==='IAP'?(c.sched||'Dates set by program'):(c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program'))}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
       ${extra}
@@ -938,23 +984,24 @@ function render(){
   renderPlan();renderCredits();renderCalendar();
   if(document.getElementById('hvlist'))renderHarvard();
   if(mitBuilt)renderMit();
+  if(iapBuilt)renderIAP();
 }
 
 /* ===================== plan ===================== */
 const halfOverlap=(a,b)=>a==='F'||b==='F'||a===b;
-function conflictSet(){const cs=planned().filter(c=>c.m.length&&!isHv(c)),s=new Set();
+function conflictSet(){const cs=planned().filter(c=>c.m.length&&!isHv(c)&&c.term!=='IAP'),s=new Set();
   for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){if(!halfOverlap(cs[i].half,cs[j].half))continue;
     for(const[d1,s1,e1]of cs[i].m)for(const[d2,s2,e2]of cs[j].m)if(d1===d2&&s1<e2&&s2<e1){s.add(cs[i].key);s.add(cs[j].key);}}
   return s;}
 // Harvard↔Sloan same-day gap < 45 min (overlap or too tight to commute across town)
-function commuteSet(){const hv=planned().filter(c=>isHv(c)&&c.m.length),sl=planned().filter(c=>!isHv(c)&&c.m.length),s=new Set();
+function commuteSet(){const hv=planned().filter(c=>isHv(c)&&c.m.length),sl=planned().filter(c=>!isHv(c)&&c.m.length&&c.term!=='IAP'),s=new Set();
   hv.forEach(h=>sl.forEach(o=>{if(!halfOverlap(h.half,o.half))return;
     h.m.forEach(([d1,s1,e1])=>o.m.forEach(([d2,s2,e2])=>{if(d1!==d2)return;
       const gap=s1>=e2?s1-e2:(s2>=e1?s2-e1:-1); if(gap<45){s.add(h.key);s.add(o.key);}}));}));
   return s;}
 
 function renderPlan(){
-  const cs=planned().sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
+  const cs=planned().filter(c=>c.term!=='IAP').sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
   document.getElementById('planCount').textContent=cs.length;
   document.getElementById('plan').innerHTML=cs.map(c=>{
     const col=colorOf(c),st=statusOf(c.key),won=isWon(c.key),bcol=(st!=='bidding'&&!c.locked)?STATUS[st].color:col,ms=c.locked?[]:mates(c.key);
@@ -975,7 +1022,7 @@ function renderPlan(){
 
 /* ===================== credits ===================== */
 function renderCredits(){
-  const cs=planned();let elec=0,tot=0;
+  const cs=planned().filter(c=>c.term!=='IAP');let elec=0,tot=0;
   cs.forEach(c=>{tot+=FU(c);if(!c.locked)elec+=FU(c);});
   const pc=(v,m)=>Math.min(100,Math.round(v/m*100));
   document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
@@ -1008,7 +1055,7 @@ function renderCalendar(){
   gut+='</div>';
   const commute=commuteSet();
   document.querySelectorAll('#calseg button').forEach(b=>b.classList.toggle('on',b.dataset.v===calView));
-  const cs=planned().filter(c=>c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
+  const cs=planned().filter(c=>c.term!=='IAP' && c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
   let daysHtml='';
   days.forEach((d)=>{
     let col=`<div class="day"><div class="dhead">${DAY[d].toUpperCase()}</div><div class="track" style="height:${CAL_H}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px 56px)">`;
@@ -1053,7 +1100,7 @@ function waiveCore(){
 // Export your plan as an .ics calendar file (client-side, no backend). Fall 2026 weekly recurrences.
 function icsEsc(s){return (s||'').replace(/([,;\\])/g,'\\$1').replace(/\r?\n/g,'\\n');}
 function buildICS(){
-  const cs=planned().filter(c=>c.m&&c.m.length);
+  const cs=planned().filter(c=>c.m&&c.m.length&&c.term!=='IAP');
   if(!cs.length)return null;
   const pad=n=>String(n).padStart(2,'0');
   const DOW={M:1,T:2,W:3,Th:4,F:5};
@@ -1119,12 +1166,13 @@ if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
 /* ===================== MIT non-Sloan tab ===================== */
 let mitHideOff=true, mitBuilt=false, hvMarquee=false;
 function setTab(t){
-  ['sloan','harvard','mit','community'].forEach(v=>{
+  ['sloan','iap','harvard','mit','community'].forEach(v=>{
     document.getElementById('view-'+v).style.display=(v===t)?'':'none';
     document.getElementById('tab-'+v).classList.toggle('on',v===t);
   });
   if(t==='mit'&&!mitBuilt){buildMit();mitBuilt=true;}
   if(t==='harvard')renderHarvard();
+  if(t==='iap')renderIAP();
   if(t==='community')renderCommunity();
 }
 function renderHarvard(){
@@ -1312,7 +1360,7 @@ async function viewPerson(id,name){
   const isSelf=session&&id===session.user.id;
   const onCal=overlays.some(o=>o.id===id);
   box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay calendar'}</button>`}</div>
-    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').replace('IAP:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
     <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat - you can see which classes you overlap on via the calendar overlay.</div>`;
 }
 async function overlayPerson(id,name){
@@ -1388,6 +1436,160 @@ function applyPreload(){
     save();
     history.replaceState(null,'',location.pathname);
   }catch(e){}
+}
+/* ===================== IAP · January 2027 ===================== */
+/* Keys are prefixed IAP: so they live in their own space (and sync separately
+   in the community DB). term:'IAP' keeps them out of every Fall view.
+   cal: concrete Jan-2027 sessions {dom:[days of month], s,e} for the agenda. */
+function KI(o){o.term='IAP';o.base=o.id;o.key='IAP:'+o.id+(o.sec?'·'+o.sec:'');o.route='IAP';o.certs=o.certs||[];o.m=o.m||[];return o;}
+const IAP_COURSES=[
+  KI({id:'15.003',title:'Analytics Tools',units:3,fac:'D. Bertsimas · M. Li',sched:'Mon 1/11 & 1/25, 8a–5p · E51-345',cal:[{dom:[11,25],s:480,e:1020}]}),
+  KI({id:'15.089',title:'Analytics Capstone',units:3,fac:'M. Li',sched:'1/4 8a–5p · 1/5 10a–2p · 1/6 1–6p · E51-345/315',cal:[{dom:[4],s:480,e:1020},{dom:[5],s:600,e:840},{dom:[6],s:780,e:1080}]}),
+  KI({id:'15.287',sec:'A',title:'Communication & Persuasion through Data',units:3,fac:'A. Telio',sched:'Tue & Thu 1/5–1/28, 1–2:30p · E51-151',cal:[{dom:[5,7,12,14,19,21,26,28],s:780,e:870}]}),
+  KI({id:'15.287',sec:'B',title:'Communication & Persuasion through Data',units:3,fac:'A. Telio',sched:'Tue & Thu 1/5–1/28, 2:30–4p · E51-151',cal:[{dom:[5,7,12,14,19,21,26,28],s:870,e:960}]}),
+  KI({id:'15.309',title:'Leadership Lessons Learned from the Military',units:6,fac:'L. Hafrey',sched:'Tue–Thu 1/12–1/14, 8:30a–4:30p · E51-345',cal:[{dom:[12,13,14],s:510,e:990}]}),
+  KI({id:'15.334',title:'Leading On Purpose: Identity, Values & Intention',units:6,fac:'T. Purinton',perm:1,sched:'Tue–Fri 1/19–1/22, 9a–4p · E62-221',note:'Grad · permission · was 15.S23',cal:[{dom:[19,20,21,22],s:540,e:960}]}),
+  KI({id:'15.335',title:'Leading With Impact: A Social Impact Lab',units:6,fac:'M. McCreary',sched:'Mon–Thu 1/25–1/28, 9a–4p · E62-223',note:'Grad · was 15.S24',cal:[{dom:[25,26,27,28],s:540,e:960}]}),
+  KI({id:'15.339',sec:'A',title:'Developing Leadership Capabilities',units:6,fac:'T. Malone · W. Orlikowski',perm:1,sched:'Mon–Wed 1/4–1/6, 9a–5p · location TBD',cal:[{dom:[4,5,6],s:540,e:1020}]}),
+  KI({id:'15.339',sec:'B',title:'Developing Leadership Capabilities',units:6,fac:'T. Malone · W. Orlikowski',perm:1,sched:'Mon–Wed 1/11–1/13, 9a–5p · E62-233',cal:[{dom:[11,12,13],s:540,e:1020}]}),
+  KI({id:'15.352',sec:'J',title:'StartMIT: Exploring Entrepreneurship & Innovation',units:6,fac:'S. Neal · D. Ruiz Massieu',certs:['EI'],note:'Meets with 6.9302J · room 1-190'}),
+  KI({id:'15.368',sec:'A',title:'Disciplined Entrepreneurship Lab',units:6,fac:'B. Aulet',certs:['EI'],perm:1,sched:'Martin Trust Center & virtually'}),
+  KI({id:'15.368',sec:'B',title:'Disciplined Entrepreneurship Lab',units:6,fac:'B. Aulet',certs:['EI'],perm:1,sched:'Martin Trust Center & virtually'}),
+  KI({id:'15.389',title:'Global Entrepreneurship Lab (G-Lab)',units:3,fac:'M. Jester · S. Johnson',certs:['EI','FIN'],perm:1,sched:'IAP field project',note:'IAP portion · 9u Fall + 3u IAP · 2nd-yr MBA/LGO'}),
+  KI({id:'15.393',title:'Nuts and Bolts of New Ventures',units:3,fac:'J. Hadzima',sched:'Tue/Wed/Thu 1/19–1/21 & 1/26–1/28, 6–9p · 10-250',cal:[{dom:[19,20,21,26,27,28],s:1080,e:1260}]}),
+  KI({id:'15.453',title:'Finance Lab',units:6,fac:'G. Rao · B. Vartak',certs:['FIN'],perm:1,sched:'Tue–Thu 1/5–1/28, 5–7p · E51-376',note:'6u IAP + 6u Spring (continues into H3)',cal:[{dom:[5,6,7,12,13,14,19,20,21,26,27,28],s:1020,e:1140}]}),
+  KI({id:'15.475',sec:'J',title:'Current Research in Financial Economics',units:6,fac:'Faculty TBD',note:'Doctoral'}),
+  KI({id:'15.630',title:'AI Strategy, Governance & Ethics',units:3,fac:'J. Saviano',sched:'Wed 1/20 2–4p · Thu 1/21, Wed 1/27, Thu 1/28 10a–noon · E51-345',cal:[{dom:[20],s:840,e:960},{dom:[21,27,28],s:600,e:720}]}),
+  KI({id:'15.672',title:'Negotiation Analysis',units:3,fac:'J. Curhan',perm:1,sched:'Mon/Tue/Wed/Fri 1/25–1/29, 8a–5p · E62-233',note:'Grad · undergrad twins 15.6721/15.6731 also listed',cal:[{dom:[25,26,27,29],s:480,e:1020}]}),
+  KI({id:'15.673',title:'Negotiation Analysis (6-unit)',units:6,fac:'J. Curhan',perm:1,sched:'Mon/Tue/Wed/Fri 1/25–1/29, 8a–5p · E62-233',note:'Grad · 6-unit version of 15.672',cal:[{dom:[25,26,27,29],s:480,e:1020}]}),
+  KI({id:'15.675',title:'Negotiation Seminar',units:6,fac:'J. Curhan',perm:1,sched:'Tue–Thu 1/19–1/21, 8a–5p · E62-233',note:'Sloan Fellows',cal:[{dom:[19,20,21],s:480,e:1020}]}),
+  KI({id:'15.709',title:'Key Decisions for Corporate Boards',units:3,fac:'R. Pozen',exec:1}),
+  KI({id:'15.711',title:'Executing Strategy for Results',units:3,fac:'D. Sull',certs:['EI'],exec:1}),
+  KI({id:'15.715',title:'Entrepreneurial Strategy',units:3,fac:'E. Scott · S. Stern',certs:['EI'],exec:1}),
+  KI({id:'15.718',title:'Introduction to Disciplined Entrepreneurship',units:3,fac:'B. Aulet · J. Larios Berlin',certs:['EI'],exec:1}),
+  KI({id:'15.721',title:'Communication & Persuasion through Data for Executives',units:3,fac:'M. Kazakoff · A. Mehrotra',certs:['BA'],exec:1}),
+  KI({id:'15.729',title:'Leadership: Quantitative & Qualitative Approaches (LQ²)',units:3,fac:'D. Bertsimas · M. Terrab',certs:['BA'],exec:1}),
+  KI({id:'15.731',title:'Risk Management',units:3,fac:'R. Levi',certs:['BA'],exec:1}),
+  KI({id:'15.737',title:'Advanced System Dynamics',units:3,fac:'R. Nachtrieb · J. Sterman',certs:['SUS','BA'],exec:1}),
+  KI({id:'15.740',title:'Strategic Communication for Executives',units:3,fac:'N. Hartman',exec:1}),
+  KI({id:'15.741',title:'Game Theory for Strategic Advantage',units:3,fac:'A. Bonatti',exec:1}),
+  KI({id:'15.766',title:'Domestic Plant Trek and Partner Integration',units:9,fac:'T. Roemer',note:'LGO'}),
+  KI({id:'15.777',title:'Healthcare Lab (H-Lab)',units:6,fac:'A. Quaadgras',certs:['EM','HC'],perm:1,sched:'IAP lab (continues from Fall)',note:'IAP portion · 9u Fall + 6u IAP'}),
+  KI({id:'15.786',title:'Product Management Lab',units:3,fac:'A. Aouad · R. Card',certs:['EI','EM','BA','DPM'],perm:1,sched:'IAP + Spring',note:'3u IAP + 6u Spring'}),
+  KI({id:'15.794',title:'Research Project in Operations',units:0,fac:'T. Roemer',note:'LGO · units arranged'}),
+  KI({id:'15.830',title:'Enterprise Management Lab',units:3,fac:'S. Chatterjee',certs:['EM'],perm:1,sched:'IAP lab (continues from Fall)',note:'IAP portion · 6u Fall + 3u IAP'}),
+  KI({id:'15.877',title:'Creating Effective Work Using Dynamic Work Design',units:3,fac:'N. Repenning',perm:1,sched:'Tue–Thu 1/19–1/21, 9a–4p · E52-164',note:'Grad · was 15.S20',cal:[{dom:[19,20,21],s:540,e:960}]}),
+  KI({id:'15.960',title:'Independent Study in Management (P/D/F)',units:0,fac:'C. Beck',perm:1,note:'Units arranged'}),
+  KI({id:'15.961',title:'Independent Study in Management (A–F)',units:0,fac:'C. Beck',perm:1,note:'Units arranged'}),
+  KI({id:'15.S03',title:'SSIM: Operations Lab — January Hong Kong Project',units:3,fac:'D. Fitzgerald · T. Roemer',perm:1,note:'2nd-year LGOs only'}),
+  KI({id:'15.S20',title:'SSIM: U-Lab — Transforming Self, Business & Society (2-day)',units:3,fac:'O. Scharmer',exec:1}),
+  KI({id:'15.S21',title:'SSIM: Investing in People for Innovation',units:3,fac:'C. Palmer',exec:1}),
+  KI({id:'15.S22',title:'SSIM: Mergers and Acquisitions',units:3,fac:'E. Matveyev',certs:['FIN'],exec:1}),
+  KI({id:'15.S23',title:'SSIM: Power and Politics',units:3,fac:'E. Rixey',exec:1}),
+  KI({id:'15.S24',title:'SSIM: Accounting Information for Decision-Makers (2-day)',units:3,fac:'C. Noe',exec:1}),
+  KI({id:'15.S25',title:'SSIM: AI and Money',units:3,fac:'G. Gensler',certs:['FIN'],exec:1}),
+  KI({id:'15.S50',title:'SSIM: How to Win at Texas Hold’em Poker',units:3,fac:'P. Mende · C. Noe',sched:'Tue & Thu 1/5–1/28, 1–2:30p · E51-376',cal:[{dom:[5,7,12,14,19,21,26,28],s:780,e:870}]}),
+  KI({id:'15.S51',title:'SSIM: Creative Entrepreneurship for Scale',units:6,fac:'J. Larios Berlin',certs:['EI']}),
+  KI({id:'15.S52',title:'SSIM: AI in Finance',units:3,fac:'H. Chen',certs:['FIN','BA'],exec:1}),
+  KI({id:'15.S53',title:'SSIM: AI and the Law',units:3,fac:'J. Akula',exec:1}),
+  KI({id:'15.S54',title:'SSIM: Entrepreneurship Through Acquisition',units:3,fac:'D. Giambrone · P. Russell',exec:1}),
+  KI({id:'15.S55',title:'SSIM: Crossing the Line — Entrepreneurial Ethics',units:3,fac:'F. Murray · A. Shklarek',certs:['EI'],exec:1}),
+  KI({id:'15.S56',title:'SSIM: Entrepreneurial Finance',units:3,fac:'A. Schoar',exec:1}),
+  KI({id:'15.S58',title:'SSIM: Prescriptive AI — The Edge of Optimization',units:3,fac:'A. Jacquillat',certs:['BA'],exec:1}),
+  KI({id:'15.S59',title:'SSIM: AI, Strategy, Governance & Ethics',units:3,fac:'J. Saviano',certs:['BA'],exec:1}),
+  KI({id:'15.S60',title:'SSIM: Computing in Optimization and Statistics',units:3,fac:'K. Ligris · C. Tucker',sched:'Tue & Thu 1/5–1/28, 9a–12p · E51-395',cal:[{dom:[5,7,12,14,19,21,26,28],s:540,e:720}]}),
+  KI({id:'15.S62',title:'SSIM: Management of Services (2-day)',units:3,fac:'Z. Ton',certs:['SUS'],exec:1}),
+  KI({id:'15.S63',title:'SSIM: Quantum Computing & Quantum Technologies for Managers',units:3,fac:'D. Gamarnik',exec:1}),
+  KI({id:'15.S64',title:'SSIM: Distributed Leadership in Teams and Organizations',units:3,fac:'K. Isaacs',exec:1}),
+  KI({id:'15.S65',title:'SSIM: Rewiring the Enterprise for the AI Era',units:3,fac:'E. Lamarre · J. Ruane',exec:1}),
+];
+const IAP_IDX={}; IAP_COURSES.forEach(c=>IAP_IDX[c.key]=c);
+let iapFilter={q:'',units:'',cert:'',cat:'all'}, iapBuilt=false;
+function buildIap(){
+  const us=[...new Set(IAP_COURSES.map(c=>c.units).filter(u=>u>0))].sort((a,b)=>a-b);
+  document.getElementById('iunits').innerHTML='<option value="">All units</option>'+us.map(u=>`<option value="${u}">${u} units</option>`).join('');
+  document.getElementById('icert').innerHTML='<option value="">All certificates</option>'+CERT_KEYS.map(k=>`<option value="${k}">${CERT[k].full}</option>`).join('');
+}
+function setIapCat(v){iapFilter.cat=v;renderIAP();}
+function renderIAP(){
+  if(!iapBuilt){buildIap();iapBuilt=true;}
+  iapFilter.q=document.getElementById('iq').value.toLowerCase().trim();
+  iapFilter.units=document.getElementById('iunits').value;
+  iapFilter.cert=document.getElementById('icert').value;
+  document.querySelectorAll('#iapSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===iapFilter.cat));
+  let items=IAP_COURSES.slice();
+  if(iapFilter.cat==='noexec')items=items.filter(c=>!c.exec);
+  else if(iapFilter.cat==='exec')items=items.filter(c=>c.exec);
+  if(iapFilter.q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac+' '+(c.sched||'')).toLowerCase().includes(iapFilter.q));
+  if(iapFilter.units)items=items.filter(c=>c.units===+iapFilter.units);
+  if(iapFilter.cert)items=items.filter(c=>c.certs.includes(iapFilter.cert));
+  items.sort((a,b)=>a.id.localeCompare(b.id)||((a.sec||'')<(b.sec||'')?-1:1));
+  document.getElementById('iapCount').textContent=items.length;
+  document.getElementById('iaplist').innerHTML=items.map(c=>{
+    const col=colorOf(c),added=state.plan.includes(c.key);
+    return `<div class="course" data-key="${c.key}" style="border-left-color:${col};background:${tint(col,.05)}">
+      <div style="flex:1;min-width:0">
+        <div class="crow">
+          <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
+          ${c.exec?'<span class="route r-Apply">Exec elective</span>':'<span class="route r-Register">IAP</span>'}${c.perm?'<span class="route r-Apply" style="background:#F5E7D6;color:#A65F28">permission</span>':''}${reviewChip(c.key)}
+        </div>
+        <div class="ctitle">${c.title}</div>
+        <div class="meta">
+          <span class="unit">${c.units?c.units+'u':'arr'}</span>
+          <span class="time">🗓 ${c.sched||'Dates set by program'}</span>
+          ${certBadges(c.certs)}
+        </div>
+        <div class="fac">👤 ${c.fac}</div>
+        ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
+      </div>
+      ${added?`<button class="add in" onclick="remove('${c.key}')">✓</button>`:`<button class="add" onclick="add('${c.key}')">+</button>`}
+    </div>`;
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No IAP courses match.</div>`;
+  document.getElementById('iaplist').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
+  renderIapPlan();
+}
+function renderIapPlan(){
+  const cs=planned().filter(c=>c.term==='IAP');
+  const tot=cs.reduce((a,c)=>a+(c.units||0),0);
+  document.getElementById('iapPlanCount').textContent=cs.length;
+  document.getElementById('iapUnits').textContent=tot;
+  document.getElementById('iapPlan').innerHTML=cs.map(c=>{
+    const col=colorOf(c),st=statusOf(c.key),ms=mates(c.key);
+    return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${col}">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap"><span class="pcode">${c.id}${c.sec||''}</span><span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}</div>
+        <div class="ptitle">${c.title}</div>
+        <div style="font-size:11px;color:var(--mute);margin-top:2px">🗓 ${c.sched||'Dates set by program'}</div>
+      </div>
+      <span class="time">${c.units?c.units+'u':'arr'}</span>
+      <select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select>
+      <button class="rm" onclick="remove('${c.key}')">−</button>
+    </div>`;
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:26px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on an IAP course to add it</div>`;
+  renderIapCal(cs);
+}
+function renderIapCal(cs){
+  const el=document.getElementById('iapCal');if(!el)return;
+  const weeks=[[4,5,6,7,8],[11,12,13,14,15],[18,19,20,21,22],[25,26,27,28,29]];
+  const cell={};
+  (cs||[]).filter(c=>c.cal&&c.cal.length).forEach(c=>{const col=colorOf(c);
+    c.cal.forEach(s=>(s.dom||[]).forEach(dom=>{
+      const wi=weeks.findIndex(w=>w.includes(dom));if(wi<0)return;const di=weeks[wi].indexOf(dom);
+      const t=(s.s!=null)?fmtMin(s.s)+'–'+fmtMin(s.e):'';
+      (cell[wi+'-'+di]=cell[wi+'-'+di]||[]).push(`<span class="iapchip" data-key="${c.key}" style="background:${tint(col,.16)};border-left:3px solid ${col}">${c.id}${c.sec||''}${t?'<br><span class="iapt">'+t+'</span>':''}</span>`);
+    }));
+  });
+  const dn=['Mon','Tue','Wed','Thu','Fri'];
+  let html='<div class="iaprow iaphead"><div class="iapwk">Week</div>'+dn.map(d=>`<div class="iapd">${d}</div>`).join('')+'</div>';
+  weeks.forEach((w,wi)=>{
+    html+=`<div class="iaprow"><div class="iapwk">Jan ${w[0]}</div>`+w.map((dom,di)=>{
+      const mlk=(dom===18);
+      return `<div class="iapcell">${mlk?'<span class="iaphol">MLK — no class</span>':''}${(cell[wi+'-'+di]||[]).join('')}</div>`;
+    }).join('')+'</div>';
+  });
+  const undated=(cs||[]).filter(c=>!c.cal||!c.cal.length);
+  if(undated.length)html+=`<div class="iapund"><b>Dates set by program (not on grid):</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. Many exec electives and labs schedule sessions after registration — confirm on WebSIS.</div>`;
+  el.innerHTML=html;
 }
 applyPreload();applyCoreSection();computeHv();buildStatic();render();sbInit();
 </script>
