@@ -186,6 +186,12 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 .foot b{color:var(--sub);}
 .overlay{position:fixed;inset:0;background:rgba(42,35,32,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:24px;z-index:50;}
 .overlay.show{display:flex;}
+/* login gate - covers the whole app until signed in */
+#authgate{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:22px;overflow:auto;background:radial-gradient(120% 90% at 100% 0%, #F3ECDC 0%, #EBE2D0 55%, #E7DDC9 100%);}
+#authgate.show{display:flex;}
+.gatecard{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadowL);max-width:430px;width:100%;padding:clamp(22px,3vw,34px);}
+.gatebrand{display:flex;align-items:center;gap:13px;margin-bottom:10px;}
+.gatecard .seg{max-width:260px;}
 .modal{background:var(--card);border-radius:24px;max-width:740px;width:100%;max-height:88vh;overflow:auto;padding:clamp(22px,3vw,36px);box-shadow:0 28px 70px rgba(42,35,32,.35);animation:pop .22s ease;}
 @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
 .tagpill{display:inline-flex;align-items:center;gap:7px;font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);background:var(--bsoft);padding:4px 11px;border-radius:999px;margin-bottom:12px;}
@@ -396,6 +402,17 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <!-- FOOTER -->
   <div class="foot">
     <b>Muddy Falls</b> · an unofficial planning tool for the MIT Sloan Fellows ’27 cohort - not affiliated with MIT Sloan. Your plan is saved in this browser until you sign in &amp; sync. Always confirm on SloanBid / WebSIS.
+  </div>
+</div>
+
+<!-- LOGIN GATE -->
+<div id="authgate" class="show">
+  <div class="gatecard">
+    <div class="gatebrand">
+      <div class="logo">MF</div>
+      <div><div class="brand-name" style="font-size:22px">Muddy Falls</div><div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 + IAP</div></div>
+    </div>
+    <div id="authgateBody"></div>
   </div>
 </div>
 
@@ -1161,7 +1178,7 @@ function addCustomCourse(){
 function openHelp(){document.getElementById('help').classList.add('show');}
 function closeHelp(){document.getElementById('help').classList.remove('show');localStorage.setItem('mf_seen','1');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
-if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,500);
+/* help opens after first sign-in (see onAuth), not before the login gate */
 
 /* ===================== MIT non-Sloan tab ===================== */
 let mitHideOff=true, mitBuilt=false, hvMarquee=false;
@@ -1273,6 +1290,7 @@ async function onAuth(){
   await loadReviews();
   render();
   renderCommunity();
+  if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,600);
 }
 // On login: if you've built a plan locally, push it up; if local is empty (fresh browser), pull your synced plan down. Never silently wipe the server.
 async function syncDown(){
@@ -1286,14 +1304,17 @@ async function syncDown(){
   data.forEach(e=>{if(e.course_id&&byKey(e.course_id)){if(!plan.includes(e.course_id))plan.push(e.course_id);if(e.status)status[e.course_id]=e.status;}});
   state.plan=[...new Set(plan)];state.status=status;save();render();
 }
-function setAuthMode(m){authMode=m;authView='form';renderCommunity();}
+function setAuthMode(m){authMode=m;authView='form';renderGate();}
 function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
+/* Blocked accounts - cannot register, log in, or reset; shown a generic error. */
+const BLOCKED=new Set(['shruti01@mit.edu','bindupch@mit.edu','aditicy@mit.edu']);
 async function doRegister(){
   if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const name=(document.getElementById('rName').value||'').trim();
   const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
   const email2=(document.getElementById('rEmail2').value||'').trim().toLowerCase();
   const pw=(document.getElementById('rPw').value||'');
+  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
   if(!name){amsg('Please enter your name.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
   if(email!==email2){amsg('The two emails don’t match - please re-type it.');return;}
@@ -1302,7 +1323,7 @@ async function doRegister(){
   if(error){amsg(error.message);return;}
   pendingEmail=email;pendingName=name;
   if(data.session){await onAuth();return;}
-  authView='verify';renderCommunity();
+  authView='verify';renderGate();
 }
 async function doVerify(){
   if(!SB)return;
@@ -1321,12 +1342,14 @@ async function doLogin(){
   if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
   const pw=(document.getElementById('lPw').value||'');
+  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
   const{error}=await SB.auth.signInWithPassword({email,password:pw});
   if(error){amsg(error.message);return;}
 }
 async function forgotPw(){
   if(!SB)return;
   const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
+  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Type your @mit.edu email above first.');return;}
   const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
   amsg(error?error.message:'Password-reset link sent ✉️',!error);
@@ -1375,38 +1398,41 @@ async function overlayPerson(id,name){
 }
 function removeOverlay(id){overlays=overlays.filter(o=>o.id!==id);render();}
 function clearOverlay(){overlays=[];render();}
-function renderCommunity(){
-  const b=document.getElementById('commBody');if(!b)return;
-  if(!session){
-    const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview - the shared layer turns on once the Supabase project is connected. The form below is inactive for now.</div>`;
-    if(authView==='verify'){
-      b.innerHTML=banner+`<div style="max-width:440px">
-        <p style="font-size:13px;color:var(--sub);line-height:1.6">We emailed a 6-digit code to <b>${pendingEmail||'your email'}</b>. Enter it to finish creating your profile (or click the link in the email).</p>
-        <input id="vCode" class="inp" placeholder="6-digit code" inputmode="numeric" style="max-width:220px;margin-top:12px">
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doVerify()">Verify &amp; create profile</button><button class="btn" onclick="resendCode()">Resend code</button><button class="btn" onclick="authView='form';renderCommunity()">Back</button></div>
-        <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div></div>`;
-      return;
-    }
-    const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6;max-width:640px">Create an account to share your plan and see what classmates are taking - <b>search people</b>, view their classes, and <b>overlay their calendar on yours</b> to plan swaps and find meeting times. SFMBA-only (<b>@mit.edu</b>); nothing is shared until you sign in &amp; sync.</p>`;
-    const seg=`<div class="seg" style="max-width:260px;margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
-    const form=authMode==='register'
-      ? `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
-           <input id="rName" class="inp" placeholder="Full name">
-           <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu" autocomplete="off" onpaste="return false" oncopy="return false">
-           <input id="rEmail2" class="inp" type="email" placeholder="Re-type your @mit.edu email" autocomplete="off" onpaste="return false" oncopy="return false">
-           <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
-           <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
-           <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email - classmates will use it to reach you, and there's no verification step.</div>
-         </div>`
-      : `<div style="display:flex;flex-direction:column;gap:8px;max-width:360px">
-           <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
-           <input id="lPw" class="inp" type="password" placeholder="Password">
-           <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doLogin()">Log in →</button>
-           <button onclick="forgotPw()" style="align-self:flex-start;background:none;border:none;color:var(--sub);text-decoration:underline;font-size:12px;cursor:pointer;padding:0">Forgot password?</button>
-         </div>`;
-    b.innerHTML=banner+intro+seg+form+`<div id="sbMsg" style="font-size:12.5px;margin-top:12px"></div>`;
+function renderGate(){
+  const b=document.getElementById('authgateBody');if(!b)return;
+  const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview - the shared layer turns on once the Supabase project is connected.</div>`;
+  if(authView==='verify'){
+    b.innerHTML=banner+`<p style="font-size:13px;color:var(--sub);line-height:1.6">We emailed a 6-digit code to <b>${pendingEmail||'your email'}</b>. Enter it to finish creating your profile (or click the link in the email).</p>
+      <input id="vCode" class="inp" placeholder="6-digit code" inputmode="numeric" style="width:100%;margin-top:12px">
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doVerify()">Verify &amp; create profile</button><button class="btn" onclick="resendCode()">Resend code</button><button class="btn" onclick="authView='form';renderGate()">Back</button></div>
+      <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div>`;
     return;
   }
+  const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6">Sign in with your <b>@mit.edu</b> to use Muddy Falls - browse Fall &amp; IAP courses, see who's taking what, and read reviews. SFMBA cohort only; nothing works until you're signed in.</p>`;
+  const seg=`<div class="seg" style="margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
+  const form=authMode==='register'
+    ? `<div style="display:flex;flex-direction:column;gap:8px">
+         <input id="rName" class="inp" placeholder="Full name">
+         <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu" autocomplete="off" onpaste="return false" oncopy="return false">
+         <input id="rEmail2" class="inp" type="email" placeholder="Re-type your @mit.edu email" autocomplete="off" onpaste="return false" oncopy="return false">
+         <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
+         <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
+         <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email - classmates will use it to reach you, and there's no verification step.</div>
+       </div>`
+    : `<div style="display:flex;flex-direction:column;gap:8px">
+         <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
+         <input id="lPw" class="inp" type="password" placeholder="Password">
+         <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doLogin()">Log in →</button>
+         <button onclick="forgotPw()" style="align-self:flex-start;background:none;border:none;color:var(--sub);text-decoration:underline;font-size:12px;cursor:pointer;padding:0">Forgot password?</button>
+       </div>`;
+  b.innerHTML=banner+intro+seg+form+`<div id="sbMsg" style="font-size:12.5px;margin-top:12px"></div>`;
+}
+function renderCommunity(){
+  const gate=document.getElementById('authgate');
+  const b=document.getElementById('commBody');
+  if(!session){ if(gate)gate.classList.add('show'); renderGate(); if(b)b.innerHTML='<div style="color:var(--mute2);font-size:13px;padding:8px 0">Sign in to use Muddy Falls.</div>'; return; }
+  if(gate)gate.classList.remove('show');
+  if(!b)return;
   b.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
       <div style="font-size:13px">Signed in as <b>${myProfile?myProfile.name:session.user.email}</b></div>
       <button class="btn" onclick="signOut()">Sign out</button>
