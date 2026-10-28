@@ -1306,15 +1306,16 @@ async function syncDown(){
 }
 function setAuthMode(m){authMode=m;authView='form';renderGate();}
 function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
-/* Blocked accounts - cannot register, log in, or reset; shown a generic error. */
-const BLOCKED=new Set(['shruti01@mit.edu','bindupch@mit.edu','aditicy@mit.edu']);
+/* Blocked accounts - cannot register, log in, or reset; shown a generic error. Emails are SHA-256 hashed so they are not readable in page source. */
+const BLOCKED_H=new Set(['3fcb1a583e682b7e713297b1abc151e5177290f280828cc8aa6b8856501d6448','ad6cac907fefa0d85e67ac92a49303f75655da82fd1a46bcd8cc87fbb43fb08d','11261b614b714919b6a77b2a0ab65a9028fe5509c3287f8a1bae4f6da6dd86e5']);
+async function isBlocked(email){try{const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode((email||'').trim().toLowerCase()));return BLOCKED_H.has([...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join(''));}catch(e){return false;}}
 async function doRegister(){
   if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const name=(document.getElementById('rName').value||'').trim();
   const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
   const email2=(document.getElementById('rEmail2').value||'').trim().toLowerCase();
   const pw=(document.getElementById('rPw').value||'');
-  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
+  if(await isBlocked(email)){amsg('Invalid response.');return;}
   if(!name){amsg('Please enter your name.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
   if(email!==email2){amsg('The two emails don’t match - please re-type it.');return;}
@@ -1342,14 +1343,14 @@ async function doLogin(){
   if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
   const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
   const pw=(document.getElementById('lPw').value||'');
-  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
+  if(await isBlocked(email)){amsg('Invalid response.');return;}
   const{error}=await SB.auth.signInWithPassword({email,password:pw});
   if(error){amsg(error.message);return;}
 }
 async function forgotPw(){
   if(!SB)return;
   const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
-  if(BLOCKED.has(email)){amsg('Invalid response.');return;}
+  if(await isBlocked(email)){amsg('Invalid response.');return;}
   if(!/@mit\.edu$/.test(email)){amsg('Type your @mit.edu email above first.');return;}
   const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
   amsg(error?error.message:'Password-reset link sent ✉️',!error);
