@@ -65,7 +65,7 @@ function yearMeter(label,earned,projected,target){
 function ledgerRow(r){
   const editable=!r.core&&(r.arrangedUnits||r.custom||['15.960','15.961','15.THG'].includes(r.id));
   const options=r.term==='SUMMER'?['unconfirmed','completed','planned','excluded']:['planned','completed','waitlist','excluded'];
-  const labels={unconfirmed:'Not confirmed',completed:'Completed · passed',planned:'Planned',waitlist:'Waitlist',excluded:'Not counting'};
+  const labels={unconfirmed:'Not confirmed',completed:'Completed · passed',planned:r.term==='FALL'?'In progress':'Planned',waitlist:'Waitlist',excluded:'Not counting'};
   return `<div class="ledger-row" data-ledger-key="${attr(r.key)}"><div><span class="code">${esc(r.id)}${r.sec&&r.sec!=='000'?' · '+esc(r.sec):''}</span> ${r.core?'<span class="year-pill">Core</span>':''}<div class="ledger-title">${esc(r.title)}</div><div class="ledger-reason">${r.sectionPending?'Section to be assigned · choose C or D when known. ':''}${esc(r.reason)}</div>${r.custom||r.mit?`<label class="year-check" style="font-size:12px;margin:5px 0"><input type="checkbox" ${r.graduate?'checked':''} onchange="setGraduate('${attr(r.key)}',this.checked)">Approved graduate credit</label>`:''}</div><div class="ledger-units">${editable?`<input type="number" min="0" max="99" step="1" aria-label="Approved units for ${attr(r.id)}" value="${r.units??''}" placeholder="Units" onchange="setApprovedUnits('${attr(r.key)}',this.value)">`:`${r.units??'—'}u`}</div><div class="ledger-controls">${classmatesButton(r)}<select aria-label="Completion for ${attr(r.id)} ${attr(r.sec||'')}" onchange="setOutcome('${attr(r.outcomeKey)}',this.value)">${options.map(v=>`<option value="${v}" ${v===r.outcome?'selected':''}>${labels[v]}</option>`).join('')}</select>${!r.core?`<button class="text-button" onclick="remove('${attr(r.key)}')" aria-label="Remove ${attr(r.id)} from ${TERM_LABEL[r.term]}">Remove</button>`:''}</div></div>`;
 }
 function renderLedger(t,term){
@@ -85,6 +85,32 @@ function renderDegree(){
 +    <div class="panel year-panel"><h3>Saved plan & backups</h3><p class="year-muted">Completion records and degree settings are private to your account. Course selections keep the existing cohort sharing.</p><div class="year-actions"><button class="btn" onclick="exportYearPlan()">Download backup</button><button class="btn" onclick="document.getElementById('yearImport').click()">Restore backup</button></div><div class="year-status" aria-live="polite" id="yearSyncStatus">${esc(yearSyncText)}</div>${yearConflict?'<div class="year-note">Another saved version is available. Download a backup before choosing.<div class="year-actions"><button class="btn" onclick="resolveYearConflict(false)">Load cloud version</button><button class="btn" onclick="resolveYearConflict(true)">Keep this version</button></div></div>':''}</div></aside></div>`.replace(/^\+/gm,'');
 }
 function renderSummer(){const t=degreeTotals();document.getElementById('view-summer').innerHTML=`<div class="panel year-panel"><div class="ph"><div><div class="year-kicker">Summer 2026 · required core</div><h1>Summer core courses</h1></div><button class="btn year-primary" onclick="completeSummer()">Mark Summer core completed</button></div><p class="year-muted">Seven required courses · 60 units. Mark completed courses to include them in your earned units.</p>${renderLedger(t,'SUMMER')}<button class="btn" onclick="setTab('degree')">View full degree progress</button></div>`;}
+function fallChoices(){
+  const selected=new Set(yearRecords().filter(c=>c.term==='FALL').map(c=>c.id));
+  const subjects=new Map();
+  for(const c of COURSES){
+    if(c.term&&c.term!=='FALL'||c.locked||c.route==='Ineligible'||isHv(c)||selected.has(c.id)||c.units<=0)continue;
+    if(!subjects.has(c.key))subjects.set(c.key,c);
+  }
+  return [...subjects.values()].sort((a,b)=>a.key.localeCompare(b.key,undefined,{numeric:true}));
+}
+function fallCourseChanged(){
+  const c=byKey(document.getElementById('fallCourse').value);
+  document.getElementById('fallCourseUnits').textContent=c?FU(c)+' units':'Select a course';
+  document.getElementById('fallCourseAdd').disabled=!c;
+}
+function addFallCompleted(event){
+  event?.preventDefault();
+  const key=document.getElementById('fallCourse').value,c=fallChoices().find(c=>c.key===key);
+  if(!c)return;
+  state.plan.push(key);degreeState().outcomes[key]='completed';
+  state.status=state.status||{};state.status[key]='enrolled';
+  persistYear();pushIf();
+}
+function renderFall(){
+  const t=degreeTotals(),v=t.byTerm.FALL,choices=fallChoices();
+  document.getElementById('view-sloan').innerHTML=`<div class="panel year-panel"><div class="ph"><div><div class="year-kicker">Fall 2026</div><h1>Fall course record</h1></div><span class="year-pill green">${v.earned} completed units</span></div><p class="year-muted">Select the courses you completed. Units are filled in automatically and count toward your degree. Update the status below for courses still in progress.</p><form class="fall-add-form" onsubmit="addFallCompleted(event)"><label class="year-field">Fall course<select id="fallCourse" onchange="fallCourseChanged()" required><option value="">Select a completed course</option>${choices.map(c=>`<option value="${attr(c.key)}">${esc(c.id)}${c.sec?' · '+esc(c.sec):''} · ${esc(c.title)} · ${FU(c)} units</option>`).join('')}</select></label><div class="fall-selected-units" id="fallCourseUnits" aria-live="polite">Select a course</div><button class="btn year-primary" id="fallCourseAdd" disabled type="submit">Add completed course</button></form><div class="year-actions"><button class="text-button" onclick="openYearCourse('', 'FALL')">Course not listed?</button><button class="text-button" onclick="openYearCourse('independent', 'FALL')">Add independent study</button></div>${renderLedger(t,'FALL')}<button class="btn" onclick="setTab('degree')">View degree progress</button></div>`;
+}
 function springCoreHTML(){
   const d=degreeState(),chosen=planned().find(c=>c.term==='SPRING'&&c.id===d.sdOption&&!c.component);
   const sections=Object.values(SPRING_IDX).filter(c=>c.id===d.sdOption&&!c.component&&(c.id!=='15.871'||['C','D'].includes(c.sec)));
@@ -93,7 +119,7 @@ function springCoreHTML(){
 function buildSpring(){
   const el=document.getElementById('view-spring');if(el.dataset.built)return;el.dataset.built='1';
   const certs=[...new Set(Object.values(SPRING_IDX).flatMap(c=>c.certs||[]))];
-  el.innerHTML=`<div class="ph" style="margin:16px 0 22px"><div><div class="year-kicker">Spring 2027 · Sloan</div><h1 style="margin-bottom:8px">Sloan Spring courses</h1><div class="year-muted">294 sections from the Sloan Course Browser · H3, H4 and full term.</div></div><button class="btn" onclick="openYearCourse('', 'SPRING')">Add course / study</button></div><div class="spring-layout"><div class="panel year-panel"><div class="ph"><h2>Spring catalog</h2><span class="count" id="springCount"></span></div><div class="spring-filters"><label class="year-field search">Search courses or faculty<input type="search" id="springSearch" placeholder="Try AI, finance or 15.281" oninput="springFilter.q=this.value;renderSpringResults()"></label><label class="year-field">Term length<select onchange="springFilter.half=this.value;renderSpringResults()"><option value="">All lengths</option><option value="F">Full term</option><option value="H3">H3 · first half</option><option value="H4">H4 · second half</option></select></label><label class="year-field">Certificate<select onchange="springFilter.cert=this.value;renderSpringResults()"><option value="">All certificates</option>${certs.map(c=>`<option value="${c}">${esc(CERT[c]?.full||c)}</option>`).join('')}</select></label><label class="year-field">Units<select onchange="springFilter.units=this.value;renderSpringResults()"><option value="">All unit values</option>${[...new Set(Object.values(SPRING_IDX).map(c=>c.units).filter(v=>v>0))].sort((a,b)=>a-b).map(v=>`<option value="${v}">${v} units</option>`).join('')}<option value="arr">Arranged</option></select></label></div><label class="year-check"><input type="checkbox" checked onchange="springFilter.hideUG=this.checked;renderSpringResults()">Hide undergraduate and doctoral-only sections</label><label class="year-check"><input type="checkbox" onchange="springFilter.components=this.checked;renderSpringResults()">Show recitations and labs (no extra credits)</label><div class="year-muted" style="margin-bottom:14px">Restrictions are shown as listed. Confirm SFMBA access and prerequisites in SloanBid.</div><div class="spring-list" id="springList"></div></div><div class="year-stack"><div class="panel year-panel"><div class="ph"><h2>My Spring plan</h2><span class="year-pill" id="springUnits"></span></div><div id="springCore"></div><div id="springPlan"></div><button class="btn" style="margin-top:14px" onclick="setTab('degree')">View degree progress</button></div><div class="panel year-panel"><div class="ph"><h2>Spring weekly schedule</h2><select aria-label="Spring schedule half" class="year-select" style="width:auto" onchange="springHalf=this.value;renderSpringPlan()"><option value="all">Whole term</option><option value="H3">H3</option><option value="H4">H4</option></select></div><div id="springConflicts" class="year-alert" aria-live="polite"></div><div id="springWeek" class="spring-week"></div></div></div></div>`;
+  el.innerHTML=`<div class="ph" style="margin:16px 0 22px"><div><div class="year-kicker">Spring 2027 · Sloan</div><h1 style="margin-bottom:8px">Sloan Spring courses</h1><div class="year-muted">294 sections from the Sloan Course Browser · H3, H4 and full term.</div></div><button class="btn" onclick="openYearCourse('', 'SPRING')">Add course / study</button></div><div class="spring-layout"><div class="panel year-panel"><div class="ph"><h2>Spring catalog</h2><span class="count" id="springCount"></span></div><div class="spring-filters"><label class="year-field search">Search courses or faculty<input type="search" id="springSearch" placeholder="Try AI, finance or 15.281" oninput="springFilter.q=this.value;renderSpringResults()"></label><label class="year-field">Term length<select onchange="springFilter.half=this.value;renderSpringResults()"><option value="">All lengths</option><option value="F">Full term</option><option value="H3">H3 · first half</option><option value="H4">H4 · second half</option></select></label><label class="year-field">Certificate<select onchange="springFilter.cert=this.value;renderSpringResults()"><option value="">All certificates</option>${certs.map(c=>`<option value="${c}">${esc(CERT[c]?.full||c)}</option>`).join('')}</select></label><label class="year-field">Units<select onchange="springFilter.units=this.value;renderSpringResults()"><option value="">All unit values</option>${[...new Set(Object.values(SPRING_IDX).map(c=>c.units).filter(v=>v>0))].sort((a,b)=>a-b).map(v=>`<option value="${v}">${v} units</option>`).join('')}<option value="arr">Arranged</option></select></label></div><label class="year-check"><input type="checkbox" checked onchange="springFilter.hideUG=this.checked;renderSpringResults()">Hide undergraduate and doctoral-only sections</label><label class="year-check"><input type="checkbox" onchange="springFilter.components=this.checked;renderSpringResults()">Show recitations and labs (no extra credits)</label><div class="year-muted" style="margin-bottom:14px">Restrictions are shown as listed. Confirm SFMBA access and prerequisites in SloanBid.</div><div class="spring-list" id="springList"></div></div><div class="year-stack"><div class="panel year-panel"><div class="ph"><h2>Spring weekly schedule</h2><select aria-label="Spring schedule half" class="year-select" style="width:auto" onchange="springHalf=this.value;renderSpringPlan()"><option value="all">Whole term</option><option value="H3">H3</option><option value="H4">H4</option></select></div><div id="springConflicts" class="year-alert" aria-live="polite"></div><div id="springWeek" class="spring-week"></div></div><div class="panel year-panel"><div class="ph"><h2>My Spring plan</h2><span class="year-pill" id="springUnits"></span></div><div id="springCore"></div><div id="springPlan"></div><button class="btn" style="margin-top:14px" onclick="setTab('degree')">View degree progress</button></div></div></div>`;
 }
 function renderSpringResults(){
   const q=springFilter.q.trim().toLowerCase();
@@ -113,20 +139,35 @@ function renderSpringPlan(){
   document.getElementById('springConflicts').style.color=pairs.length?'var(--brand2)':'var(--green2)';
   document.getElementById('springConflicts').textContent=pairs.length?pairs.length+' overlapping course pair'+(pairs.length===1?'':'s')+'. Check sections before registering.':'No time conflicts in this view.';
   const active=cs.filter(c=>c.outcome!=='excluded'&&(springHalf==='all'||c.half==='F'||c.half===springHalf));
-  document.getElementById('springWeek').innerHTML=['M','T','W','Th','F'].map(day=>{
-    const events=active.flatMap(c=>(c.m||[]).filter(m=>m[0]===day).map(m=>({c,m}))).sort((a,b)=>a.m[1]-b.m[1]);
-    return `<div class="spring-day"><h3>${DAY[day]}</h3>${events.map(({c,m})=>`<div class="spring-event ${keys.has(c.key)?'conflict':''}"><time>${fmtMin(m[1])}<br>${fmtMin(m[2])}</time><div><b>${esc(c.id)}${c.sec&&c.sec!=='000'?' · '+esc(c.sec):''}</b> <span class="year-pill">${c.half==='F'?'Full':c.half}</span><br>${esc(c.title)}</div></div>`).join('')||'<div class="year-muted">No scheduled classes</div>'}</div>`;
-  }).join('')+ (active.some(c=>!c.m?.length)?'<p class="year-muted">Some courses have unassigned times. They are included in units but cannot be checked for conflicts yet.</p>':'');
+  document.getElementById('springWeek').innerHTML=springCalendarHTML(active,keys);
+}
+function springCalendarHTML(active,conflicts){
+  const meetings=active.flatMap(c=>(c.m||[]));
+  const start=Math.min(8*60,...meetings.map(m=>Math.floor(m[1]/60)*60));
+  const end=Math.max(19*60,...meetings.map(m=>Math.ceil(m[2]/60)*60));
+  const scale=.9,height=(end-start)*scale;
+  let gutter='<div class="ghead"></div><div class="track" style="height:'+height+'px">';
+  for(let time=start;time<end;time+=60)gutter+=`<span class="tlabel" style="top:${(time-start)*scale}px">${fmtTime(time).replace(' ','').toLowerCase()}</span>`;
+  gutter+='</div>';
+  const days=['M','T','W','Th','F'].map(day=>{
+    const events=active.flatMap(c=>(c.m||[]).filter(m=>m[0]===day).map(m=>({c,s:m[1],e:m[2]})));
+    layoutLanes(events);
+    return `<div class="day"><div class="dhead">${DAY[day]}</div><div class="track" style="height:${height}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px ${60*scale}px)">${events.map(({c,s,e,lane,cols})=>`<button class="spring-calendar-course ${conflicts.has(c.key)?'conflict':''}" data-key="${attr(c.key)}" onclick="showClassmates('${attr(c.key)}')" aria-label="${attr(c.id+' '+DAY[day]+' '+fmtTime(s)+' to '+fmtTime(e)+'. '+c.title)}" style="top:${(s-start)*scale}px;height:${Math.max(24,(e-s)*scale)}px;left:calc(${lane*100/cols}% + 2px);width:calc(${100/cols}% - 4px)"><b>${esc(c.id)}${c.sec&&c.sec!=='000'?' · '+esc(c.sec):''}</b><span>${esc(c.half==='F'?'Full term':c.half||'')}</span><span>${esc(c.title)}</span></button>`).join('')}</div></div>`;
+  }).join('');
+  const undated=active.filter(c=>!c.m?.length);
+  return `<div class="calwrap spring-calendar" aria-label="Spring weekly calendar"><div class="gutter">${gutter}</div><div class="days">${days}</div></div><p class="year-muted">Select courses in the browser to add them to this calendar. Click a class to see classmates.</p>${undated.length?`<p class="year-muted">Times pending: ${undated.map(c=>esc(c.id)).join(', ')}. These courses count toward planned units but are not plotted yet.</p>`:''}`;
+
 }
 window.renderYear=function(){
   if(!yearReady)return;
   if(window.yearActiveTab==='degree')renderDegree();
   if(window.yearActiveTab==='summer')renderSummer();
+  if(window.yearActiveTab==='sloan')renderFall();
   if(window.yearActiveTab==='spring'){buildSpring();renderSpringResults();renderSpringPlan();}
 };
 function openYearCourse(kind='',term='SPRING'){
   const dialog=document.getElementById('yearCourse');dialog.querySelector('form').reset();document.getElementById('ycMessage').textContent='';
-  document.getElementById('ycKind').value=kind||'course';document.getElementById('ycTerm').value=term;yearKindChanged();dialog.showModal();
+  document.getElementById('ycKind').value=kind||'course';document.getElementById('ycTerm').value=term;document.getElementById('ycOutcome').value=term==='FALL'?'completed':'planned';yearKindChanged();dialog.showModal();
 }
 function yearKindChanged(){
   const kind=document.getElementById('ycKind').value,code=document.getElementById('ycCode'),title=document.getElementById('ycTitle'),units=document.getElementById('ycUnits');

@@ -36,3 +36,7 @@ The login screen uses Supabase email OTP for both existing and new members. Exis
 Production uses the `mf-send-email` Send Email Hook to check the private 113-address allowlist before sending mail. Its signed-webhook handler sends through Gmail SMTP using encrypted server secrets. The `mf_otp_only_access_token` Custom Access Token hook rejects password and recovery sign-ins, including direct Auth API calls. The private eligibility RPC is executable only by internal service/auth roles. Never put the mail password or hook secret in the repository.
 
 The server hooks must remain enabled for these protections. Removing frontend password controls alone is not sufficient.
+
+## Term views
+
+Summer and Fall use course completion records. Fall courses are selected from a dropdown with their units prefilled; adding a course records it as completed, and existing records retain their previous status. Independent study and courses missing from the list can be added manually. IAP keeps its January calendar, and Spring uses a weekly time grid with H3/H4 filters and visible time conflicts.

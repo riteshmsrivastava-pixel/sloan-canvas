@@ -39,6 +39,19 @@ test('application restores legacy plans and resolves all new catalog keys',async
   assert.ok(box.innerHTML.includes('No classmates here yet'));
   assert.ok(!box.innerHTML.includes('IAP &lt;peer&gt;'));
 
+  // Fall additions are completed records; split labs use only the Fall units.
+  box.value='15.777';
+  vm.runInContext('persistYear=()=>{};pushIf=()=>{};addFallCompleted();addFallCompleted();',ctx);
+  assert.equal(vm.runInContext("state.plan.filter(k=>k==='15.777').length",ctx),1);
+  assert.equal(vm.runInContext("degreeState().outcomes['15.777']",ctx),'completed');
+  assert.equal(vm.runInContext('degreeTotals().byTerm.FALL.earned',ctx),9);
+  assert.ok(vm.runInContext("state.plan.includes('IAP:15.960')",ctx));
+  assert.equal(vm.runInContext("fallChoices().some(c=>c.id==='15.777')",ctx),false);
+  vm.runInContext('renderFall()',ctx);
+  assert.ok(box.innerHTML.includes('Fall course record'));
+  assert.ok(box.innerHTML.includes('Add completed course'));
+  assert.ok(!box.innerHTML.includes('Weekly Schedule'));
+
 });
 
 test('IAP and Spring lab portions each count, without duplicated full-course units',()=>{const t=Y.calculate([c('15.453',6,'IAP'),c('15.453',12,'SPRING'),c('15.786',3,'IAP'),c('15.786',9,'SPRING')]);assert.equal(t.projected,21);assert.equal(t.byTerm.IAP.planned,9);assert.equal(t.byTerm.SPRING.planned,12);});

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muddy Falls · Your SFMBA Year</title>
 <meta name="description" content="MIT Sloan Fellows course planner for Summer, Fall, IAP and Spring. Track graduate units, core requirements and degree progress.">
-<link rel="stylesheet" href="year.css?v=10f6cea09ed7">
+<link rel="stylesheet" href="year.css?v=e1dd55d2d170">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -243,9 +243,6 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
       <div class="round"><i></i> Summer 2026 – Spring 2027</div>
-      <div class="meters">
-        <div><div class="k">Fall elective room</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
-      </div>
       <button class="helpbtn" onclick="openHelp()"><i>?</i> How to use</button>
       <button class="helpbtn" id="acctBtn" onclick="setTab('community')">Sign in</button>
     </div>
@@ -267,70 +264,8 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <section id="view-summer" class="year-section" style="display:none"></section>
   <section id="view-spring" class="year-section" style="display:none"></section>
 
-  <!-- VIEW: SLOAN -->
-  <div id="view-sloan">
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- LEFT: CATALOG -->
-    <div class="left panel pad">
-      <div class="ph"><h2>Course Catalog</h2><span class="count"><span id="catCount">0</span> courses</span></div>
-      <div class="seg" id="routeSeg"></div>
-      <div class="filters">
-        <input id="q" class="inp" placeholder="⌕  Search courses…" oninput="render()">
-        <select id="cert" class="inp" onchange="render()"></select>
-        <select id="track" class="inp" onchange="render()"></select>
-        <select id="units" class="inp" onchange="render()"></select>
-        <select id="half" class="inp" onchange="render()"><option value="">Any half</option><option value="F">Full term</option><option value="H1">First half · H1</option><option value="H2">Second half · H2</option></select>
-      </div>
-      <div class="elig">
-        <button class="switch on" id="eligSwitch" onclick="toggleElig()"><i></i></button>
-        <div>
-          <div class="t">Only courses I can take <span>(SFMBA)</span></div>
-          <div class="d">Hides undergrad, doctoral, MFIN &amp; core-repeats - only what SFMBAs can actually enroll in. <i>(SloanBid’s “205” counts all those.)</i></div>
-        </div>
-      </div>
-      <div class="legend" id="legend"></div>
-      <div class="list" id="catalog"></div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="right">
-
-      <!-- PLAN + POINTS -->
-      <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;">
-        <div class="panel pad" style="flex:1 1 340px;min-width:280px;">
-          <div class="ph" style="margin-bottom:14px;"><h2>My Fall Plan</h2><div style="display:flex;gap:8px;align-items:center"><span class="count" id="planCount"></span><button class="btn" onclick="openCustom()" title="Add a course that isn't in the catalog">+ custom</button><button class="btn" onclick="downloadICS()" title="Download your schedule as a calendar file">📅 .ics</button><button class="btn" onclick="resetPlan()">Reset</button></div></div>
-          <div id="plan" style="display:flex;flex-direction:column;gap:9px;"></div>
-        </div>
-        <div class="panel pad" style="flex:1 1 250px;min-width:250px;">
-          <div class="ph" style="margin-bottom:16px;"><h2>Credits</h2><span class="okpill" id="okpill">Add courses</span></div>
-          <div class="barwrap"><div class="barhead"><span class="lab">Elective units</span><span class="val"><b id="cap-elec" style="color:var(--green)">0</b> / 57</span></div><div class="bar"><i id="bar-elec" style="background:linear-gradient(90deg,#6E8A5B,#5F7A4E)"></i></div></div>
-          <div class="barwrap"><div class="barhead"><span class="lab">Total Fall units <span style="color:var(--mute2);font-weight:500">(incl. core)</span></span><span class="val"><b id="cap-tot" style="color:var(--terra)">9</b> / 66</span></div><div class="bar"><i id="bar-tot" style="background:linear-gradient(90deg,#D08043,#C8703D)"></i></div></div>
-          <div class="fineline"><b style="color:#6B6157">Units</b> are used the moment you add a course. Bidding is closed for Fall 2026 - this is now your final-schedule &amp; add/drop planner. Always confirm on SloanBid/WebSIS.</div>
-        </div>
-      </div>
-
-      <!-- CALENDAR -->
-      <div class="panel pad">
-        <div class="ph" style="margin-bottom:14px;">
-          <h2>Weekly Schedule</h2>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-            <div class="calseg" id="calseg">
-              <button data-v="all" class="on" onclick="setCalView('all')">Full term</button>
-              <button data-v="H1" onclick="setCalView('H1')">H1</button>
-              <button data-v="H2" onclick="setCalView('H2')">H2</button>
-            </div>
-            <span id="overlayInfo"></span><span class="clash" id="clash">No conflicts</span><span class="swipe mhint">← swipe days →</span>
-          </div>
-        </div>
-        <div class="calwrap" id="calwrap"></div>
-        <div class="traveldisc">🚇 <b>Harvard is across town</b> - HBS (Allston) and HKS/HLS (Cambridge) sit ~30–40 min from Sloan (Kendall). Leave a buffer between a Harvard class and a Sloan one; back-to-back isn’t realistic. <b>Set each Harvard course’s days</b> in My Fall Plan (confirm on my.harvard) and it appears here; an amber outline flags a tight commute.</div>
-      </div>
-    </div>
-  </div>
-
-  </div><!-- /view-sloan -->
+  <!-- Fall course completion record -->
+  <section id="view-sloan" class="year-section" style="display:none"></section>
 
   <!-- VIEW: IAP (Jan 2027) -->
   <div id="view-iap" style="display:none">
@@ -900,30 +835,13 @@ const planned=()=>state.plan.map(byKey).filter(Boolean);
 
 /* ===================== static UI ===================== */
 function buildStatic(){
-  document.getElementById('cert').innerHTML='<option value="">All certificates</option>'+CERT_KEYS.map(k=>`<option value="${k}">${CERT[k].full}</option>`).join('');
-  document.getElementById('track').innerHTML=Object.entries(TRACKS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-  const us=[...new Set(COURSES.filter(c=>!c.locked&&!isHv(c)).map(c=>FU(c)).filter(u=>u>0))].sort((a,b)=>a-b);
-  document.getElementById('units').innerHTML='<option value="">All units</option>'+us.map(u=>`<option value="${u}">${u} units</option>`).join('');
-  document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
-  const steps=[
-    ['1','Four catalogs','Top tabs: 📋 Sloan · 🗓️ IAP (Jan ’27) · Harvard · Fall · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
-    ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
-    ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping - so you (and classmates) can see where things stand.'],
-    ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed - this is your add/drop planner now.'],
-    ['5','Check your week','Calendar plots every course; red = time clash, amber = tight Harvard↔Sloan commute. Tap a course to see who’s in it; ✕ to remove.'],
-    ['6','Join the community','Sign in on the Community tab with your @mit.edu. You’ll see every classmate and how many classes you share - no searching needed.'],
-    ['7','See who’s in a class','Tap any course - in the catalog, your plan, or the calendar - to open a popup of which classmates are in it and their status. Reach out on WhatsApp or email to compare or swap.'],
-    ['8','Compare calendars','Overlay up to 3 classmates’ schedules on yours (colored ghost blocks) to find where you line up. Tap a chip’s ✕ to remove one.'],
-    ['9','It’s private','Your plan saves in this browser; nothing is shared until you sign in. SFMBA-only (@mit.edu). Always confirm on SloanBid / WebSIS.'],
-  ];
-  document.getElementById('steps').innerHTML=steps.map(s=>`<div class="step"><div class="n">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join('');
   // calendar hover tooltip (event-delegated, survives re-renders)
   const tip=document.getElementById('tip'),cal=document.getElementById('calwrap');
   // tooltip on any element with data-key (calendar tiles + catalog/Harvard cards)
   document.addEventListener('mouseover',e=>{const b=e.target.closest('[data-key]');if(!b)return;const c=byKey(b.dataset.key);if(!c)return;tip.innerHTML=tipHTML(c);tip.style.display='block';});
   document.addEventListener('mousemove',e=>{if(tip.style.display!=='block')return;const pad=14,r=tip.getBoundingClientRect();let x=e.clientX+pad,y=e.clientY+pad;if(x+r.width>innerWidth-8)x=e.clientX-r.width-pad;if(y+r.height>innerHeight-8)y=e.clientY-r.height-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
   document.addEventListener('mouseout',e=>{const b=e.target.closest('[data-key]');if(b&&!b.contains(e.relatedTarget))tip.style.display='none';});
-  cal.addEventListener('scroll',()=>tip.style.display='none');
+  cal?.addEventListener('scroll',()=>tip.style.display='none');
   document.addEventListener('dblclick',e=>{const b=e.target.closest('.block');if(!b)return;e.preventDefault();const c=byKey(b.dataset.key);if(!c||c.locked||isWon(c.key))return;tip.style.display='none';remove(c.key);});
   // Click any course anywhere (catalog / Harvard / MIT / plan / calendar block) → classmates popup. Controls still work.
   document.addEventListener('click',e=>{
@@ -972,49 +890,6 @@ function noteChips(c){
 
 function render(){
   computeHv();
-  filter.q=document.getElementById('q').value.toLowerCase().trim();
-  filter.cert=document.getElementById('cert').value;
-  filter.track=document.getElementById('track').value;
-  filter.units=document.getElementById('units').value;
-  filter.half=document.getElementById('half').value;
-  routeTabs();
-  let items=COURSES.filter(c=>!c.locked&&!isHv(c));
-  if(filter.eligibleOnly)items=items.filter(isEligible);
-  if(filter.q)items=items.filter(c=>(c.id+' '+c.title+' '+c.fac).toLowerCase().includes(filter.q));
-  if(filter.route!=='all')items=items.filter(c=>c.route===filter.route);
-  if(filter.cert)items=items.filter(c=>c.certs.includes(filter.cert));
-  if(filter.units)items=items.filter(c=>FU(c)===+filter.units);
-  if(filter.half)items=items.filter(c=>(c.half||'F')===filter.half);
-  let rk=null;
-  if(filter.track){const o=TRACK_RANK[filter.track]||[];rk={};o.forEach((id,i)=>rk[id]=i+1);items=items.filter(c=>rk[c.base]).sort((a,b)=>rk[a.base]-rk[b.base]);}
-  else items.sort((a,b)=>a.id.localeCompare(b.id));
-  document.getElementById('catCount').textContent=items.length;
-  document.getElementById('catalog').innerHTML=items.map(c=>{
-    const col=colorOf(c),added=state.plan.includes(c.key),rank=rk?rk[c.base]:0,inelig=c.route==='Ineligible',full=isFull(c)&&!added;
-    return `<div class="course" data-key="${c.key}" style="border-left-color:${full?'#c2002a':col};background:${full?'#fdecee':tint(col,.05)};${inelig?'opacity:.72;':''}">
-      <div style="flex:1;min-width:0">
-        <div class="crow">
-          ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick - top reputation/demand">⭐</span>':''}
-          <span class="code"><span class="cdot" style="background:${col}"></span>${escH(c.id)}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
-          <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}${reviewChip(c.key)}
-        </div>
-        <div class="ctitle">${escH(c.title)}</div>
-        <div class="meta">
-          <span class="unit">${FU(c)}u${c.fu&&c.fu!==c.units?' Fall':''}${c.half!=='F'?' · '+c.half:''}</span>
-          <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||(HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'TBA')}</span>
-          ${biddable(c)?`<span class="tier" style="color:${TIERCOL[c.tier]}"><i style="background:${TIERCOL[c.tier]}"></i>${TIERLAB[c.tier]}</span>`:''}
-          ${certBadges(c.certs)}
-        </div>
-        <div class="fac">👤 ${c.fac}</div>
-        <div class="notes">${noteChips(c)}</div>
-      </div>
-      ${inelig?`<span class="add" style="background:#ECE3D3;color:#B6A992;cursor:not-allowed" title="Not eligible for SFMBA">🚫</span>`:added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Enrolled - click to remove from plan" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
-    </div>`;
-  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:40px 0">No courses match these filters.</div>`;
-  document.getElementById('catalog').insertAdjacentHTML('beforeend',`<div class="scrollcue">⌄ scroll for more</div>`);
-  renderPlan();renderCredits();renderCalendar();
-  if(document.getElementById('hvlist'))renderHarvard();
-  if(mitBuilt)renderMit();
   if(iapBuilt)renderIAP();
   if(window.renderYear)window.renderYear();
 }
@@ -1338,10 +1213,9 @@ async function viewPerson(id,name){
   let data=[];try{const r=await SB.from('mf_enrollments').select('*').eq('user_id',id).order('course_id');data=r.data||[];}catch(e){}
   const box=document.getElementById('personBox');if(!box)return;
   const isSelf=session&&id===session.user.id;
-  const onCal=overlays.some(o=>o.id===id);
-  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay Fall calendar'}</button>`}</div>
+  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${escH(name)}${isSelf?' (you)':''}</h2></div>
     <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('SPRING:','').replace('MIT:','').replace('IAP:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
-    <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat - you can see which classes you overlap on via the calendar overlay.</div>`;
+    <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Shared course selections are shown above. Completion records remain private.</div>`;
 }
 async function overlayPerson(id,name){
   if(!SB)return;
@@ -1549,7 +1423,7 @@ function renderIapCal(cs){
 </script>
 <script src="spring-data.js?v=c199604d3498"></script>
 <script src="year-model.js?v=e163cc217e3b"></script>
-<script src="year.js?v=3a15445208f7"></script>
+<script src="year.js?v=793cc6f993df"></script>
 <script src="mit-spring-data.js?v=8bef7d7655c7"></script>
 <script src="harvard-spring-data.js?v=cdd7da3320c8"></script>
 <script src="crossreg.js?v=9f24c89da948"></script>
