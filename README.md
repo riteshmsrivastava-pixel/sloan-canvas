@@ -6,7 +6,7 @@ The full-year planner preserves the `sloanCanvas_fall_v1` browser plan and legac
 
 ## Verification
 
-Run `node --test verify.cjs`. No package installation or build is required. Browser QA should use a synthetic/local account, without changing a student's real completion record.
+Run `node --test verify.cjs email-auth.test.cjs`. No package installation or build is required. Browser QA should use a synthetic/local account, without changing a student's real completion record.
 
 ## Sources and rules
 
@@ -28,3 +28,11 @@ The signup allowlist is stored only in the private database schema. It is not in
 `year-plans.sql` documents the private-plan schema. The production signup allowlist is managed separately; do not recreate or replace it during frontend deployment.
 
 Classmates buttons on IAP and Spring catalog/plan cards show the same term and section’s shared selections with Enrolled, Sampling, Waitlist, or Dropping status. Completion records stay private. IAP dates were rechecked in the authenticated 2027JA Sloan Course Browser on Nov 22, 2026; Analytics Capstone’s January 5 sessions were corrected, and 15.S60 faculty updated. Executive electives still have no published dates in that listing. Finance Lab and Product Management Lab use separate IAP/Spring unit allocations.
+
+## Passwordless authentication
+
+The login screen uses Supabase email OTP for both existing and new members. Existing user IDs, profile names, and saved plans are preserved. New members enter their name after verifying their email. Codes expire after 600 seconds; resend requests are separated by 60 seconds.
+
+Production uses the `mf-send-email` Send Email Hook to check the private 113-address allowlist before sending mail. Its signed-webhook handler sends through Gmail SMTP using encrypted server secrets. The `mf_otp_only_access_token` Custom Access Token hook rejects password and recovery sign-ins, including direct Auth API calls. The private eligibility RPC is executable only by internal service/auth roles. Never put the mail password or hook secret in the repository.
+
+The server hooks must remain enabled for these protections. Removing frontend password controls alone is not sufficient.

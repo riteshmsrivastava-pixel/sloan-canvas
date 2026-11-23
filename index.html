@@ -484,7 +484,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 const SB_URL='https://htbhfahaddsbqjemoiaj.supabase.co';
 const SB_KEY='sb_publishable_9Ii2rmOjf6dIhtW-Vz9mXA_ZuaP4Ce7'; /* publishable key (safe to embed) */
 const SB=(SB_URL&&SB_KEY&&window.supabase)?window.supabase.createClient(SB_URL,SB_KEY):null;
-let session=null, myProfile=null, overlays=[], authMode='login', authView='form', pendingEmail=null, pendingName=null;
+let session=null, myProfile=null, overlays=[], authView='email', pendingEmail=null, pendingName=null;
 const OVL_COLORS=['#4c5a6e','#9c5a2e','#3f7d54'];
 const OVL_MAX=3;
 /* ============================================================ */
@@ -1292,28 +1292,8 @@ function updateAcct(){const b=document.getElementById('acctBtn');if(b)b.textCont
 async function sbInit(){
   if(!SB){renderCommunity();return;}
   try{const{data}=await SB.auth.getSession();session=data.session;}catch(e){}
-  SB.auth.onAuthStateChange((e,s)=>{session=s;if(e==='PASSWORD_RECOVERY'){const np=prompt('Set a new password (min 6 chars):');if(np&&np.length>=6)SB.auth.updateUser({password:np}).then(()=>alert('Password updated - you’re signed in.'));}onAuth();});
+  SB.auth.onAuthStateChange((e,s)=>{session=s;setTimeout(()=>onAuth(),0);});
   await onAuth();
-}
-async function onAuth(){
-  if(!SB){return;}
-  if(!session){myProfile=null;updateAcct();renderCommunity();return;}
-  if(await isBlocked(session.user.email)){await SB.auth.signOut();session=null;myProfile=null;updateAcct();renderCommunity();return;}
-  authView='form';pendingEmail=null;
-  const uid=session.user.id,email=session.user.email;
-  let prof=null;
-  try{const{data}=await SB.from('mf_profiles').select('*').eq('id',uid).maybeSingle();prof=data;}catch(e){}
-  if(!prof||!prof.name){
-    const name=(session.user.user_metadata&&session.user.user_metadata.name)||pendingName||email.split('@')[0];
-    try{await SB.from('mf_profiles').upsert({id:uid,email,name});}catch(e){}prof={id:uid,email,name};
-  }
-  myProfile=prof;pendingName=null;updateAcct();
-  await syncDown();
-  await loadRoster();
-  await loadReviews();
-  render();
-  renderCommunity();
-  if(!localStorage.getItem('mf_seen'))setTimeout(openHelp,600);
 }
 // On login: if you've built a plan locally, push it up; if local is empty (fresh browser), pull your synced plan down. Never silently wipe the server.
 async function syncDown(){
@@ -1327,59 +1307,10 @@ async function syncDown(){
   data.forEach(e=>{if(e.course_id&&byKey(e.course_id)){if(!plan.includes(e.course_id))plan.push(e.course_id);if(e.status)status[e.course_id]=e.status;}});
   state.plan=[...new Set(plan)];state.status=status;save();render();
 }
-function setAuthMode(m){authMode=m;authView='form';renderGate();}
 function amsg(t,ok){const e=document.getElementById('sbMsg');if(e){e.textContent=t;e.style.color=ok?'var(--green2)':'#c2002a';}}
 /* Blocked accounts - cannot register, log in, or reset; shown a generic error. Emails are SHA-256 hashed so they are not readable in page source. */
 const BLOCKED_H=new Set(['3fcb1a583e682b7e713297b1abc151e5177290f280828cc8aa6b8856501d6448','ad6cac907fefa0d85e67ac92a49303f75655da82fd1a46bcd8cc87fbb43fb08d','11261b614b714919b6a77b2a0ab65a9028fe5509c3287f8a1bae4f6da6dd86e5']);
 async function isBlocked(email){try{const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode((email||'').trim().toLowerCase()));return BLOCKED_H.has([...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join(''));}catch(e){return false;}}
-async function doRegister(){
-  if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
-  const name=(document.getElementById('rName').value||'').trim();
-  const email=(document.getElementById('rEmail').value||'').trim().toLowerCase();
-  const email2=(document.getElementById('rEmail2').value||'').trim().toLowerCase();
-  const pw=(document.getElementById('rPw').value||'');
-  if(await isBlocked(email)){amsg('Invalid response.');return;}
-  if(!name){amsg('Please enter your name.');return;}
-  if(!/@mit\.edu$/.test(email)){amsg('Please use your @mit.edu email.');return;}
-  if(email!==email2){amsg('The two emails don’t match - please re-type it.');return;}
-  if(pw.length<6){amsg('Password must be at least 6 characters.');return;}
-  const{data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name},emailRedirectTo:location.href.split('#')[0]}});
-  if(error){amsg(error.message);return;}
-  pendingEmail=email;pendingName=name;
-  if(data.session){await onAuth();return;}
-  authView='verify';renderGate();
-}
-async function doVerify(){
-  if(!SB)return;
-  if(await isBlocked(pendingEmail)){amsg('Invalid response.');return;}
-  const token=(document.getElementById('vCode').value||'').trim();
-  if(!token){amsg('Enter the code from your email.');return;}
-  let r=await SB.auth.verifyOtp({email:pendingEmail,token,type:'signup'});
-  if(r.error)r=await SB.auth.verifyOtp({email:pendingEmail,token,type:'email'});
-  if(r.error){amsg(r.error.message);return;}
-}
-async function resendCode(){
-  if(!SB||!pendingEmail)return;
-  if(await isBlocked(pendingEmail)){amsg('Invalid response.');return;}
-  const{error}=await SB.auth.resend({type:'signup',email:pendingEmail});
-  amsg(error?error.message:'Code re-sent ✉️',!error);
-}
-async function doLogin(){
-  if(!SB){amsg('Not connected yet - Supabase creds pending.');return;}
-  const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
-  const pw=(document.getElementById('lPw').value||'');
-  if(await isBlocked(email)){amsg('Invalid response.');return;}
-  const{error}=await SB.auth.signInWithPassword({email,password:pw});
-  if(error){amsg(error.message);return;}
-}
-async function forgotPw(){
-  if(!SB)return;
-  const email=(document.getElementById('lEmail').value||'').trim().toLowerCase();
-  if(await isBlocked(email)){amsg('Invalid response.');return;}
-  if(!/@mit\.edu$/.test(email)){amsg('Type your @mit.edu email above first.');return;}
-  const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
-  amsg(error?error.message:'Password-reset link sent ✉️',!error);
-}
 async function signOut(){if(!SB)return;await SB.auth.signOut();session=null;myProfile=null;overlays=[];updateAcct();renderCommunity();render();}
 async function syncUp(){
   if(!SB||!session)return;
@@ -1424,39 +1355,10 @@ async function overlayPerson(id,name){
 }
 function removeOverlay(id){overlays=overlays.filter(o=>o.id!==id);render();}
 function clearOverlay(){overlays=[];render();}
-function renderGate(){
-  const b=document.getElementById('authgateBody');if(!b)return;
-  const banner=SB?'':`<div style="background:#fff3e0;border:1px solid #f0d9b8;color:#8a6500;border-radius:12px;padding:10px 13px;font-size:12px;margin-bottom:14px">👀 Preview - the shared layer turns on once the Supabase project is connected.</div>`;
-  if(authView==='verify'){
-    b.innerHTML=banner+`<p style="font-size:13px;color:var(--sub);line-height:1.6">We emailed a 6-digit code to <b>${pendingEmail||'your email'}</b>. Enter it to finish creating your profile (or click the link in the email).</p>
-      <input id="vCode" class="inp" placeholder="6-digit code" inputmode="numeric" style="width:100%;margin-top:12px">
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doVerify()">Verify &amp; create profile</button><button class="btn" onclick="resendCode()">Resend code</button><button class="btn" onclick="authView='form';renderGate()">Back</button></div>
-      <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div>`;
-    return;
-  }
-  const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6">Sign in with your <b>@mit.edu</b> to use Muddy Falls - plan your full year, track graduate credits, see who's taking what, and read reviews. Registration is limited to invited SFMBA cohort email addresses.</p>`;
-  const seg=`<div class="seg" style="margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
-  const form=authMode==='register'
-    ? `<div style="display:flex;flex-direction:column;gap:8px">
-         <input id="rName" class="inp" placeholder="Full name">
-         <input id="rEmail" class="inp" type="email" placeholder="you@mit.edu" autocomplete="off" onpaste="return false" oncopy="return false">
-         <input id="rEmail2" class="inp" type="email" placeholder="Re-type your @mit.edu email" autocomplete="off" onpaste="return false" oncopy="return false">
-         <input id="rPw" class="inp" type="password" placeholder="Create a password (min 6)">
-         <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doRegister()">Register →</button>
-         <div style="font-size:11.5px;color:var(--sub);line-height:1.5">Double-check your email - classmates will use it to reach you, and there's no verification step.</div>
-       </div>`
-    : `<div style="display:flex;flex-direction:column;gap:8px">
-         <input id="lEmail" class="inp" type="email" placeholder="you@mit.edu">
-         <input id="lPw" class="inp" type="password" placeholder="Password">
-         <button class="btn" style="background:var(--brand);color:#fff;border-color:var(--brand)" onclick="doLogin()">Log in →</button>
-         <button onclick="forgotPw()" style="align-self:flex-start;background:none;border:none;color:var(--sub);text-decoration:underline;font-size:12px;cursor:pointer;padding:0">Forgot password?</button>
-       </div>`;
-  b.innerHTML=banner+intro+seg+form+`<div id="sbMsg" style="font-size:12.5px;margin-top:12px"></div>`;
-}
 function renderCommunity(){
   const gate=document.getElementById('authgate');
   const b=document.getElementById('commBody');
-  if(!session){ if(gate)gate.classList.add('show'); renderGate(); if(b)b.innerHTML='<div style="color:var(--mute2);font-size:13px;padding:8px 0">Sign in to use Muddy Falls.</div>'; return; }
+  if(!session||profileRequired){ if(gate)gate.classList.add('show'); renderGate(); if(b)b.innerHTML='<div style="color:var(--mute2);font-size:13px;padding:8px 0">Sign in to use Muddy Falls.</div>'; return; }
   if(gate)gate.classList.remove('show');
   if(!b)return;
   b.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -1651,6 +1553,7 @@ function renderIapCal(cs){
 <script src="mit-spring-data.js?v=8bef7d7655c7"></script>
 <script src="harvard-spring-data.js?v=cdd7da3320c8"></script>
 <script src="crossreg.js?v=49fb968766be"></script>
+<script src="email-auth.js?v=48d975362865"></script>
 <script>applyPreload();applyCoreSection();computeHv();buildStatic();initYear();initCrossreg();render();setTab('degree');sbInit();</script>
 </body>
 </html>

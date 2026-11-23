@@ -18,7 +18,7 @@ test('application restores legacy plans and resolves all new catalog keys',async
   const storage=new Map([['sloanCanvas_fall_v1',JSON.stringify({plan:['15.414','IAP:15.960'],bids:{},won:[],custom:{},status:{}})]]);
   const ctx={console,document:{addEventListener:()=>{}},crypto:require('node:crypto').webcrypto,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},addEventListener:()=>{}};ctx.window=ctx;vm.createContext(ctx);
   vm.runInContext(main,ctx);
-  for(const file of ['spring-data.js','year-model.js','year.js','mit-spring-data.js','harvard-spring-data.js','crossreg.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+file,'utf8'),ctx,{filename:file});
+  for(const file of ['spring-data.js','year-model.js','year.js','mit-spring-data.js','harvard-spring-data.js','crossreg.js','email-auth.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+file,'utf8'),ctx,{filename:file});
   assert.equal(vm.runInContext('state.plan.length',ctx),2);
   assert.equal(vm.runInContext("byKey('SPRING:15.281·A').units",ctx),9);
   assert.equal(vm.runInContext('degreeTotals().earned',ctx),0);
