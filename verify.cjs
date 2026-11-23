@@ -1,0 +1,28 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const Y=require('./year-model.js');
+const c=(id,units,term='FALL',extra={})=>({key:id+term,id,units,term,graduate:true,outcome:'planned',...extra});
+test('official targets: standard, waiver and longer System Dynamics',()=>{assert.deepEqual(Y.requirements(),{total:171,core:75,elective:96,maxElective:129});assert.deepEqual(Y.requirements({finWaiver:true,sdOption:'15.873'}),{total:174,core:69,elective:105,maxElective:129});});
+test('planned and waitlist credits are never earned',()=>{const t=Y.calculate([c('A',9,'FALL',{outcome:'completed'}),c('B',6),c('C',12,'SPRING',{outcome:'waitlist'}),c('D',9,'IAP',{outcome:'excluded'})]);assert.equal(t.earned,9);assert.equal(t.projected,15);assert.equal(t.gap,156);});
+test('Summer must be explicitly confirmed; passing core totals 60',()=>{assert.equal(Y.calculate(Y.SUMMER.map(c=>({...c,outcome:'unconfirmed'}))).earned,0);assert.equal(Y.calculate(Y.SUMMER.map(c=>({...c,outcome:'completed'}))).coreEarned,60);});
+test('duplicates across sections and terms only count once, completed first',()=>{const t=Y.calculate([c('15.071',12,'SPRING'),c('15.071',12,'FALL',{outcome:'completed'}),c('15.071',12,'SPRING',{key:'other-section'})]);assert.equal(t.projected,12);assert.equal(t.earned,12);assert.equal(t.byTerm.SPRING.planned,0);});
+test('recitations, undergraduate and unknown units do not inflate totals',()=>{const t=Y.calculate([c('A',12,'SPRING',{component:true}),c('B',9,'SPRING',{graduate:false}),c('C',null)]);assert.equal(t.projected,0);assert.ok(t.warnings.some(x=>x.includes('approved units')));});
+test('split Fall/IAP labs add only their correct allocation',()=>{const t=Y.calculate([c('15.777',9),c('15.777',6,'IAP')]);assert.equal(t.projected,15);});
+test('independent study limited to 12 per term but counted across terms',()=>{const t=Y.calculate([c('15.960',9),c('15.961',6),c('15.961',6,'IAP'),c('15.960',12,'SPRING')]);assert.equal(t.byTerm.FALL.planned,12);assert.equal(t.projected,30);assert.ok(t.warnings.some(x=>x.includes('independent study')));});
+test('thesis spans multiple terms, with a 24-unit total cap',()=>{const t=Y.calculate([c('15.THG',12,'FALL'),c('15.THG',15,'SPRING')],{degree:'SM'});assert.equal(t.thesisUnits,24);assert.equal(t.projected,24);assert.equal(t.thesisTerms.length,2);assert.ok(Y.calculate([c('15.THG',24,'SPRING')]).warnings.some(x=>x.includes('two terms')));});
+test('H3 and H4 do not conflict; full-term courses overlap both',()=>{const m=[['M',600,690]],courses=[c('A',6,'SPRING',{half:'H3',m}),c('B',6,'SPRING',{half:'H4',m}),c('C',9,'SPRING',{half:'F',m}),c('D',9,'FALL',{half:'F',m})];assert.equal(Y.conflicts(courses).length,2);assert.equal(Y.conflicts(courses,'H3').length,1);});
+test('earned 171 alone is insufficient without required core',()=>{const t=Y.calculate([c('X',171,'FALL',{outcome:'completed'})]);assert.equal(t.unitTargetMet,false);});
+test('all 294 source sections load without credit-bearing components',()=>{const ctx={window:{}};vm.runInNewContext(fs.readFileSync(require.resolve('./spring-data.js'),'utf8'),ctx);const cs=ctx.window.SPRING_COURSES;assert.equal(cs.length,294);assert.equal(new Set(cs.map(c=>c.key)).size,294);assert.equal(cs.filter(c=>c.component&&c.units>0).length,0);assert.ok(cs.some(c=>c.id==='15.871'&&c.sec==='C'));});
+test('application restores legacy plans and resolves all new catalog keys',()=>{
+  const html=fs.readFileSync(__dirname+'/index.html','utf8');
+  const main=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const COURSES='));
+  const storage=new Map([['sloanCanvas_fall_v1',JSON.stringify({plan:['15.414','IAP:15.960'],bids:{},won:[],custom:{},status:{}})]]);
+  const ctx={console,document:{addEventListener:()=>{}},crypto:require('node:crypto').webcrypto,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},addEventListener:()=>{}};ctx.window=ctx;vm.createContext(ctx);
+  vm.runInContext(main,ctx);
+  for(const file of ['spring-data.js','year-model.js','year.js','mit-spring-data.js','harvard-spring-data.js','crossreg.js'])vm.runInContext(fs.readFileSync(__dirname+'/'+file,'utf8'),ctx,{filename:file});
+  assert.equal(vm.runInContext('state.plan.length',ctx),2);
+  assert.equal(vm.runInContext("byKey('SPRING:15.281·A').units",ctx),9);
+  assert.equal(vm.runInContext('degreeTotals().earned',ctx),0);
+  assert.equal(vm.runInContext('degreeTotals().target.total',ctx),171);
+  assert.equal(vm.runInContext('Object.values(EXTERNAL_IDX).filter(c=>!byKey(c.key)).length',ctx),0);
+  assert.equal(vm.runInContext('Object.values(EXTERNAL_IDX).filter(c=>c.term!=="SPRING").length',ctx),0);
+});

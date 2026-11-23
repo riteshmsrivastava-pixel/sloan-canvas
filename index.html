@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Muddy Falls · Fall 2026 Course Organizer</title>
+<title>Muddy Falls · Your SFMBA Year</title>
+<meta name="description" content="Plan your MIT Sloan Fellows year: Summer, Fall, IAP and Spring. Track completed graduate credits, core requirements and your path to graduation.">
+<link rel="stylesheet" href="year.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -236,13 +238,13 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div class="logo">MF</div>
       <div>
         <div class="brand-name">Muddy Falls</div>
-        <div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 Course Organizer</div>
+        <div class="brand-sub">MIT Sloan Fellows ’27 · 2026–27 · SFMBA year planner</div>
       </div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-      <div class="round"><i></i> Fall 2026 · Classes begin Sep 9</div>
+      <div class="round"><i></i> Summer 2026 – Spring 2027</div>
       <div class="meters">
-        <div><div class="k">Units left</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
+        <div><div class="k">Fall elective room</div><div class="v" style="color:var(--green)"><span id="m-units">57</span><small> / 57</small></div></div>
       </div>
       <button class="helpbtn" onclick="openHelp()"><i>?</i> How to use</button>
       <button class="helpbtn" id="acctBtn" onclick="setTab('community')">Sign in</button>
@@ -251,12 +253,19 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
 
   <!-- TABS -->
   <div class="tabs">
-    <button id="tab-sloan" class="on" onclick="setTab('sloan')">📋 Sloan courses</button>
+    <button id="tab-degree" class="on" onclick="setTab('degree')">My degree</button>
+    <button id="tab-summer" onclick="setTab('summer')">Summer ’26</button>
+    <button id="tab-sloan" onclick="setTab('sloan')">Fall ’26</button>
     <button id="tab-iap" onclick="setTab('iap')">🗓️ IAP · Jan ’27</button>
-    <button id="tab-harvard" onclick="setTab('harvard')">🎓 Harvard cross-reg</button>
-    <button id="tab-mit" onclick="setTab('mit')">🏛️ MIT Non-Sloan</button>
+    <button id="tab-spring" onclick="setTab('spring')">Spring ’27</button>
+    <button id="tab-harvard" onclick="setTab('harvard')">Harvard · Fall</button>
+    <button id="tab-mit" onclick="setTab('mit')">MIT · Fall</button>
     <button id="tab-community" onclick="setTab('community')">👥 Community</button>
   </div>
+
+  <main id="view-degree" class="year-section"></main>
+  <section id="view-summer" class="year-section" style="display:none"></section>
+  <section id="view-spring" class="year-section" style="display:none"></section>
 
   <!-- VIEW: SLOAN -->
   <div id="view-sloan">
@@ -410,7 +419,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
   <div class="gatecard">
     <div class="gatebrand">
       <div class="logo">MF</div>
-      <div><div class="brand-name" style="font-size:22px">Muddy Falls</div><div class="brand-sub">MIT Sloan Fellows ’27 · Fall 2026 + IAP</div></div>
+      <div><div class="brand-name" style="font-size:22px">Muddy Falls</div><div class="brand-sub">MIT Sloan Fellows ’27 · Your year · Summer, Fall, IAP & Spring</div></div>
     </div>
     <div id="authgateBody"></div>
   </div>
@@ -427,7 +436,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
       <div>
         <div class="tagpill">Getting started</div>
         <h2 class="big">How to use Muddy Falls</h2>
-        <p style="margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.5;">Plan your Fall 2026 courses and weekly schedule in a few minutes.</p>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.5;">Plan your full SFMBA year and track your path to graduation.</p>
       </div>
       <button class="close" onclick="closeHelp()">×</button>
     </div>
@@ -827,7 +836,7 @@ async function showClassmates(key){
   const c=byKey(key);if(!c)return;
   const modal=document.getElementById('matesModal'),box=document.getElementById('matesBox');
   modal.classList.add('show');
-  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${c.id}${c.sec||''}</h2><div style="font-size:13px;color:var(--sub);margin-top:3px">${c.title}</div></div><button class="close" onclick="closeMates()">×</button></div>`;
+  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${escH(c.id)}${c.sec||''}</h2><div style="font-size:13px;color:var(--sub);margin-top:3px">${escH(c.title)}</div></div><button class="close" onclick="closeMates()">×</button></div>`;
   if(!session){box.innerHTML=head+`<div style="padding:20px 0;color:var(--sub);font-size:13px;line-height:1.6">Sign in on the <b>Community</b> tab to see which classmates are in this class and how to reach them.</div>`;return;}
   box.innerHTML=head+`<div style="padding:26px 0;text-align:center;color:var(--mute2);font-size:13px">Loading classmates…</div>`;
   await loadRoster();
@@ -854,8 +863,8 @@ function findMeetTimes(){
   const days=[['M','Monday'],['T','Tuesday'],['W','Wednesday'],['Th','Thursday'],['F','Friday']];
   const busy={M:[],T:[],W:[],Th:[],F:[]};
   const add=cs=>cs.forEach(c=>(c.m||[]).forEach(([d,s,e])=>{if(busy[d])busy[d].push([Math.max(s,WIN_S),Math.min(e,WIN_E)]);}));
-  add(planned());                        // your classes
-  overlays.forEach(o=>add(o.courses));   // each overlaid classmate
+  add(planned().filter(c=>!c.term||c.term==='FALL'));                        // your classes
+  overlays.forEach(o=>add(o.courses.filter(c=>!c.id.startsWith('SPRING:')&&!c.id.startsWith('IAP:'))));   // each overlaid classmate
   const names=['you',...overlays.map(o=>o.name)];
   let rows='',anyFree=false;
   days.forEach(([d,dl])=>{
@@ -875,13 +884,13 @@ function findMeetTimes(){
 function lockWon(k){if(!state.won)state.won=[];if(!state.won.includes(k))state.won.push(k);save();render();}
 function unlockWon(k){state.won=(state.won||[]).filter(x=>x!==k);save();render();}
 function withdraw(k){const c=byKey(k);if(!confirm('Remove '+(c?c.id:'this course')+' from your plan?'))return;state.won=(state.won||[]).filter(x=>x!==k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];save();render();pushIf();}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));if(window.yearLocalSave)window.yearLocalSave();}
 function applyCoreSection(){const c=byKey('15.414');if(c)c.m=state.coreSec==='B'?mt('TTh','13:00-14:30'):mt('TTh','10:00-11:30');}
 function setCoreSec(v){state.coreSec=v;applyCoreSection();save();render();}
 let MITIDX=null;
 function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:m.hf||'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
-const byKey=k=>!k?undefined:(k.slice(0,4)==='IAP:'?IAP_IDX[k]:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k))));
+const byKey=k=>!k?undefined:(window.yearLookup&&window.yearLookup(k))||(k.slice(0,4)==='IAP:'?IAP_IDX[k]:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k))));
 const planned=()=>state.plan.map(byKey).filter(Boolean);
 
 /* ===================== static UI ===================== */
@@ -892,7 +901,7 @@ function buildStatic(){
   document.getElementById('units').innerHTML='<option value="">All units</option>'+us.map(u=>`<option value="${u}">${u} units</option>`).join('');
   document.getElementById('legend').innerHTML=CERT_KEYS.map(k=>`<span><i style="background:${CERT[k].c}"></i>${k}</span>`).join('')+`<span><i style="background:#C8703D"></i>Core</span>`;
   const steps=[
-    ['1','Four catalogs','Top tabs: 📋 Sloan · 🗓️ IAP (Jan ’27) · 🎓 Harvard cross-reg · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
+    ['1','Four catalogs','Top tabs: 📋 Sloan · 🗓️ IAP (Jan ’27) · Harvard · Fall · 🏛️ MIT non-Sloan. Add from any tab into one shared plan.'],
     ['2','Build your plan','Tap + to add a course to My Fall Plan. Core 15.414 is locked in (pick section A/B).'],
     ['3','Set your status','On each course pick 🟢 Enrolled · 🟡 Sampling · 🟠 Waitlist · 🔴 Dropping - so you (and classmates) can see where things stand.'],
     ['4','Watch the limits','Bars track elective units /57 and total Fall units /66, live. Harvard/MIT units count too. Bidding is closed - this is your add/drop planner now.'],
@@ -925,8 +934,8 @@ function tipHTML(c){
   const a=ALSO[c.base];if(a)extra+=`<div class="trow" style="color:#A9D49B">🔁 Also offered in ${a.join(', ')}</div>`;
   const s=SIM[c.base];if(s)extra+=`<div class="trow" style="color:#AFC2DC">≈ Similar: ${s.id} - ${s.why}</div>`;
   if(c.note)extra+=`<div class="trow" style="color:#E7B27E">◔ ${c.note}</div>`;
-  return `<div class="tc" style="color:${tint(col,.55)}">${c.id}${c.sec||''}</div>
-    <div class="tt">${c.title}</div>
+  return `<div class="tc" style="color:${tint(col,.55)}">${escH(c.id)}${c.sec||''}</div>
+    <div class="tt">${escH(c.title)}</div>
     <div class="td">
       <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+TIERLAB[c.tier]:''}
       <div class="trow">🕑 ${c.term==='IAP'?(c.sched||'Dates not published yet'):(c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program'))}</div>
@@ -981,10 +990,10 @@ function render(){
       <div style="flex:1;min-width:0">
         <div class="crow">
           ${rank?`<span class="rk">#${rank}</span>`:''}${c.star?'<span title="Marquee pick - top reputation/demand">⭐</span>':''}
-          <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
+          <span class="code"><span class="cdot" style="background:${col}"></span>${escH(c.id)}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
           <span class="route ${ROUTECLASS[c.route]}">${ROUTELABEL[c.route]}</span>${full?'<span class="route r-Full">● Was full</span>':''}${reviewChip(c.key)}
         </div>
-        <div class="ctitle">${c.title}</div>
+        <div class="ctitle">${escH(c.title)}</div>
         <div class="meta">
           <span class="unit">${FU(c)}u${c.fu&&c.fu!==c.units?' Fall':''}${c.half!=='F'?' · '+c.half:''}</span>
           <span class="time">${daysShort(c.m)} · ${timeShort(c.m)||(HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'TBA')}</span>
@@ -1002,32 +1011,33 @@ function render(){
   if(document.getElementById('hvlist'))renderHarvard();
   if(mitBuilt)renderMit();
   if(iapBuilt)renderIAP();
+  if(window.renderYear)window.renderYear();
 }
 
 /* ===================== plan ===================== */
 const halfOverlap=(a,b)=>a==='F'||b==='F'||a===b;
-function conflictSet(){const cs=planned().filter(c=>c.m.length&&!isHv(c)&&c.term!=='IAP'),s=new Set();
+function conflictSet(){const cs=planned().filter(c=>c.m.length&&!isHv(c)&&(!c.term||c.term==='FALL')),s=new Set();
   for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){if(!halfOverlap(cs[i].half,cs[j].half))continue;
     for(const[d1,s1,e1]of cs[i].m)for(const[d2,s2,e2]of cs[j].m)if(d1===d2&&s1<e2&&s2<e1){s.add(cs[i].key);s.add(cs[j].key);}}
   return s;}
 // Harvard↔Sloan same-day gap < 45 min (overlap or too tight to commute across town)
-function commuteSet(){const hv=planned().filter(c=>isHv(c)&&c.m.length),sl=planned().filter(c=>!isHv(c)&&c.m.length&&c.term!=='IAP'),s=new Set();
+function commuteSet(){const hv=planned().filter(c=>isHv(c)&&c.m.length),sl=planned().filter(c=>!isHv(c)&&c.m.length&&(!c.term||c.term==='FALL')),s=new Set();
   hv.forEach(h=>sl.forEach(o=>{if(!halfOverlap(h.half,o.half))return;
     h.m.forEach(([d1,s1,e1])=>o.m.forEach(([d2,s2,e2])=>{if(d1!==d2)return;
       const gap=s1>=e2?s1-e2:(s2>=e1?s2-e1:-1); if(gap<45){s.add(h.key);s.add(o.key);}}));}));
   return s;}
 
 function renderPlan(){
-  const cs=planned().filter(c=>c.term!=='IAP').sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
+  const cs=planned().filter(c=>(!c.term||c.term==='FALL')).sort((a,b)=>(b.locked?1:0)-(a.locked?1:0));
   document.getElementById('planCount').textContent=cs.length;
   document.getElementById('plan').innerHTML=cs.map(c=>{
     const col=colorOf(c),st=statusOf(c.key),won=isWon(c.key),bcol=(st!=='bidding'&&!c.locked)?STATUS[st].color:col,ms=c.locked?[]:mates(c.key);
     return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${bcol};${st==='enrolled'?'background:#F1F6EC;':st==='dropping'?'background:#fdeef0;':''}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap">
-          <span class="pcode">${c.id}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}
+          <span class="pcode">${escH(c.id)}${c.sec||''}</span>${c.locked?'<span class="corebadge">core</span>':''}<span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}
         </div>
-        <div class="ptitle">${c.title}</div>
+        <div class="ptitle">${escH(c.title)}</div>
       </div>
       <span class="time">${FU(c)}u</span>
       ${c.id==='15.414'?`<select onchange="setCoreSec(this.value)" style="font-family:var(--fb);font-size:11px;border:1px solid var(--line2);border-radius:8px;padding:3px 6px;background:#fff;color:var(--sub);cursor:pointer"><option value="A" ${state.coreSec==='A'?'selected':''}>A · TTh 10–11:30</option><option value="B" ${state.coreSec==='B'?'selected':''}>B · TTh 1–2:30</option></select><button class="btn" style="font-size:10px;padding:3px 8px;margin-left:6px" title="Have a finance waiver? Remove the core class" onclick="waiveCore()">waiver</button>`:c.route==='Crossreg'?(HV_TIME[c.key]?`<select onchange="setHvDays('${c.key}',this.value)" class="hvsel"><option value="">+ days</option>${Object.keys(PAT).map(p=>`<option value="${p}" ${hvSel(c)===p?'selected':''}>${p}</option>`).join('')}</select>`:`<span style="font-size:10.5px;color:var(--mute)">Harvard · TBA</span>`):''}
@@ -1039,7 +1049,7 @@ function renderPlan(){
 
 /* ===================== credits ===================== */
 function renderCredits(){
-  const cs=planned().filter(c=>c.term!=='IAP');let elec=0,tot=0;
+  const cs=planned().filter(c=>(!c.term||c.term==='FALL'));let elec=0,tot=0;
   cs.forEach(c=>{tot+=FU(c);if(!c.locked)elec+=FU(c);});
   const pc=(v,m)=>Math.min(100,Math.round(v/m*100));
   document.getElementById('cap-elec').textContent=elec;document.getElementById('cap-tot').textContent=tot;
@@ -1072,7 +1082,7 @@ function renderCalendar(){
   gut+='</div>';
   const commute=commuteSet();
   document.querySelectorAll('#calseg button').forEach(b=>b.classList.toggle('on',b.dataset.v===calView));
-  const cs=planned().filter(c=>c.term!=='IAP' && c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
+  const cs=planned().filter(c=>(!c.term||c.term==='FALL') && c.m.length && (calView==='all'||c.half==='F'||c.half===calView));
   let daysHtml='';
   days.forEach((d)=>{
     let col=`<div class="day"><div class="dhead">${DAY[d].toUpperCase()}</div><div class="track" style="height:${CAL_H}px;background-image:repeating-linear-gradient(to bottom,var(--grid) 0 1px,transparent 1px 56px)">`;
@@ -1084,10 +1094,10 @@ function renderCalendar(){
       const top=(s-CAL_S)/(CAL_E-CAL_S)*CAL_H,h=Math.max((e-s)/(CAL_E-CAL_S)*CAL_H,30),hv=isHv(c),won=isWon(c.key),st=statusOf(c.key),col0=hv?'#8C1515':c.mit?'#5b6b7a':colorOf(c);
       const w=100/cols,left=lane*w,caution=commute.has(c.key)&&!conf.has(c.key);
       col+=`<div class="block ${conf.has(c.key)?'conf':''} ${hv?'hv':''} ${caution?'caution':''} ${won?'locked':''}" data-key="${c.key}" style="top:${top}px;height:${h}px;left:calc(${left}% + 3px);width:calc(${w}% - 5px);background:${tint(col0,.16)};border-left-color:${col0}${st==='dropping'?';opacity:.5':''}${(st==='sampling'||st==='waitlist')?';border-left-style:dashed':''}">
-        ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${(st!=='bidding'&&st!=='enrolled')?`<span style="color:${STATUS[st].color}">●</span> `:''}${c.id}${c.sec||''}</div><div class="bt">${c.title}</div></div>`;
+        ${(c.locked||won)?(won?`<span class="lk">🔒</span>`:''):`<button class="bx" title="Remove" onclick="event.stopPropagation();remove('${c.key}')">×</button>`}<div class="bc" style="color:${col0}">${(st!=='bidding'&&st!=='enrolled')?`<span style="color:${STATUS[st].color}">●</span> `:''}${escH(c.id)}${c.sec||''}</div><div class="bt">${escH(c.title)}</div></div>`;
     });
     const nov=overlays.length,cw=nov?44/nov:0;
-    overlays.forEach((ov,oi2)=>ov.courses.forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
+    overlays.forEach((ov,oi2)=>ov.courses.filter(oc=>!oc.id.startsWith('SPRING:')&&!oc.id.startsWith('IAP:')).forEach(oc=>(oc.m||[]).forEach(([dd,os,oe])=>{if(dd!==d)return;
       const ot=(os-CAL_S)/(CAL_E-CAL_S)*CAL_H,oh=Math.max((oe-os)/(CAL_E-CAL_S)*CAL_H,24),rp=oi2*cw;
       col+=`<div class="block" style="top:${ot}px;height:${oh}px;right:calc(${rp}% + 3px);width:calc(${cw}% - 3px);background:${tint(ov.color,.16)};border-left:3px dashed ${ov.color};pointer-events:none;z-index:3"><div class="bc" style="color:${ov.color};font-size:9px">${(''+oc.id).replace('MIT:','')}</div></div>`;})));
     if(!evs.length&&d==='F'&&!overlays.length)col+=`<div style="position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:var(--fm);font-size:10px;color:#CFC2AC">no classes</div>`;
@@ -1106,7 +1116,11 @@ function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();p
 function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];if(k.slice(0,7)==='CUSTOM:'&&state.custom)delete state.custom[k];save();render();pushIf();}
 function pushIf(){if(SB&&session&&typeof syncUp==='function')syncUp();}
 function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
-function resetPlan(){if(!confirm('Clear your plan? (Core 15.414 stays unless you have a finance waiver.)'))return;state={plan:state.finWaiver?[]:['15.414'],bids:{},coreSec:state.coreSec||'A',hvPat:{},won:[],status:{},custom:{},finWaiver:!!state.finWaiver};save();render();}
+function resetPlan(){
+  if(!confirm('Clear Fall electives from this plan? Summer, IAP, Spring and completion records will stay.'))return;
+  state.plan=state.plan.filter(k=>{const c=byKey(k);return c&&c.term&&c.term!=='FALL'||k==='15.414'&&!state.finWaiver;});
+  save();render();pushIf();
+}
 // Finance waiver: let students who've waived the core drop 15.414 (and keep it dropped).
 function waiveCore(){
   state.finWaiver=!state.finWaiver;
@@ -1117,7 +1131,7 @@ function waiveCore(){
 // Export your plan as an .ics calendar file (client-side, no backend). Fall 2026 weekly recurrences.
 function icsEsc(s){return (s||'').replace(/([,;\\])/g,'\\$1').replace(/\r?\n/g,'\\n');}
 function buildICS(){
-  const cs=planned().filter(c=>c.m&&c.m.length&&c.term!=='IAP');
+  const cs=planned().filter(c=>c.m&&c.m.length&&(!c.term||c.term==='FALL'));
   if(!cs.length)return null;
   const pad=n=>String(n).padStart(2,'0');
   const DOW={M:1,T:2,W:3,Th:4,F:5};
@@ -1183,7 +1197,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 /* ===================== MIT non-Sloan tab ===================== */
 let mitHideOff=true, mitBuilt=false, hvMarquee=false;
 function setTab(t){
-  ['sloan','iap','harvard','mit','community'].forEach(v=>{
+  window.yearActiveTab=t;
+  ['degree','summer','spring','sloan','iap','harvard','mit','community'].forEach(v=>{
     document.getElementById('view-'+v).style.display=(v===t)?'':'none';
     document.getElementById('tab-'+v).classList.toggle('on',v===t);
   });
@@ -1191,6 +1206,7 @@ function setTab(t){
   if(t==='harvard')renderHarvard();
   if(t==='iap')renderIAP();
   if(t==='community')renderCommunity();
+  if(window.renderYear)window.renderYear();
 }
 function renderHarvard(){
   const list=document.getElementById('hvlist'); if(!list)return;
@@ -1207,8 +1223,8 @@ function renderHarvard(){
     const added=state.plan.includes(c.key), school=c.fac.split('·').pop().trim(), tl=HV_TIME[c.key]?fmtRange(HV_TIME[c.key]):'time TBA';
     return `<div class="course" data-key="${c.key}" style="border-left-color:#8C1515;background:#FBF6F4">
       <div style="flex:1;min-width:0">
-        <div class="crow">${c.star?'<span title="Marquee pick">⭐</span>':''}<span class="code" style="color:#8C1515"><span class="cdot" style="background:#8C1515"></span>${c.id}</span><span class="route r-Crossreg">${school}</span></div>
-        <div class="ctitle">${c.title}</div>
+        <div class="crow">${c.star?'<span title="Marquee pick">⭐</span>':''}<span class="code" style="color:#8C1515"><span class="cdot" style="background:#8C1515"></span>${escH(c.id)}</span><span class="route r-Crossreg">${school}</span></div>
+        <div class="ctitle">${escH(c.title)}</div>
         <div class="meta"><span class="unit">${c.units}u${c.half!=='F'?' · '+c.half:''}</span><span class="time">${tl}</span></div>
         <div class="fac">👤 ${c.fac}</div>
         ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
@@ -1241,10 +1257,10 @@ function renderMit(){
   const total=items.length, CAP=250; const shown=items.slice(0,CAP);
   document.getElementById('mitCount').textContent=total;
   document.getElementById('mitlist').innerHTML=shown.map(c=>`
-    <div class="course" data-key="MIT:${c.id}" style="border-left-color:#9a8e7e;background:#fff">
+    <div class="course" data-key="MIT:${escH(c.id)}" style="border-left-color:#9a8e7e;background:#fff">
       <div style="flex:1;min-width:0">
         <div class="crow">
-          <span class="code" style="color:#5b5b60"><span class="cdot" style="background:#9a8e7e"></span>${c.id}</span>
+          <span class="code" style="color:#5b5b60"><span class="cdot" style="background:#9a8e7e"></span>${escH(c.id)}</span>
           <span class="route r-Register">${depts[c.d]||c.d}</span>
           ${c.off?`<span class="route" style="background:#F3E0DA;color:#A65F28">not offered ’25–’26</span>`:''}
         </div>
@@ -1260,7 +1276,7 @@ function renderMit(){
         ${c.ds?`<div style="font-size:11.5px;color:var(--sub);margin-top:8px;line-height:1.45">${c.ds}</div>`:''}
         ${c.x?`<div class="fac" style="margin-top:4px">↔ ${c.x}</div>`:''}
       </div>
-      ${state.plan.includes('MIT:'+c.id)?(isWon('MIT:'+c.id)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won - click to withdraw" onclick="withdraw('MIT:${c.id}')">🔒</button>`:`<button class="add in" onclick="remove('MIT:${c.id}')">✓</button>`):`<button class="add" onclick="add('MIT:${c.id}')">+</button>`}
+      ${state.plan.includes('MIT:'+c.id)?(isWon('MIT:'+c.id)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won - click to withdraw" onclick="withdraw('MIT:${escH(c.id)}')">🔒</button>`:`<button class="add in" onclick="remove('MIT:${escH(c.id)}')">✓</button>`):`<button class="add" onclick="add('MIT:${escH(c.id)}')">+</button>`}
     </div>`).join('')||`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);padding:40px 0">No subjects match these filters.</div>`;
   if(total>CAP)document.getElementById('mitlist').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1;text-align:center;color:var(--mute2);font-family:var(--fm);font-size:11px;padding:8px 0">Showing first ${CAP} of ${total} - refine search or pick a department to see more.</div>`);
 }
@@ -1276,6 +1292,7 @@ async function sbInit(){
 async function onAuth(){
   if(!SB){return;}
   if(!session){myProfile=null;updateAcct();renderCommunity();return;}
+  if(await isBlocked(session.user.email)){await SB.auth.signOut();session=null;myProfile=null;updateAcct();renderCommunity();return;}
   authView='form';pendingEmail=null;
   const uid=session.user.id,email=session.user.email;
   let prof=null;
@@ -1328,6 +1345,7 @@ async function doRegister(){
 }
 async function doVerify(){
   if(!SB)return;
+  if(await isBlocked(pendingEmail)){amsg('Invalid response.');return;}
   const token=(document.getElementById('vCode').value||'').trim();
   if(!token){amsg('Enter the code from your email.');return;}
   let r=await SB.auth.verifyOtp({email:pendingEmail,token,type:'signup'});
@@ -1336,6 +1354,7 @@ async function doVerify(){
 }
 async function resendCode(){
   if(!SB||!pendingEmail)return;
+  if(await isBlocked(pendingEmail)){amsg('Invalid response.');return;}
   const{error}=await SB.auth.resend({type:'signup',email:pendingEmail});
   amsg(error?error.message:'Code re-sent ✉️',!error);
 }
@@ -1383,8 +1402,8 @@ async function viewPerson(id,name){
   const box=document.getElementById('personBox');if(!box)return;
   const isSelf=session&&id===session.user.id;
   const onCal=overlays.some(o=>o.id===id);
-  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay calendar'}</button>`}</div>
-    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('MIT:','').replace('IAP:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
+  box.innerHTML=`<div class="ph" style="margin-bottom:10px"><h2 style="font-size:16px">${name}${isSelf?' (you)':''}</h2>${isSelf?'':`<button class="btn" onclick="overlayPerson('${id}',${JSON.stringify(name).replace(/"/g,'&quot;')})" style="background:${onCal?'var(--card)':'var(--brand)'};color:${onCal?'var(--ink)':'#fff'};border-color:${onCal?'var(--line)':'var(--brand)'}">${onCal?'✓ On your calendar':'Overlay Fall calendar'}</button>`}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">${data.map(e=>{const st=STATUS[e.status]?e.status:null;const badge=st?`<span style="font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:${STATUS[st].color}1e;color:${STATUS[st].color}">${SDOT[st]||''} ${STATUS[st].label}</span>`:'';return `<div class="prow"><span class="pcode">${e.course_id.replace('SPRING:','').replace('MIT:','').replace('IAP:','').split('·')[0]}</span><span class="ptitle" style="flex:1">${(e.title||'').split('·').slice(1).join('·').trim()||e.title}</span>${badge}</div>`;}).join('')||'<div style="color:var(--mute2);font-size:13px">No classes shared yet.</div>'}</div>
     <div style="font-size:11.5px;color:var(--sub2);margin-top:12px;line-height:1.5">Want to swap? Find <b>${name}</b> in the cohort chat - you can see which classes you overlap on via the calendar overlay.</div>`;
 }
 async function overlayPerson(id,name){
@@ -1409,7 +1428,7 @@ function renderGate(){
       <div id="sbMsg" style="font-size:12.5px;margin-top:10px"></div>`;
     return;
   }
-  const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6">Sign in with your <b>@mit.edu</b> to use Muddy Falls - browse Fall &amp; IAP courses, see who's taking what, and read reviews. SFMBA cohort only; nothing works until you're signed in.</p>`;
+  const intro=`<p style="font-size:13px;color:var(--sub);line-height:1.6">Sign in with your <b>@mit.edu</b> to use Muddy Falls - plan your full year, track graduate credits, see who's taking what, and read reviews. Registration is limited to invited SFMBA cohort email addresses.</p>`;
   const seg=`<div class="seg" style="margin:16px 0"><button class="${authMode==='login'?'on':''}" onclick="setAuthMode('login')">Log in</button><button class="${authMode==='register'?'on':''}" onclick="setAuthMode('register')">Register</button></div>`;
   const form=authMode==='register'
     ? `<div style="display:flex;flex-direction:column;gap:8px">
@@ -1557,10 +1576,10 @@ function renderIAP(){
     return `<div class="course" data-key="${c.key}" style="border-left-color:${col};background:${tint(col,.05)}">
       <div style="flex:1;min-width:0">
         <div class="crow">
-          <span class="code"><span class="cdot" style="background:${col}"></span>${c.id}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
+          <span class="code"><span class="cdot" style="background:${col}"></span>${escH(c.id)}${c.sec?'<span style="color:var(--mute)">'+c.sec+'</span>':''}</span>
           ${c.exec?'<span class="route r-Apply">Exec elective</span>':'<span class="route r-Register">IAP</span>'}${c.perm?'<span class="route r-Apply" style="background:#F5E7D6;color:#A65F28">permission</span>':''}${reviewChip(c.key)}
         </div>
-        <div class="ctitle">${c.title}</div>
+        <div class="ctitle">${escH(c.title)}</div>
         <div class="meta">
           <span class="unit">${c.units?c.units+'u':'arr'}</span>
           <span class="time">🗓 ${c.sched||'Dates not published yet'}</span>
@@ -1584,8 +1603,8 @@ function renderIapPlan(){
     const col=colorOf(c),st=statusOf(c.key),ms=mates(c.key);
     return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${col}">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap"><span class="pcode">${c.id}${c.sec||''}</span><span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}</div>
-        <div class="ptitle">${c.title}</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap"><span class="pcode">${escH(c.id)}${c.sec||''}</span><span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}</div>
+        <div class="ptitle">${escH(c.title)}</div>
         <div style="font-size:11px;color:var(--mute);margin-top:2px">🗓 ${c.sched||'Dates not published yet'}</div>
       </div>
       <span class="time">${c.units?c.units+'u':'arr'}</span>
@@ -1603,7 +1622,7 @@ function renderIapCal(cs){
     c.cal.forEach(s=>(s.dom||[]).forEach(dom=>{
       const wi=weeks.findIndex(w=>w.includes(dom));if(wi<0)return;const di=weeks[wi].indexOf(dom);
       const t=(s.s!=null)?fmtMin(s.s)+'–'+fmtMin(s.e):'';
-      (cell[wi+'-'+di]=cell[wi+'-'+di]||[]).push(`<span class="iapchip" data-key="${c.key}" style="background:${tint(col,.16)};border-left:3px solid ${col}">${c.id}${c.sec||''}${t?'<br><span class="iapt">'+t+'</span>':''}</span>`);
+      (cell[wi+'-'+di]=cell[wi+'-'+di]||[]).push(`<span class="iapchip" data-key="${c.key}" style="background:${tint(col,.16)};border-left:3px solid ${col}">${escH(c.id)}${c.sec||''}${t?'<br><span class="iapt">'+t+'</span>':''}</span>`);
     }));
   });
   const dn=['Mon','Tue','Wed','Thu','Fri'];
@@ -1618,7 +1637,13 @@ function renderIapCal(cs){
   if(undated.length)html+=`<div class="iapund"><b>Dates not published yet:</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. These are set by the program after you register - confirm on WebSIS.</div>`;
   el.innerHTML=html;
 }
-applyPreload();applyCoreSection();computeHv();buildStatic();render();sbInit();
 </script>
+<script src="spring-data.js"></script>
+<script src="year-model.js"></script>
+<script src="year.js"></script>
+<script src="mit-spring-data.js"></script>
+<script src="harvard-spring-data.js"></script>
+<script src="crossreg.js"></script>
+<script>applyPreload();applyCoreSection();computeHv();buildStatic();initYear();initCrossreg();render();setTab('degree');sbInit();</script>
 </body>
 </html>
