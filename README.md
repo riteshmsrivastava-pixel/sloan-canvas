@@ -26,3 +26,5 @@ The existing Supabase project hosts `mf_degree_plans`, with owner-only row polic
 The signup allowlist is stored only in the private database schema. It is not included in this repository. New registrations are restricted by the existing `auth.users` trigger; existing profiles are preserved. Three pre-existing excluded addresses remain blocked. Never put the roster, user emails, credentials, or exported personal plans in this repository.
 
 `year-plans.sql` documents the private-plan schema. The production signup allowlist is managed separately; do not recreate or replace it during frontend deployment.
+
+Classmates buttons on IAP and Spring catalog/plan cards show the same term and section’s shared selections with Enrolled, Sampling, Waitlist, or Dropping status. Completion records stay private. IAP dates were rechecked in the authenticated 2027JA Sloan Course Browser on Nov 22, 2026; Analytics Capstone’s January 5 sessions were corrected, and 15.S60 faculty updated. Executive electives still have no published dates in that listing. Finance Lab and Product Management Lab use separate IAP/Spring unit allocations.

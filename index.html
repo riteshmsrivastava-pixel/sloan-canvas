@@ -350,7 +350,7 @@ select.inp{flex:0 0 auto;min-width:0;font-weight:600;color:#6B6157;cursor:pointe
           <select id="icert" class="inp" onchange="renderIAP()"></select>
           <select id="iunits" class="inp" onchange="renderIAP()"></select>
         </div>
-        <div class="list" id="iaplist"></div>
+        <p class="year-muted">Schedule checked against the Sloan Course Browser on Nov 22, 2026. Executive elective dates remain unpublished. Use Classmates to see shared selections and enrollment status.</p><div class="list" id="iaplist"></div>
       </div>
       <div class="right">
         <div class="panel pad">
@@ -831,12 +831,17 @@ async function deleteReview(key){
   try{await SB.from('mf_reviews').delete().eq('user_id',session.user.id).eq('course_id',key);}catch(e){}
   await loadReviews();render();showReviews(key);
 }
+function classmatesButton(c){
+  if(!c||c.custom||!byKey(c.key))return '';
+  const count=mates(c.key).length,section=c.sec&&c.sec!=='000'?' '+c.sec:'';
+  return `<button type="button" class="text-button mate" aria-label="Classmates in ${escH(c.id+section)}" onclick="showClassmates('${escH(c.key)}')">👥 Classmates${count?' · '+count:''}</button>`;
+}
 // Classmates popup - click any class to see who else is in it (refreshes live on open)
 async function showClassmates(key){
   const c=byKey(key);if(!c)return;
   const modal=document.getElementById('matesModal'),box=document.getElementById('matesBox');
   modal.classList.add('show');
-  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${escH(c.id)}${c.sec||''}</h2><div style="font-size:13px;color:var(--sub);margin-top:3px">${escH(c.title)}</div></div><button class="close" onclick="closeMates()">×</button></div>`;
+  const head=`<div class="ph" style="align-items:flex-start;margin-bottom:4px"><div style="min-width:0"><h2 style="font-size:18px;margin:0">${escH(c.id)}${c.sec&&c.sec!=='000'?' · '+escH(c.sec):''}</h2><div style="font-size:13px;color:var(--sub);margin-top:3px">${escH(c.title)}</div><div class="year-muted">${c.term==='IAP'?'IAP 2027':c.term==='SPRING'?'Spring 2027':'Fall 2026'} · Classmates’ shared course selections</div></div><button class="close" aria-label="Close classmates" onclick="closeMates()">×</button></div>`;
   if(!session){box.innerHTML=head+`<div style="padding:20px 0;color:var(--sub);font-size:13px;line-height:1.6">Sign in on the <b>Community</b> tab to see which classmates are in this class and how to reach them.</div>`;return;}
   box.innerHTML=head+`<div style="padding:26px 0;text-align:center;color:var(--mute2);font-size:13px">Loading classmates…</div>`;
   await loadRoster();
@@ -848,7 +853,7 @@ async function showClassmates(key){
     body=`<div style="padding:20px 0;color:var(--mute2);font-size:13px;line-height:1.6">No classmates here yet${mine?' - you’re the first in this class':''}. As people join and add their courses, they’ll show up here automatically.</div>`;
   }else{
     body=`<div style="font-size:13px;color:var(--sub);margin:12px 0 12px"><b style="color:var(--ink);font-size:15px">${people.length}</b> classmate${people.length>1?'s':''} in this class${mine?' (plus you)':''}</div>
-      <div style="display:flex;flex-direction:column;gap:8px">${people.map(m=>{const stc=(STATUS[m.status]||{}).color||'#888',stl=(STATUS[m.status]||{}).label||'';return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px"><span style="flex:1;font-weight:600;min-width:0">${m.name||' - '}</span>${stl?`<span style="font-size:11.5px;font-weight:600;color:${stc};display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="font-size:13px">●</span>${stl}</span>`:''}</div>`;}).join('')}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">${people.map(m=>{const stc=(STATUS[m.status]||{}).color||'#888',stl=(STATUS[m.status]||{}).label||'';return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px"><span style="flex:1;font-weight:600;min-width:0">${escH(m.name||' - ')}</span>${stl?`<span style="font-size:11.5px;font-weight:600;color:${stc};display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="font-size:13px">●</span>${stl}</span>`:''}</div>`;}).join('')}</div>
       <div style="margin-top:16px;font-size:11.5px;color:var(--sub2);line-height:1.5">Reach out by email or on your cohort WhatsApp to compare plans or swap sections.</div>`;
   }
   box.innerHTML=head+body;
@@ -1228,6 +1233,7 @@ function renderHarvard(){
         <div class="meta"><span class="unit">${c.units}u${c.half!=='F'?' · '+c.half:''}</span><span class="time">${tl}</span></div>
         <div class="fac">👤 ${c.fac}</div>
         ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
+        ${classmatesButton(c)}
       </div>
       ${added?(isWon(c.key)?`<button class="add" style="background:#E7EDDD;color:#4F6B3E" title="Won - click to withdraw" onclick="withdraw('${c.key}')">🔒</button>`:`<button class="add in" onclick="remove('${c.key}')">✓</button>`):`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
@@ -1490,7 +1496,7 @@ function applyPreload(){
 function KI(o){o.term='IAP';o.base=o.id;o.key='IAP:'+o.id+(o.sec?'·'+o.sec:'');o.route='IAP';o.certs=o.certs||[];o.m=o.m||[];return o;}
 const IAP_COURSES=[
   KI({id:'15.003',title:'Analytics Tools',units:3,fac:'D. Bertsimas · M. Li',sched:'Mon 1/11 & 1/25, 8a–5p · E51-345',cal:[{dom:[11,25],s:480,e:1020}]}),
-  KI({id:'15.089',title:'Analytics Capstone',units:3,fac:'M. Li',sched:'1/4 8a–5p · 1/5 10a–2p · 1/6 1–6p · E51-345/315',cal:[{dom:[4],s:480,e:1020},{dom:[5],s:600,e:840},{dom:[6],s:780,e:1080}]}),
+  KI({id:'15.089',title:'Analytics Capstone',units:3,fac:'M. Li',sched:'1/4 8a–5p · 1/5 11:30a–1p & 4–6p · 1/6 1–6p · E51-345/315',cal:[{dom:[4],s:480,e:1020},{dom:[5],s:690,e:780},{dom:[5],s:960,e:1080},{dom:[6],s:780,e:1080}]}),
   KI({id:'15.287',sec:'A',title:'Communication & Persuasion through Data',units:3,fac:'A. Telio',sched:'Tue & Thu 1/5–1/28, 1–2:30p · E51-151',cal:[{dom:[5,7,12,14,19,21,26,28],s:780,e:870}]}),
   KI({id:'15.287',sec:'B',title:'Communication & Persuasion through Data',units:3,fac:'A. Telio',sched:'Tue & Thu 1/5–1/28, 2:30–4p · E51-151',cal:[{dom:[5,7,12,14,19,21,26,28],s:870,e:960}]}),
   KI({id:'15.309',title:'Leadership Lessons Learned from the Military',units:6,fac:'L. Hafrey',sched:'Tue–Thu 1/12–1/14, 8:30a–4:30p · E51-345',cal:[{dom:[12,13,14],s:510,e:990}]}),
@@ -1543,7 +1549,7 @@ const IAP_COURSES=[
   KI({id:'15.S56',title:'SSIM: Entrepreneurial Finance',units:3,fac:'A. Schoar',exec:1}),
   KI({id:'15.S58',title:'SSIM: Prescriptive AI - The Edge of Optimization',units:3,fac:'A. Jacquillat',certs:['BA'],exec:1}),
   KI({id:'15.S59',title:'SSIM: AI, Strategy, Governance & Ethics',units:3,fac:'J. Saviano',certs:['BA'],exec:1}),
-  KI({id:'15.S60',title:'SSIM: Computing in Optimization and Statistics',units:3,fac:'K. Ligris · C. Tucker',sched:'Tue & Thu 1/5–1/28, 9a–12p · E51-395',cal:[{dom:[5,7,12,14,19,21,26,28],s:540,e:720}]}),
+  KI({id:'15.S60',title:'SSIM: Computing in Optimization and Statistics',units:3,fac:'N. Patnaik',sched:'Tue & Thu 1/5–1/28, 9a–12p · E51-395',cal:[{dom:[5,7,12,14,19,21,26,28],s:540,e:720}]}),
   KI({id:'15.S62',title:'SSIM: Management of Services (2-day)',units:3,fac:'Z. Ton',certs:['SUS'],exec:1}),
   KI({id:'15.S63',title:'SSIM: Quantum Computing & Quantum Technologies for Managers',units:3,fac:'D. Gamarnik',exec:1}),
   KI({id:'15.S64',title:'SSIM: Distributed Leadership in Teams and Organizations',units:3,fac:'K. Isaacs',exec:1}),
@@ -1587,6 +1593,7 @@ function renderIAP(){
         </div>
         <div class="fac">👤 ${c.fac}</div>
         ${c.note?`<div class="notes"><span class="note warn">◔ ${c.note}</span></div>`:''}
+        ${classmatesButton(c)}
       </div>
       ${added?`<button class="add in" onclick="remove('${c.key}')">✓</button>`:`<button class="add" onclick="add('${c.key}')">+</button>`}
     </div>`;
@@ -1634,7 +1641,7 @@ function renderIapCal(cs){
     }).join('')+'</div>';
   });
   const undated=(cs||[]).filter(c=>!c.cal||!c.cal.length);
-  if(undated.length)html+=`<div class="iapund"><b>Dates not published yet:</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. These are set by the program after you register - confirm on WebSIS.</div>`;
+  if(undated.length)html+=`<div class="iapund"><b>Dates not published yet:</b> ${undated.map(c=>c.id+(c.sec||'')).join(', ')}. Confirm current dates with the program or on WebSIS; undated courses are not plotted in the calendar.</div>`;
   el.innerHTML=html;
 }
 </script>

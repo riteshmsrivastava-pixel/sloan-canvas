@@ -12,7 +12,7 @@ test('thesis spans multiple terms, with a 24-unit total cap',()=>{const t=Y.calc
 test('H3 and H4 do not conflict; full-term courses overlap both',()=>{const m=[['M',600,690]],courses=[c('A',6,'SPRING',{half:'H3',m}),c('B',6,'SPRING',{half:'H4',m}),c('C',9,'SPRING',{half:'F',m}),c('D',9,'FALL',{half:'F',m})];assert.equal(Y.conflicts(courses).length,2);assert.equal(Y.conflicts(courses,'H3').length,1);});
 test('earned 171 alone is insufficient without required core',()=>{const t=Y.calculate([c('X',171,'FALL',{outcome:'completed'})]);assert.equal(t.unitTargetMet,false);});
 test('all 294 source sections load without credit-bearing components',()=>{const ctx={window:{}};vm.runInNewContext(fs.readFileSync(require.resolve('./spring-data.js'),'utf8'),ctx);const cs=ctx.window.SPRING_COURSES;assert.equal(cs.length,294);assert.equal(new Set(cs.map(c=>c.key)).size,294);assert.equal(cs.filter(c=>c.component&&c.units>0).length,0);assert.ok(cs.some(c=>c.id==='15.871'&&c.sec==='C'));});
-test('application restores legacy plans and resolves all new catalog keys',()=>{
+test('application restores legacy plans and resolves all new catalog keys',async()=>{
   const html=fs.readFileSync(__dirname+'/index.html','utf8');
   const main=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const COURSES='));
   const storage=new Map([['sloanCanvas_fall_v1',JSON.stringify({plan:['15.414','IAP:15.960'],bids:{},won:[],custom:{},status:{}})]]);
@@ -25,4 +25,20 @@ test('application restores legacy plans and resolves all new catalog keys',()=>{
   assert.equal(vm.runInContext('degreeTotals().target.total',ctx),171);
   assert.equal(vm.runInContext('Object.values(EXTERNAL_IDX).filter(c=>!byKey(c.key)).length',ctx),0);
   assert.equal(vm.runInContext('Object.values(EXTERNAL_IDX).filter(c=>c.term!=="SPRING").length',ctx),0);
+  assert.equal(vm.runInContext("Object.values(SPRING_IDX).filter(c=>c.id==='15.786'&&!c.component).every(c=>c.units===6)",ctx),true);
+  assert.equal(vm.runInContext("IAP_IDX['IAP:15.089'].cal.filter(s=>s.dom.includes(5)).map(s=>s.s+'-'+s.e).join(',')",ctx),'690-780,960-1080');
+  const modal={classList:{add(){},contains(){return true;}}},box={innerHTML:''};
+  ctx.document.getElementById=id=>id==='matesModal'?modal:box;
+  vm.runInContext("session={user:{id:'me'}};roster={'IAP:15.453':[{uid:'iap-person',name:'IAP <peer>',status:'enrolled'}]};",ctx);
+  await vm.runInContext("showClassmates('IAP:15.453')",ctx);
+  assert.ok(box.innerHTML.includes('IAP &lt;peer&gt;'));
+  assert.ok(box.innerHTML.includes('Enrolled'));
+  assert.ok(box.innerHTML.includes('IAP 2027'));
+  await vm.runInContext("showClassmates(Object.values(SPRING_IDX).find(c=>c.id==='15.453'&&!c.component).key)",ctx);
+  assert.ok(box.innerHTML.includes('Spring 2027'));
+  assert.ok(box.innerHTML.includes('No classmates here yet'));
+  assert.ok(!box.innerHTML.includes('IAP &lt;peer&gt;'));
+
 });
+
+test('IAP and Spring lab portions each count, without duplicated full-course units',()=>{const t=Y.calculate([c('15.453',6,'IAP'),c('15.453',12,'SPRING'),c('15.786',3,'IAP'),c('15.786',9,'SPRING')]);assert.equal(t.projected,21);assert.equal(t.byTerm.IAP.planned,9);assert.equal(t.byTerm.SPRING.planned,12);});

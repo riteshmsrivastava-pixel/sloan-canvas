@@ -8,7 +8,7 @@
     ['15.809','Marketing and Strategy',9]
   ].map(([id,title,units])=>({key:'SUMMER:'+id,id,title,units,term:'SUMMER',core:true,m:[],half:'F'}));
   const TERMS=['SUMMER','FALL','IAP','SPRING'];
-  const SPLIT={'15.389':{FALL:9,IAP:3},'15.777':{FALL:9,IAP:6},'15.830':{FALL:6,IAP:3}};
+  const SPLIT={'15.389':{FALL:9,IAP:3},'15.777':{FALL:9,IAP:6},'15.830':{FALL:6,IAP:3},'15.453':{IAP:6,SPRING:6},'15.786':{IAP:3,SPRING:6}};
   const number=v=>Number.isFinite(Number(v))&&Number(v)>=0?Number(v):0;
   function requirements(settings={}){
     const longCore=settings.sdOption==='15.873';
