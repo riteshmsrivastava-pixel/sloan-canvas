@@ -860,7 +860,7 @@ function tipHTML(c){
   return `<div class="tc" style="color:${tint(col,.55)}">${escH(c.id)}${c.sec||''}</div>
     <div class="tt">${escH(c.title)}</div>
     <div class="td">
-      <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]}${biddable(c)?' · '+TIERLAB[c.tier]:''}
+      <b>${FU(c)} units${c.fu&&c.fu!==c.units?' Fall (+'+(c.units-c.fu)+'u IAP)':''}${c.half!=='F'?' · '+c.half:''}</b> · ${ROUTELABEL[c.route]||c.route||'Course'}${biddable(c)?' · '+TIERLAB[c.tier]:''}
       <div class="trow">🕑 ${c.term==='IAP'?(c.sched||'Dates not published yet'):(c.m.length?fmtMeet(c.m):(c.mit?'register via WebSIS · confirm time on MIT catalog':isHv(c)&&HV_TIME[c.key]?fmtRange(HV_TIME[c.key])+' · set days in plan':isHv(c)?'time TBA · confirm on my.harvard':'Set by program'))}</div>
       <div class="trow">👤 ${c.fac}</div>
       ${c.certs.length?`<div class="trow">🎓 ${c.certs.map(k=>CERT[k].full).join(', ')}</div>`:''}
