@@ -41,7 +41,14 @@ async function doVerify(event){
   try{
     if(!await emailAllowed(email)){amsg('This email is not on the approved cohort list.');return;}
     const {data,error}=await SB.auth.verifyOtp({email,token,type:'email'});
-    if(error){amsg('That code is invalid or expired. Try the latest code or request a new one.');return;}
+    if(error){
+      amsg(error.status>=500
+        ?'Sign-in is temporarily unavailable. Keep your code and try again in a moment.'
+        :error.status===429
+          ?'Too many attempts. Please wait a minute before trying again.'
+          :'That code is invalid or expired. Try the latest code or request a new one.');
+      return;
+    }
     session=data.session;await onAuth();
   }catch(error){amsg('Could not verify the code. Please try again.');}
   finally{setAuthBusy(false);}
@@ -86,13 +93,13 @@ function renderGate(){
   const body=document.getElementById('authgateBody');if(!body)return;clearTimeout(authTimer);
   const message='<div id="sbMsg" role="status" aria-live="polite" style="font-size:13px;margin-top:14px"></div>';
   if(authView==='load-error'&&session){
-    body.innerHTML='<h1 style="font-size:25px;margin:22px 0 10px">Your profile is safe.</h1><p class="year-muted">We could not load it right now. Please try again.</p><button class="btn year-primary" onclick="onAuth()">Retry</button><button class="text-button" onclick="signOut()">Sign out</button>';return;
+    body.innerHTML='<h1 style="font-size:25px;margin:22px 0 10px">Unable to load profile</h1><p class="year-muted">We could not load it right now. Please try again.</p><button class="btn year-primary" onclick="onAuth()">Retry</button><button class="text-button" onclick="signOut()">Sign out</button>';return;
   }
   if(authView==='profile'&&session){
-    body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Make it yours.</h1><p class="year-muted">Your MIT email is verified. Add the name your classmates will recognize.</p><form onsubmit="createOtpProfile(event)" class="year-stack"><label class="year-field">Full name<input id="otpName" class="inp" autocomplete="name" maxlength="100" required></label><button class="btn year-primary" type="submit">Create my profile</button></form>${message}<button class="text-button" style="margin-top:14px" onclick="signOut()">Use a different account</button>`;return;
+    body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Create profile</h1><p class="year-muted">Your MIT email is verified. Enter your full name for your profile.</p><form onsubmit="createOtpProfile(event)" class="year-stack"><label class="year-field">Full name<input id="otpName" class="inp" autocomplete="name" maxlength="100" required></label><button class="btn year-primary" type="submit">Create my profile</button></form>${message}<button class="text-button" style="margin-top:14px" onclick="signOut()">Use a different account</button>`;return;
   }
   if(authView==='verify'&&pendingEmail){
-    body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Check your inbox.</h1><p class="year-muted">Enter the one-time code sent to <b>${escH(pendingEmail)}</b>. It expires in 10 minutes.</p><form onsubmit="doVerify(event)" class="year-stack"><label class="year-field">Email code<input id="vCode" class="inp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,12}" maxlength="12" placeholder="Enter your code" required style="font-size:25px;letter-spacing:5px"></label><button class="btn year-primary" type="submit">Verify &amp; sign in</button></form><div class="year-actions"><button class="btn" id="resendOtp" type="button" onclick="resendCode()">Resend code</button><button class="text-button" type="button" onclick="changeAuthEmail()">Change email</button></div><p class="year-muted" style="margin-top:14px">Check spam or junk if it hasn’t arrived. Use the newest code and keep this page open.</p>${message}`;updateResend();return;
+    body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Enter email code</h1><p class="year-muted">Enter the one-time code sent to <b>${escH(pendingEmail)}</b>. It expires in 10 minutes.</p><form onsubmit="doVerify(event)" class="year-stack"><label class="year-field">Email code<input id="vCode" class="inp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,12}" maxlength="12" placeholder="Enter your code" required style="font-size:25px;letter-spacing:5px"></label><button class="btn year-primary" type="submit">Verify &amp; sign in</button></form><div class="year-actions"><button class="btn" id="resendOtp" type="button" onclick="resendCode()">Resend code</button><button class="text-button" type="button" onclick="changeAuthEmail()">Change email</button></div><p class="year-muted" style="margin-top:14px">Check spam or junk if it hasn’t arrived. Use the newest code and keep this page open.</p>${message}`;updateResend();return;
   }
-  body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Your year, one sign-in away.</h1><p class="year-muted">Use your approved MIT email. We’ll send you a one-time login code—no password needed.</p><form onsubmit="requestEmailCode(event)" class="year-stack"><label class="year-field">MIT email address<input id="otpEmail" class="inp" type="email" autocomplete="email" placeholder="you@mit.edu" value="${escH(authEmailDraft)}" required></label><button class="btn year-primary" type="submit" ${SB?'':'disabled'}>Email me a code</button></form><p class="year-muted" style="margin-top:16px">Available to the approved Sloan Fellows ’27 cohort. Existing members keep their profiles and saved plans; new members create a profile after email verification.</p>${message}`;
+  body.innerHTML=`<h1 style="font-size:25px;margin:22px 0 10px">Sign in</h1><p class="year-muted">Enter your approved MIT email to receive a one-time sign-in code.</p><form onsubmit="requestEmailCode(event)" class="year-stack"><label class="year-field">MIT email address<input id="otpEmail" class="inp" type="email" autocomplete="email" placeholder="you@mit.edu" value="${escH(authEmailDraft)}" required></label><button class="btn year-primary" type="submit" ${SB?'':'disabled'}>Email me a code</button></form><p class="year-muted" style="margin-top:16px">Access is limited to the approved Sloan Fellows ’27 email list.</p>${message}`;
 }
