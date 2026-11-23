@@ -47,6 +47,7 @@
     if(thesisUnits&&thesisTerms.size<2)warnings.push('A thesis must span at least two terms. Confirm your proposal and timeline with SES.');
     if(electiveProjected>129)warnings.push('Your plan exceeds the 129-unit graduate elective maximum.');
     if(byTerm.FALL.core+byTerm.FALL.elective>66)warnings.push('Your Fall plan exceeds 66 total units.');
+    if(byTerm.IAP.earned+byTerm.IAP.planned>12)warnings.push('Your IAP plan exceeds the 12-unit limit, including lab continuations.');
     const thesisRequired=['SM','MOT'].includes(settings.degree);
     if(thesisRequired&&thesisUnits<24)warnings.push(settings.degree+' requires a completed Sloan thesis; your plan currently allocates '+thesisUnits+' of 24 thesis units.');
     const coreRemaining=out.filter(r=>r.core&&r.outcome!=='completed');

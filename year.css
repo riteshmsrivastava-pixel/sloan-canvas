@@ -10,3 +10,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,su
 
 .fall-add-form{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin:24px 0 12px;padding:20px;background:var(--card2);border:1px solid var(--line);border-radius:14px}.fall-add-form .year-field{flex:1 1 420px;min-width:0}.fall-add-form select{width:100%;max-width:100%}.fall-selected-units{font:600 14px var(--fm);min-width:95px;padding:12px 0}.fall-add-form button:disabled{opacity:.5;cursor:default}.spring-calendar{background:var(--card)}.spring-calendar .gutter{position:sticky;left:0;z-index:2;background:var(--card)}.spring-calendar .days{min-width:540px}.spring-calendar-course{position:absolute;text-align:left;overflow:hidden;border:1px solid #8eae7b;border-left:3px solid #547541;border-radius:7px;padding:5px;background:#e7efdf;color:#243329;font:11px var(--fb);cursor:pointer}.spring-calendar-course b{display:block;font-size:11px}.spring-calendar-course span{display:block;margin-top:3px;line-height:1.25}.spring-calendar-course.conflict{border-color:#9f3835;background:#f7e2df;color:#6d2322}.spring-calendar .tlabel{font-size:10px}.spring-calendar-course:hover{filter:brightness(.96)}
 @media(max-width:600px){.fall-add-form{padding:14px;gap:8px}.fall-add-form .year-field{flex-basis:100%}.fall-add-form select{font-size:13px}.fall-add-form button{margin-left:auto}}
+
+.spring-core-panel{border-top:3px solid var(--brand)}
+.spring-core-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.spring-core-sections>div{padding:12px;background:var(--bg);border:1px solid var(--line2);border-radius:10px}
+.spring-core-sections span{display:block;font-size:13px;margin-top:6px;color:var(--mute)}
+@media(max-width:520px){.spring-core-sections{grid-template-columns:1fr}}
+@media(max-width:850px){.spring-layout>.year-stack{display:contents}.spring-core-panel{grid-row:1}}

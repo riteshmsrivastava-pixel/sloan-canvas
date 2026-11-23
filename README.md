@@ -40,3 +40,7 @@ The server hooks must remain enabled for these protections. Removing frontend pa
 ## Term views
 
 Summer and Fall use course completion records. Fall courses are selected from a dropdown with their units prefilled; adding a course records it as completed, and existing records retain their previous status. Independent study and courses missing from the list can be added manually. IAP keeps its January calendar, and Spring uses a weekly time grid with H3/H4 filters and visible time conflicts.
+
+Fall G-Lab (9+3), H-Lab (9+6), and EM-Lab (6+3) derive an IAP continuation from the saved Fall record. Allocations were checked against the 2027JA Sloan Course Browser; older EM-Lab audit PDFs have a different split. Only the Fall portion is earned when adding a completed Fall course. An explicitly selected IAP portion retains its own status; derived portions can be removed and restored without changing Fall history. IAP totals include approved research units and flag plans above 12 units.
+
+The November 20, 2026 SFMBA program announcement confirms 15.871 as the only Spring core: 6 units, H3, Hazhir Rahmandad, sections C (Mon/Wed 10–11:30 am) and D (Mon/Wed 1–2:30 pm). The program assigns sections after bidding. This core is visible above the Spring calendar and counted once, even before section assignment; the regular MBA A/B sections are hidden from the Fellows browser.

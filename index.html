@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muddy Falls · Your SFMBA Year</title>
 <meta name="description" content="MIT Sloan Fellows course planner for Summer, Fall, IAP and Spring. Track graduate units, core requirements and degree progress.">
-<link rel="stylesheet" href="year.css?v=e1dd55d2d170">
+<link rel="stylesheet" href="year.css?v=c8ba35744ec8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -831,7 +831,7 @@ let MITIDX=null;
 function mitToCourse(m){const dep=(window.MIT_DEPTS&&window.MIT_DEPTS[m.d])||m.d;const mm=(m.sc&&m.sc.d&&m.sc.t)?m.sc.d.flatMap(d=>mt(d,m.sc.t)):[];return {key:'MIT:'+m.id,id:m.id,base:m.id,title:m.t,units:m.u||0,half:m.hf||'F',certs:[],route:'MITreg',m:mm,fac:m.ins||dep,mit:true,note:'MIT '+dep+' · register via WebSIS'+(m.off?' · not offered ’25–’26':'')};}
 function mitIndex(){if(MITIDX)return MITIDX;MITIDX={};(window.MIT_COURSES||[]).forEach(m=>{const k='MIT:'+m.id;if(!MITIDX[k])MITIDX[k]=mitToCourse(m);});return MITIDX;}
 const byKey=k=>!k?undefined:(window.yearLookup&&window.yearLookup(k))||(k.slice(0,4)==='IAP:'?IAP_IDX[k]:(k.slice(0,4)==='MIT:'?mitIndex()[k]:(k.slice(0,7)==='CUSTOM:'?(state.custom&&state.custom[k]):COURSES.find(c=>c.key===k))));
-const planned=()=>state.plan.map(byKey).filter(Boolean);
+const planned=()=>{const courses=state.plan.map(byKey).filter(Boolean);return window.yearWithContinuations?window.yearWithContinuations(courses):courses;};
 
 /* ===================== static UI ===================== */
 function buildStatic(){
@@ -992,8 +992,8 @@ function renderCalendar(){
 }
 
 /* ===================== actions ===================== */
-function add(k){if(!state.plan.includes(k)){state.plan.push(k);save();render();pushIf();}}
-function remove(k){state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];if(k.slice(0,7)==='CUSTOM:'&&state.custom)delete state.custom[k];save();render();pushIf();}
+function add(k){if(!state.plan.includes(k)){if(window.yearPlanAdd)window.yearPlanAdd(k);state.plan.push(k);save();render();pushIf();}}
+function remove(k){if(window.yearPlanRemove)window.yearPlanRemove(k);state.plan=state.plan.filter(x=>x!==k);delete state.bids[k];if(k.slice(0,7)==='CUSTOM:'&&state.custom)delete state.custom[k];save();render();pushIf();}
 function pushIf(){if(SB&&session&&typeof syncUp==='function')syncUp();}
 function setBid(k,v){state.bids[k]=Math.max(0,parseInt(v||'0',10)||0);save();renderCredits();}
 function resetPlan(){
@@ -1354,7 +1354,7 @@ function renderIAP(){
   items.sort((a,b)=>a.id.localeCompare(b.id)||((a.sec||'')<(b.sec||'')?-1:1));
   document.getElementById('iapCount').textContent=items.length;
   document.getElementById('iaplist').innerHTML=items.map(c=>{
-    const col=colorOf(c),added=state.plan.includes(c.key);
+    const col=colorOf(c),added=planned().some(x=>x.key===c.key);
     return `<div class="course" data-key="${c.key}" style="border-left-color:${col};background:${tint(col,.05)}">
       <div style="flex:1;min-width:0">
         <div class="crow">
@@ -1378,24 +1378,26 @@ function renderIAP(){
   renderIapPlan();
 }
 function renderIapPlan(){
-  const cs=planned().filter(c=>c.term==='IAP');
-  const tot=cs.reduce((a,c)=>a+(c.units||0),0);
+  const cs=degreeTotals().records.filter(c=>c.term==='IAP');
+  const tot=cs.reduce((a,c)=>a+c.credit,0);
   document.getElementById('iapPlanCount').textContent=cs.length;
   document.getElementById('iapUnits').textContent=tot;
-  document.getElementById('iapPlan').innerHTML=cs.map(c=>{
+  document.getElementById('iapPlan').innerHTML=`<div class="year-note">${tot} / 12 IAP units planned or completed. Fall lab continuations are included automatically; only their IAP portion counts here.${tot>12?'<p class="year-alert">Your IAP plan exceeds the 12-unit limit.</p>':''}</div>`+(cs.map(c=>{
     const col=colorOf(c),st=statusOf(c.key),ms=mates(c.key);
     return `<div class="prow" data-key="${c.key}" style="cursor:pointer;border-left-color:${col}">
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap"><span class="pcode">${escH(c.id)}${c.sec||''}</span><span class="mate" onclick="showClassmates('${c.key}')" title="See who else is in this class">👥 ${ms.length?ms.length+' in class':'Classmates'}</span>${reviewChip(c.key)}</div>
         <div class="ptitle">${escH(c.title)}</div>
+        ${c.linkedFrom?`<div class="ledger-reason">From your Fall record · ${Y.SPLIT[c.id].FALL} Fall + ${c.units} IAP units</div>`:''}
+        ${c.reason?`<div class="ledger-reason">${escH(c.reason)}</div>`:''}
         <div style="font-size:11px;color:var(--mute);margin-top:2px">🗓 ${c.sched||'Dates not published yet'}</div>
       </div>
       <span class="time">${c.units?c.units+'u':'arr'}</span>
       <select class="stsel" title="Set your status" onchange="setStatus('${c.key}',this.value)" style="border-color:${STATUS[st].color}66;color:${STATUS[st].color}">${Object.keys(STATUS).map(k=>`<option value="${k}" ${st===k?'selected':''}>${SDOT[k]} ${STATUS[k].label}</option>`).join('')}</select>
       <button class="rm" onclick="remove('${c.key}')">−</button>
     </div>`;
-  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:26px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on an IAP course to add it</div>`;
-  renderIapCal(cs);
+  }).join('')||`<div style="text-align:center;color:var(--mute2);padding:26px 0;border:2px dashed var(--line2);border-radius:14px">Tap + on an IAP course to add it</div>`);
+  renderIapCal(cs.filter(c=>c.outcome!=='excluded'));
 }
 function renderIapCal(cs){
   const el=document.getElementById('iapCal');if(!el)return;
@@ -1422,8 +1424,8 @@ function renderIapCal(cs){
 }
 </script>
 <script src="spring-data.js?v=c199604d3498"></script>
-<script src="year-model.js?v=e163cc217e3b"></script>
-<script src="year.js?v=793cc6f993df"></script>
+<script src="year-model.js?v=cd27e9022083"></script>
+<script src="year.js?v=668f8dfef618"></script>
 <script src="mit-spring-data.js?v=8bef7d7655c7"></script>
 <script src="harvard-spring-data.js?v=cdd7da3320c8"></script>
 <script src="crossreg.js?v=9f24c89da948"></script>
